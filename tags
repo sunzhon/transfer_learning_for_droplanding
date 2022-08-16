@@ -1,0 +1,638 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ACC_GYRO_FIELDS	vicon_imu_data_process/const.py	/^ACC_GYRO_FIELDS = ['Accel_X', 'Accel_Y', 'Accel_Z', 'Gyro_X', 'Gyro_Y', 'Gyro_Z']$/;"	v
+ALLSPHINXOPTS	scikit-kinematics/docs/Makefile	/^ALLSPHINXOPTS   = -d $(BUILDDIR)\/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .$/;"	m
+ALLSPHINXOPTS	scikit-kinematics/docs/make.bat	/^	set ALLSPHINXOPTS=-D latex_paper_size=%PAPER% %ALLSPHINXOPTS%$/;"	v
+ALLSPHINXOPTS	scikit-kinematics/docs/make.bat	/^set ALLSPHINXOPTS=-d %BUILDDIR%\/doctrees %SPHINXOPTS% .$/;"	v
+ALL_FIELDS	vicon_imu_data_process/const.py	/^ALL_FIELDS = DISCRETE_FIELDS + CONTINUOUS_FIELDS$/;"	v
+ANKLE_VALUES	vicon_imu_data_process/const.py	/^ANKLE_VALUES=['AnkleAngle','AnkleMoment']$/;"	v
+BASIC_COP_DATA_FIELDS	vicon_imu_data_process/const.py	/^BASIC_COP_DATA_FIELDS=['COP']$/;"	v
+BASIC_KNEE_DATA_FIELDS	vicon_imu_data_process/const.py	/^BASIC_KNEE_DATA_FIELDS=['KneeAngle_X','KneeAngle_Y','KneeMoment_X','KneeMoment_Y']$/;"	v
+BASIC_V3D_DATA_FIELDS	vicon_imu_data_process/const.py	/^BASIC_V3D_DATA_FIELDS=[variable+direction for variable in BIOMECHANICS_VARIABLES for direction in ['','.1','.2']]  $/;"	v
+BIOMECHANICS_VARIABLES	vicon_imu_data_process/const.py	/^BIOMECHANICS_VARIABLES=['GRF','FPA','ANKLE_ANGLE','ANKLE_MOMENT','KNEE_ANGLE','KNEE_MOMENT','HIP_ANGLE','HIP_MOMENT']$/;"	v
+BUILDDIR	scikit-kinematics/docs/Makefile	/^BUILDDIR      = _build$/;"	m
+BUILDDIR	scikit-kinematics/docs/make.bat	/^set BUILDDIR=_build$/;"	v
+CONTINUOUS_FIELDS	vicon_imu_data_process/const.py	/^                    JOINT_LIST + SEGMENT_DATA_FIELDS$/;"	v
+DATA_PATH	vicon_imu_data_process/const.py	/^DATA_PATH = os.path.join(MEDIA_NAME,"drop_landing_workspace","data")$/;"	v
+DATA_VISULIZATION_PATH	vicon_imu_data_process/const.py	/^DATA_VISULIZATION_PATH = os.path.join(RESULTS_PATH,'datasets_files','dataset_visulization')$/;"	v
+DIRECTIONS	vicon_imu_data_process/const.py	/^DIRECTIONS=['_X','_Y','_Z']$/;"	v
+DISCRETE_FIELDS	vicon_imu_data_process/const.py	/^DISCRETE_FIELDS = STATIC_DATA + PHASE_LIST$/;"	v
+DROPLANDING_PERIOD	vicon_imu_data_process/const.py	/^DROPLANDING_PERIOD=80 # 落地后的0.5秒内， 这是研究每次落地实验的时间范围$/;"	v
+DROPLANDING_PERIOD_END	vicon_imu_data_process/const.py	/^DROPLANDING_PERIOD_END = DROPLANDING_PERIOD\/4*3-1$/;"	v
+DROPLANDING_PERIOD_SATRT	vicon_imu_data_process/const.py	/^DROPLANDING_PERIOD_SATRT = DROPLANDING_PERIOD\/4$/;"	v
+DYNAMIC_TRIALS	vicon_imu_data_process/const.py	/^DYNAMIC_TRIALS = ['baseline', 'fpa_01', 'fpa_02','fpa_03','fpa_04','fpa_05','single']$/;"	v
+Display	scikit-kinematics/src/skinematics/view.py	/^class Display:$/;"	c
+DivideMaxScalar	vicon_imu_data_process/wearable_toolkit.py	/^class DivideMaxScalar(MinMaxScaler):$/;"	c
+ESTIMATION_SENSOR_CONFIGURATIONS	vicon_imu_data_process/const.py	/^ESTIMATION_SENSOR_CONFIGURATIONS = {$/;"	v
+EXAMPLE_DATA_FIELDS	vicon_imu_data_process/const.py	/^EXAMPLE_DATA_FIELDS = [$/;"	v
+EXT_KNEE_MOMENT	vicon_imu_data_process/const.py	/^EXT_KNEE_MOMENT = ['EXT_KM_X', 'EXT_KM_Y', 'EXT_KM_Z']$/;"	v
+FEATURES_FIELDS	vicon_imu_data_process/const.py	/^FEATURES_FIELDS = extract_imu_fields(IMU_SENSOR_LIST, IMU_RAW_FIELDS)$/;"	v
+FONT_DICT	vicon_imu_data_process/const.py	/^FONT_DICT = {'fontsize': FONT_SIZE, 'fontname': 'Arial'}$/;"	v
+FONT_DICT_LARGE	vicon_imu_data_process/const.py	/^FONT_DICT_LARGE = {'fontsize': FONT_SIZE_LARGE, 'fontname': 'Arial'}$/;"	v
+FONT_DICT_SMALL	vicon_imu_data_process/const.py	/^FONT_DICT_SMALL = {'fontsize': FONT_SIZE_SMALL, 'fontname': 'Arial'}$/;"	v
+FONT_DICT_X_SMALL	vicon_imu_data_process/const.py	/^FONT_DICT_X_SMALL = {'fontsize': 15, 'fontname': 'Arial'}$/;"	v
+FONT_SIZE	vicon_imu_data_process/const.py	/^FONT_SIZE = 20$/;"	v
+FONT_SIZE_LARGE	vicon_imu_data_process/const.py	/^FONT_SIZE_LARGE = 24$/;"	v
+FONT_SIZE_SMALL	vicon_imu_data_process/const.py	/^FONT_SIZE_SMALL = 18$/;"	v
+FORCE	vicon_imu_data_process/const.py	/^FORCE=['Force']$/;"	v
+FORCE_DATA_FIELDS	vicon_imu_data_process/const.py	/^FORCE_DATA_FIELDS = ['plate_' + num + '_' + data_type + '_' + axis for num in ['1', '2']$/;"	v
+FORCE_DATA_FIELDS	vicon_imu_data_process/const.py	/^FORCE_DATA_FIELDS=  [lr + 'Force' + dire for lr in LEFT_RIGHT for dire in DIRECTIONS]$/;"	v
+FPA_VALUES	vicon_imu_data_process/const.py	/^FPA_VALUES=['FPA']$/;"	v
+GRAVITY	vicon_imu_data_process/const.py	/^GRAVITY = 9.81$/;"	v
+GUESSED_EVENT_INDEX	vicon_imu_data_process/wearable_toolkit.py	/^    GUESSED_EVENT_INDEX = 0$/;"	v	class:SageCsvReader
+GramSchmidt	scikit-kinematics/src/skinematics/vector.py	/^def GramSchmidt(p0,p1,p2):$/;"	f
+HIP_VALUES	vicon_imu_data_process/const.py	/^HIP_VALUES=['HipAngle','HipMoment']$/;"	v
+I18NSPHINXOPTS	scikit-kinematics/docs/Makefile	/^I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .$/;"	m
+I18NSPHINXOPTS	scikit-kinematics/docs/make.bat	/^	set I18NSPHINXOPTS=-D latex_paper_size=%PAPER% %I18NSPHINXOPTS%$/;"	v
+I18NSPHINXOPTS	scikit-kinematics/docs/make.bat	/^set I18NSPHINXOPTS=%SPHINXOPTS% .$/;"	v
+IMU_Base	scikit-kinematics/src/skinematics/imus.py	/^class IMU_Base(metaclass=abc.ABCMeta):$/;"	c
+IMU_DATA_FIELDS	vicon_imu_data_process/const.py	/^IMU_DATA_FIELDS = extract_imu_fields(IMU_SENSOR_LIST, IMU_FIELDS)$/;"	v
+IMU_FEATURES_FIELDS	vicon_imu_data_process/const.py	/^IMU_FEATURES_FIELDS = extract_imu_fields(IMU_SENSOR_LIST, IMU_RAW_FIELDS)$/;"	v
+IMU_FIELDS	vicon_imu_data_process/const.py	/^IMU_FIELDS = ['Accel_X', 'Accel_Y', 'Accel_Z', 'Gyro_X', 'Gyro_Y', 'Gyro_Z', 'Mag_X', 'Mag_Y', 'Mag_Z', 'Quat_1', 'Quat_2',$/;"	v
+IMU_RAW_FIELDS	vicon_imu_data_process/const.py	/^IMU_RAW_FIELDS = ['Accel_X', 'Accel_Y', 'Accel_Z', 'Gyro_X', 'Gyro_Y', 'Gyro_Z', 'Mag_X', 'Mag_Y', 'Mag_Z']$/;"	v
+IMU_SENSOR_LIST	vicon_imu_data_process/const.py	/^IMU_SENSOR_LIST = ['CHEST','WAIST', 'R_THIGH', 'R_SHANK','R_FOOT','L_THIGH','L_SHANK','L_FOOT']$/;"	v
+JOINT_LIST	vicon_imu_data_process/const.py	/^JOINT_LIST = [marker + '_' + axis for axis in ['X', 'Y', 'Z'] for marker in sum(SEGMENT_DEFINITIONS.values(), [])]$/;"	v
+KNEE_DATA_FIELDS	vicon_imu_data_process/const.py	/^KNEE_DATA_FIELDS = [lr + knee + dire for lr in LEFT_RIGHT for knee in KNEE_VALUES for dire in DIRECTIONS[:2]]$/;"	v
+KNEE_VALUES	vicon_imu_data_process/const.py	/^KNEE_VALUES=['KneeAngle','KneeMoment']$/;"	v
+LABELS_FIELDS	vicon_imu_data_process/const.py	/^LABELS_FIELDS =  [ 'R_KNEE_MOMENT_X','R_KNEE_MOMENT_Y','R_KNEE_MOMENT_Z','R_GRF_X','R_GRF_Y', 'R_GRF_Z']$/;"	v
+LEFT_RIGHT	vicon_imu_data_process/const.py	/^LEFT_RIGHT=['L_','R_']$/;"	v
+LEVER_ARM_FIELDS	vicon_imu_data_process/const.py	/^LEVER_ARM_FIELDS = ['r_x', 'r_y', 'r_z']$/;"	v
+LINE_WIDTH	vicon_imu_data_process/const.py	/^LINE_WIDTH = 2$/;"	v
+LINE_WIDTH_THICK	vicon_imu_data_process/const.py	/^LINE_WIDTH_THICK = 3$/;"	v
+LOAD_SUBJECTS_TRIALS	vicon_imu_data_process/const.py	/^LOAD_SUBJECTS_TRIALS={subject:[] for subject in SUBJECTS}$/;"	v
+MEDIA_NAME	vicon_imu_data_process/const.py	/^    MEDIA_NAME = "\/media\/sun\/DATA\/"$/;"	v
+MEDIA_NAME	vicon_imu_data_process/const.py	/^MEDIA_NAME=os.environ.get("MEDIA_NAME")$/;"	v
+Madgwick	scikit-kinematics/src/skinematics/imus.py	/^class Madgwick:$/;"	c
+Mahony	scikit-kinematics/src/skinematics/imus.py	/^class Mahony:$/;"	c
+MyOwnSensor	scikit-kinematics/src/skinematics/sensors/manual.py	/^class MyOwnSensor(IMU_Base):$/;"	c
+NEEDED_FORCE_PLATED_DATA_FIELDS	vicon_imu_data_process/const.py	/^NEEDED_FORCE_PLATED_DATA_FIELDS=['- Force', '- CoP']$/;"	v
+NGIMU	scikit-kinematics/src/skinematics/sensors/xio_ngimu.py	/^class NGIMU(IMU_Base):$/;"	c
+OPENPOSE_MODEL_PATH	vicon_imu_data_process/const.py	/^OPENPOSE_MODEL_PATH = os.environ.get('OPENPOSE_MODEL_PATH')$/;"	v
+Orientation_OGL	scikit-kinematics/src/skinematics/view.py	/^class Orientation_OGL:$/;"	c
+PAPER	scikit-kinematics/docs/Makefile	/^PAPER         =$/;"	m
+PAPER	scikit-kinematics/docs/make.bat	/^	echo.  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter$/;"	v
+PAPEROPT_a4	scikit-kinematics/docs/Makefile	/^PAPEROPT_a4     = -D latex_paper_size=a4$/;"	m
+PAPEROPT_letter	scikit-kinematics/docs/Makefile	/^PAPEROPT_letter = -D latex_paper_size=letter$/;"	m
+PELVIS_VALUES	vicon_imu_data_process/const.py	/^PELVIS_VALUES=['PelvisAngle']$/;"	v
+Polulu	scikit-kinematics/src/skinematics/sensors/polulu.py	/^class Polulu(IMU_Base):$/;"	c
+Quaternion	scikit-kinematics/src/skinematics/quat.py	/^class Quaternion():$/;"	c
+R	scikit-kinematics/src/skinematics/rotmat.py	/^def R(axis='x', angle=90) :$/;"	f
+RESULTS_PATH	vicon_imu_data_process/const.py	/^RESULTS_PATH = os.path.join(MEDIA_NAME,"drop_landing_workspace\/results")$/;"	v
+RKNEE_MARKER_FIELDS	vicon_imu_data_process/const.py	/^RKNEE_MARKER_FIELDS = [marker + axis for marker in ['RFME', 'RFLE'] for axis in ['_X', '_Y', '_Z']]$/;"	v
+R_s	scikit-kinematics/src/skinematics/rotmat.py	/^def R_s(axis='x', angle='alpha'):$/;"	f
+R_z	scikit-kinematics/src/skinematics/rotmat.py	/^    R_z = stm(axis=2, angle=30)$/;"	v
+Rx	scikit-kinematics/src/skinematics/rotmat.py	/^    Rx = stm_s(axis=0, angle='0')$/;"	v
+Rx	scikit-kinematics/src/skinematics/rotmat.py	/^    Rx = stm_s(axis=0, angle='alpha')$/;"	v
+Rz	scikit-kinematics/src/skinematics/rotmat.py	/^    Rz = stm_s(axis=2, angle='theta')$/;"	v
+SAMPLES_AFTER_STEP	vicon_imu_data_process/const.py	/^SAMPLES_AFTER_STEP = 20$/;"	v
+SAMPLES_BEFORE_STEP	vicon_imu_data_process/const.py	/^SAMPLES_BEFORE_STEP = 20$/;"	v
+SAMPLE_FREQUENCY	vicon_imu_data_process/const.py	/^SAMPLE_FREQUENCY=100.0 # 100 Hz$/;"	v
+SEGMENT_DATA_FIELDS	vicon_imu_data_process/const.py	/^SEGMENT_DATA_FIELDS = [seg_name + '_' + axis for axis in ['X', 'Y', 'Z'] for seg_name in SEGMENT_DEFINITIONS.keys()]$/;"	v
+SEGMENT_DEFINITIONS	vicon_imu_data_process/const.py	/^SEGMENT_DEFINITIONS = {$/;"	v
+SEGMENT_MASS_PERCENT	vicon_imu_data_process/const.py	/^SEGMENT_MASS_PERCENT = {'L_FOOT': 1.37, 'R_FOOT': 1.37, 'R_SHANK': 4.33, 'R_THIGH': 14.16,$/;"	v
+SENSOR_COMBINATION	vicon_imu_data_process/const.py	/^SENSOR_COMBINATION = ['8IMU_2camera', '8IMU', '3IMU_2camera', '3IMU', '1IMU_2camera', '1IMU', '2camera']$/;"	v
+SENSOR_COMBINATION_SORTED	vicon_imu_data_process/const.py	/^SENSOR_COMBINATION_SORTED = ['8IMU_2camera', '3IMU_2camera', '8IMU', '1IMU_2camera', '3IMU', '2camera', '1IMU']$/;"	v
+SESSIONS	vicon_imu_data_process/const.py	/^SESSIONS=['20210930_vicon','20211015_vicon','20211022_vicon','20211025_vicon','20211026_vicon'] # vicon experiment sessions$/;"	v
+SPHINXBUILD	scikit-kinematics/docs/Makefile	/^SPHINXBUILD   = sphinx-build$/;"	m
+SPHINXBUILD	scikit-kinematics/docs/make.bat	/^	set SPHINXBUILD=sphinx-build$/;"	v
+SPHINXOPTS	scikit-kinematics/docs/Makefile	/^SPHINXOPTS    =$/;"	m
+STATIC_TRIALS	vicon_imu_data_process/const.py	/^STATIC_TRIALS = ['static']$/;"	v
+STEP_TYPE	vicon_imu_data_process/const.py	/^STEP_TYPE = STANCE$/;"	v
+STM	scikit-kinematics/src/skinematics/rotmat.py	/^    STM = stm(axis=0, angle=45, translation=[1, 2, 3.3])$/;"	v
+SUBJECTS	vicon_imu_data_process/const.py	/^SUBJECTS = [$/;"	v
+SYN_DROPLANDING_PERIOD	vicon_imu_data_process/const.py	/^SYN_DROPLANDING_PERIOD=60 # synchronize imus and GRFs by shift and crop them into this period$/;"	v
+SageCsvReader	vicon_imu_data_process/wearable_toolkit.py	/^class SageCsvReader:$/;"	c
+THORAX_VALUES	vicon_imu_data_process/const.py	/^THORAX_VALUES=['ThoraxAngle']$/;"	v
+TRAIN_USED_TRIALS_DOUBLE_LEG	vicon_imu_data_process/const.py	/^TRAIN_USED_TRIALS_DOUBLE_LEG = [str(idx) if idx>9 else '0'+str(idx) for idx in range(1,TRAIN_USED_TRIAL_NUM+1,1)]  #trial number$/;"	v
+TRAIN_USED_TRIALS_SINGLE_LEG	vicon_imu_data_process/const.py	/^TRAIN_USED_TRIALS_SINGLE_LEG = [str(idx) for idx in range(31,41,1)]  #trial number$/;"	v
+TRAIN_USED_TRIAL_NUM	vicon_imu_data_process/const.py	/^TRAIN_USED_TRIAL_NUM=30$/;"	v
+TRIALS	vicon_imu_data_process/const.py	/^TRIALS = [str(idx) if idx > 9 else '0' + str(idx) for idx in range(1,TRIAL_NUM+1,1)]  #trial number$/;"	v
+TRIAL_NUM	vicon_imu_data_process/const.py	/^TRIAL_NUM = 40$/;"	v
+TRUE_EVENT_INDEX	vicon_imu_data_process/wearable_toolkit.py	/^    TRUE_EVENT_INDEX = 0$/;"	v	class:Visual3dCsvReader
+T_y	scikit-kinematics/src/skinematics/rotmat.py	/^    T_y = stm(translation=[0, 10., 0])$/;"	v
+TestSequenceFunctions	scikit-kinematics/tests/test_imus.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_markers.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_misc.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_quat.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_rotmat.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_sensor_manual.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_sensor_polulu.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_sensor_vicon.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_sensor_xio.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_sensor_xio_ngimu.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_sensor_xsens.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_sensor_yei.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_skinematics.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/tests/test_vector.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+TestSequenceFunctions	scikit-kinematics/xtest_view.py	/^class TestSequenceFunctions(unittest.TestCase):$/;"	c
+Tx	scikit-kinematics/src/skinematics/rotmat.py	/^    Tx = stm_s(transl='0,0,0')$/;"	v
+Tx	scikit-kinematics/src/skinematics/rotmat.py	/^    Tx = stm_s(transl='r,0,0')$/;"	v
+Tz	scikit-kinematics/src/skinematics/rotmat.py	/^    Tz = stm_s(transl='0,0,15')$/;"	v
+Tz	scikit-kinematics/src/skinematics/rotmat.py	/^    Tz = stm_s(transl='0,0,d')$/;"	v
+Update	scikit-kinematics/src/skinematics/imus.py	/^    def Update(self, Gyroscope, Accelerometer, Magnetometer):$/;"	m	class:Madgwick
+Update	scikit-kinematics/src/skinematics/imus.py	/^    def Update(self, Gyroscope, Accelerometer, Magnetometer):$/;"	m	class:Mahony
+V3DReader	vicon_imu_data_process/load_rawdata.py	/^class V3DReader():$/;"	c
+V3D_DATA_FIELDS	vicon_imu_data_process/const.py	/^V3D_DATA_FIELDS=['LON','RON'] + ['LEFT_'+ temp for temp in BASIC_V3D_DATA_FIELDS] + ['RIGHT_'+temp for temp in BASIC_V3D_DATA_FIELDS] + ['PELVIS_ANGLE','PELVIS_ANGLE.1','PELVIS_ANGLE.2','THORAX_ANGLE','THORAX_ANGLE.1','THORAX_ANGLE.2']$/;"	v
+V3D_LABELS_FIELDS	vicon_imu_data_process/const.py	/^V3D_LABELS_FIELDS = ['LON','RON']+['L_'+ temp + dire for temp in BIOMECHANICS_VARIABLES for dire in DIRECTIONS] + ['R_'+temp + dire for temp in BIOMECHANICS_VARIABLES for dire in DIRECTIONS] + [temp + dire for temp in ['PELVIS_ANGLE','THORAX_ANGLE'] for dire in DIRECTIONS]$/;"	v
+VIDEO_ANGLES	vicon_imu_data_process/const.py	/^VIDEO_ANGLES = ["90", "180"]$/;"	v
+VIDEO_DATA_FIELDS	vicon_imu_data_process/const.py	/^VIDEO_DATA_FIELDS = extract_video_fields(VIDEO_LIST, VIDEO_ANGLES)$/;"	v
+VIDEO_LIST	vicon_imu_data_process/const.py	/^VIDEO_LIST = ["LShoulder", "RShoulder", "MidHip", "RHip", "LHip", "RKnee", "LKnee", "RAnkle", "LAnkle", "RHeel",$/;"	v
+VIDEO_ORIGINAL_SAMPLE_RATE	vicon_imu_data_process/const.py	/^VIDEO_ORIGINAL_SAMPLE_RATE = 119.99014859206962$/;"	v
+VIDEO_PATH	vicon_imu_data_process/const.py	/^VIDEO_PATH = os.environ.get('VIDEO_DATA_PATH')$/;"	v
+VarSelector	scikit-kinematics/src/skinematics/view.py	/^class VarSelector():$/;"	c
+Vicon	scikit-kinematics/src/skinematics/sensors/vicon.py	/^class Vicon(IMU_Base):$/;"	c
+ViconCsvReader	vicon_imu_data_process/wearable_toolkit.py	/^class ViconCsvReader:$/;"	c
+ViconReader	vicon_imu_data_process/load_rawdata.py	/^class ViconReader():$/;"	c
+Visual3dCsvReader	vicon_imu_data_process/wearable_toolkit.py	/^class Visual3dCsvReader:$/;"	c
+WRONG_TRIALS	vicon_imu_data_process/const.py	/^WRONG_TRIALS={subject:[] for subject in SUBJECTS}$/;"	v
+XIO	scikit-kinematics/src/skinematics/sensors/xio.py	/^class XIO(IMU_Base):$/;"	c
+XSEN_IMU_ID	vicon_imu_data_process/const.py	/^XSEN_IMU_ID={'MASTER':'0120092C','CHEST':'00B44914','WAIST':'00B44918','L_THIGH':'00B44915','L_SHANK':'00B44909','L_FOOT':'00B44907','R_THIGH':'00B4490C','R_SHANK':'00B4490E','R_FOOT':'00B44911'}$/;"	v
+XSens	scikit-kinematics/src/skinematics/sensors/xsens.py	/^class XSens(IMU_Base):$/;"	c
+XsenReader	vicon_imu_data_process/load_rawdata.py	/^class XsenReader():$/;"	c
+XsenTxtReader	vicon_imu_data_process/wearable_toolkit.py	/^class XsenTxtReader():$/;"	c
+YEI	scikit-kinematics/src/skinematics/sensors/yei.py	/^class YEI(IMU_Base):$/;"	c
+__all__	scikit-kinematics/src/skinematics/__init__.py	/^__all__ = []$/;"	v
+__author__	scikit-kinematics/src/skinematics/__init__.py	/^__author__ = "Thomas Haslwanter <thomas.haslwanter@fh-linz.at"$/;"	v
+__div__	scikit-kinematics/src/skinematics/quat.py	/^    def __div__(self, other):$/;"	m	class:Quaternion	file:
+__find_stationary_phase	vicon_imu_data_process/wearable_toolkit.py	/^    def __find_stationary_phase(gyr_magnitude, acc_magnitude, foot_stationary_acc_thd, foot_stationary_gyr_thd):$/;"	m	class:SageCsvReader	file:
+__find_stationary_phase_2	vicon_imu_data_process/wearable_toolkit.py	/^    def __find_stationary_phase_2(gyr_magnitude, acc_magnitude, foot_stationary_acc_thd, foot_stationary_gyr_thd):$/;"	m	class:SageCsvReader	file:
+__find_zero_crossing	vicon_imu_data_process/wearable_toolkit.py	/^    def __find_zero_crossing(self, gyr_x, foot_stationary_gyr_thd, i_sample):$/;"	m	class:SageCsvReader	file:
+__getitem__	scikit-kinematics/src/skinematics/quat.py	/^    def __getitem__(self, select):$/;"	m	class:Quaternion	file:
+__init__	scikit-kinematics/src/skinematics/imus.py	/^    def __init__(self, in_file = None,$/;"	m	class:IMU_Base
+__init__	scikit-kinematics/src/skinematics/imus.py	/^    def __init__(self, rate=256.0, Beta=1.0, Quaternion=[1,0,0,0]):$/;"	m	class:Madgwick
+__init__	scikit-kinematics/src/skinematics/imus.py	/^    def __init__(self, rate=256.0, Kp=1.0, Ki=0, Quaternion=[1,0,0,0]):$/;"	m	class:Mahony
+__init__	scikit-kinematics/src/skinematics/quat.py	/^    def __init__(self, inData, inType='vector'):    $/;"	m	class:Quaternion
+__init__	scikit-kinematics/src/skinematics/view.py	/^    def __init__(self, master, data=None):$/;"	m	class:Display
+__init__	scikit-kinematics/src/skinematics/view.py	/^    def __init__(self, quat_in=None, rate=50, looping=False, win_width = 800, win_height = 600):$/;"	m	class:Orientation_OGL
+__init__	scikit-kinematics/src/skinematics/view.py	/^    def __init__(self, selectionWindow,  mainApp):$/;"	m	class:VarSelector
+__init__	vicon_imu_data_process/load_rawdata.py	/^    def __init__(self, subject_info, session):$/;"	m	class:ViconReader
+__init__	vicon_imu_data_process/load_rawdata.py	/^    def __init__(self,subject_info,session):$/;"	m	class:V3DReader
+__init__	vicon_imu_data_process/load_rawdata.py	/^    def __init__(self,subject_info,session):$/;"	m	class:XsenReader
+__init__	vicon_imu_data_process/wearable_toolkit.py	/^    def __init__(self, file_path):$/;"	m	class:SageCsvReader
+__init__	vicon_imu_data_process/wearable_toolkit.py	/^    def __init__(self, file_path,subject_name,trial):$/;"	m	class:Visual3dCsvReader
+__init__	vicon_imu_data_process/wearable_toolkit.py	/^    def __init__(self, file_path,trial=None, segment_definitions=None, static_trial=None, subject_info=None):$/;"	m	class:ViconCsvReader
+__init__	vicon_imu_data_process/wearable_toolkit.py	/^    def __init__(self,folder_path, subject_name, trial):$/;"	m	class:XsenTxtReader
+__len__	scikit-kinematics/src/skinematics/quat.py	/^    def __len__(self):$/;"	m	class:Quaternion	file:
+__license__	scikit-kinematics/src/skinematics/__init__.py	/^__license__ = "BSD 2-Clause License"$/;"	v
+__mul__	scikit-kinematics/src/skinematics/quat.py	/^    def __mul__(self, other):$/;"	m	class:Quaternion	file:
+__repr__	scikit-kinematics/src/skinematics/quat.py	/^    def __repr__(self):$/;"	m	class:Quaternion	file:
+__setitem__	scikit-kinematics/src/skinematics/quat.py	/^    def __setitem__(self, select, item):$/;"	m	class:Quaternion	file:
+__truediv__	scikit-kinematics/src/skinematics/quat.py	/^    def __truediv__(self, other):$/;"	m	class:Quaternion	file:
+__version__	scikit-kinematics/src/skinematics/__init__.py	/^__version__ = "0.8.8"$/;"	v
+_calc_orientation	scikit-kinematics/src/skinematics/imus.py	/^    def _calc_orientation(self):$/;"	m	class:IMU_Base
+_checkRequirements	scikit-kinematics/src/skinematics/imus.py	/^    def _checkRequirements(self):$/;"	m	class:IMU_Base
+_check_axis	scikit-kinematics/src/skinematics/rotmat.py	/^def _check_axis(sel_axis):$/;"	f
+_set_data	scikit-kinematics/src/skinematics/imus.py	/^    def _set_data(self, data):$/;"	m	class:IMU_Base
+_set_info	scikit-kinematics/src/skinematics/imus.py	/^    def _set_info(self):$/;"	m	class:IMU_Base
+_show	scikit-kinematics/src/skinematics/misc.py	/^    def _show(_i):$/;"	f	function:progressbar
+_update_func	scikit-kinematics/src/skinematics/view.py	/^def _update_func(num, all_corners, colors, ax, title=None):$/;"	f
+a	scikit-kinematics/src/skinematics/quat.py	/^    a = np.r_[np.cos(0.1), 0,0,np.sin(0.1)]$/;"	v
+a	scikit-kinematics/src/skinematics/rotmat.py	/^    a = np.r_[np.cos(0.1), 0,0,np.sin(0.1)]$/;"	v
+a	scikit-kinematics/src/skinematics/vector.py	/^    a = [3,3,0]$/;"	v
+analytical	scikit-kinematics/src/skinematics/imus.py	/^def analytical(R_initialOrientation=np.eye(3),$/;"	f
+analyze_3Dmarkers	scikit-kinematics/src/skinematics/markers.py	/^def analyze_3Dmarkers(MarkerPos, ReferencePos):$/;"	f
+angle	scikit-kinematics/src/skinematics/vector.py	/^def angle(v1,v2):$/;"	f
+angles	scikit-kinematics/src/skinematics/rotmat.py	/^    angles = np.r_[20, 0, 0]$/;"	v
+angles	scikit-kinematics/src/skinematics/rotmat.py	/^    angles = sequence(testmat, to='nautical')$/;"	v
+angles	scikit-kinematics/src/skinematics/rotmat.py	/^    angles = sequence(testmat2, to='nautical')$/;"	v
+append_external_kam	vicon_imu_data_process/wearable_toolkit.py	/^    def append_external_kam(self):$/;"	m	class:ViconCsvReader
+augment_subjects_trials_dataset	vicon_imu_data_process/data_augment.py	/^    augment_subjects_trials_dataset = imu_data_augment(subjects_trials_dataset,rot_matrix,save_to_hdf5 = "5_augment_features_labels_rawdatasets")$/;"	v
+b	scikit-kinematics/src/skinematics/quat.py	/^    b = np.r_[np.cos(0.2), 0,np.sin(0.2),0]$/;"	v
+b	scikit-kinematics/src/skinematics/vector.py	/^    b = [0, 1, 0]$/;"	v
+backward	scikit-kinematics/src/skinematics/view.py	/^    def backward(self):$/;"	m	class:Display
+boxplot_IMU_number_accuracy	estimation_assessment/visualization.py	/^def boxplot_IMU_number_accuracy(combination_investigation_results, landing_manner='both', estimated_variable='both', syn_features_label='both', use_frame_index='both',LSTM_unit='all', IMU_number='all',title=None, drop_value=None, metric_fields=['r2'], hue=None):$/;"	f
+boxplot_single_imu_estimation_accuracy	estimation_assessment/visualization.py	/^def boxplot_single_imu_estimation_accuracy(combination_investigation_results):$/;"	f
+calc_angvel	scikit-kinematics/src/skinematics/quat.py	/^def calc_angvel(q, rate=1, winSize=5, order=2):$/;"	f
+calc_position	scikit-kinematics/src/skinematics/imus.py	/^    def calc_position(self):$/;"	m	class:IMU_Base
+calc_quat	scikit-kinematics/src/skinematics/quat.py	/^def calc_quat(omega, q0, rate, CStype):$/;"	f
+calculate_model_time_complexity	estimation_assessment/scores.py	/^def calculate_model_time_complexity(model, series, hyperparams):$/;"	f
+calculate_scores	estimation_assessment/scores.py	/^def calculate_scores(y_true, y_pred):$/;"	f
+calculate_statistic_variable	vicon_imu_data_process/process_rawdata.py	/^def calculate_statistic_variable(data: list, col_names:list, displayed_variables, subjects: list, trial_categories, statistic_methods='max',statistic_value_name='KAM'):$/;"	f
+calibrate_force_plate_center	vicon_imu_data_process/wearable_toolkit.py	/^def calibrate_force_plate_center(file_path, plate_num):$/;"	f
+change_orientation	scikit-kinematics/src/skinematics/simulations/simulate_movements.py	/^def change_orientation(rate, duration, q_start=[0,0,0], rotation_axis=[0, 0, 1], deg=90):$/;"	f
+change_position	scikit-kinematics/src/skinematics/simulations/simulate_movements.py	/^def change_position(rate, duration, start_pos = [0,0,0], direction=[1,0,0], distance=0.5):$/;"	f
+combination_investigation_results	estimation_assessment/scores.py	/^    combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/investigation\/2022-05-24\/205937\/GRFtesting_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/scores.py	/^    combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/4_collected_sensor_lstm\/3_imu\/3_imu_25_lstm_units\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/scores.py	/^    combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/4_collected_sensor_lstm\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/scores.py	/^    combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/latest_train\/001\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/scores.py	/^    combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/latest_train\/10_14\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/scores.py	/^    combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/latest_train\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/scores.py	/^    combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/latest_train_bk\/08_30\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/scores.py	/^    combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/new_alignment\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/visualization.py	/^        combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/1_collected_data\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/visualization.py	/^        combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/3_collected_modeling\/additional_imu_all_imu_all_lstm_double_GRF\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/visualization.py	/^        combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/Four_variable_optimal_imu_config\/KEM_double_legs\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/visualization.py	/^        combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/Four_variable_optimal_imu_config\/KEM_single_leg\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/visualization.py	/^        combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/Four_variable_optimal_imu_config\/vGRF_double_legs\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/visualization.py	/^        combination_investigation_results = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/Four_variable_optimal_imu_config\/vGRF_single_leg\/testing_result_folders.txt"$/;"	v
+combination_investigation_results	estimation_assessment/visualization.py	/^        combination_investigation_results = [t1, t2] +t3$/;"	v
+combination_investigation_results	estimation_assessment/visualization.py	/^        combination_investigation_results = [t_right, t_left]$/;"	v
+combination_investigation_results	jupyter-lab/develop.py	/^    combination_investigation_results = integrative_investigation(investigation_variables,prefix_name='GRF_X',fold_number=2, test_multi_trials=True)$/;"	v
+configuration	scikit-kinematics/src/skinematics/setup.py	/^def configuration(parent_package='',top_path=None):$/;"	f
+convert	scikit-kinematics/src/skinematics/quat.py	/^def convert(quat, to='rotmat'):$/;"	f
+convert	scikit-kinematics/src/skinematics/rotmat.py	/^def convert(rMat, to ='quat'):$/;"	f
+copyright	scikit-kinematics/docs/conf.py	/^copyright = u'2021, thomas haslwanter'$/;"	v
+correct	scikit-kinematics/src/skinematics/rotmat.py	/^    correct = np.r_[[0,0,np.pi\/4]]$/;"	v
+cpus	estimation_study.py	/^cpus=tf.config.list_logical_devices(device_type='CPU')$/;"	v
+cpus	jupyter-lab/develop.py	/^cpus = tf.config.experimental.list_physical_devices(device_type='CPU')$/;"	v
+createWidgets	scikit-kinematics/src/skinematics/view.py	/^    def createWidgets(self):$/;"	m	class:Display
+createWidgets	scikit-kinematics/src/skinematics/view.py	/^    def createWidgets(self, items):$/;"	m	class:VarSelector
+create_step_id	vicon_imu_data_process/wearable_toolkit.py	/^    def create_step_id(self, segment, verbose=False):$/;"	m	class:SageCsvReader
+create_step_id	vicon_imu_data_process/wearable_toolkit.py	/^    def create_step_id(self, step_type):$/;"	m	class:Visual3dCsvReader
+create_testing_files	vicon_imu_data_process/process_rawdata.py	/^def create_testing_files(training_folder):$/;"	f
+create_training_files	vicon_imu_data_process/process_rawdata.py	/^def create_training_files(model_object=None, hyperparams={'lr':0}, base_folder=os.path.join(RESULTS_PATH,'training_testing\/')):$/;"	f
+crop	vicon_imu_data_process/wearable_toolkit.py	/^    def crop(self, start_index):$/;"	m	class:SageCsvReader
+crop	vicon_imu_data_process/wearable_toolkit.py	/^    def crop(self, start_index):$/;"	m	class:ViconCsvReader
+crop	vicon_imu_data_process/wearable_toolkit.py	/^    def crop(self, start_index, end_index):$/;"	m	class:XsenTxtReader
+crop	vicon_imu_data_process/wearable_toolkit.py	/^    def crop(self, start_index=0, end_index=None):$/;"	m	class:Visual3dCsvReader
+data	scikit-kinematics/src/skinematics/view.py	/^    data = XSens(in_file)$/;"	v
+data	vicon_imu_data_process/process_rawdata.py	/^            data = pd.DataFrame(data=subjects_trials_data[subject][trial], columns=hyperparams['columns_names'])$/;"	v
+data	vicon_imu_data_process/process_rawdata.py	/^    data=pd.DataFrame(data=subjects_trials_data['P_11_liuchunyu']['12'], columns=hyperparams['columns_names'])$/;"	v
+data_filter	vicon_imu_data_process/wearable_toolkit.py	/^def data_filter(data, cut_off_fre, sampling_fre, filter_order=4):$/;"	f
+define_elements	scikit-kinematics/src/skinematics/view.py	/^    def define_elements(self):$/;"	m	class:Orientation_OGL
+deg2quat	scikit-kinematics/src/skinematics/quat.py	/^def deg2quat(inDeg):$/;"	f
+dh	scikit-kinematics/src/skinematics/rotmat.py	/^def dh(theta=0, d=0, r=0, alpha=0):$/;"	f
+dh2	scikit-kinematics/src/skinematics/rotmat.py	/^    dh2 = Tz * Rz * Tx * Rx    $/;"	v
+dh_mat	scikit-kinematics/src/skinematics/rotmat.py	/^    dh_mat = Tz * Rz * Tx * Rx$/;"	v
+dh_s	scikit-kinematics/src/skinematics/rotmat.py	/^def dh_s(theta=0, d=0, r=0, alpha=0):$/;"	f
+dir_name	scikit-kinematics/src/skinematics/sensors/xio_ngimu.py	/^dir_name = os.path.dirname(__file__)$/;"	v
+display_bio_variables	vicon_imu_data_process/process_rawdata.py	/^    display_bio_variables = ['L_FPA_Z','R_FPA_Z', 'L_FPA_X','R_FPA_X',  'L_KNEE_MOMENT_X','R_KNEE_MOMENT_X','R_KNEE_MOMENT_Y',  'R_KNEE_MOMENT_Z','L_KNEE_MOMENT_Z',  'L_KNEE_MOMENT_Y','L_KNEE_ANGLE_Y','R_KNEE_ANGLE_Y',  'L_KNEE_ANGLE_X','R_KNEE_ANGLE_X',   'L_KNEE_ANGLE_Z','R_KNEE_ANGLE_Z' ,'PELVIS_ANGLE_X','THORAX_ANGLE_X']$/;"	v
+display_bio_variables	vicon_imu_data_process/process_rawdata.py	/^    display_bio_variables = ['L_FPA_Z','R_FPA_Z',$/;"	v
+displayed_data	vicon_imu_data_process/process_rawdata.py	/^            displayed_data=data[['R_FOOT_Accel_X','R_FOOT_Accel_Y','R_FOOT_Accel_Z','R_GRF_X', 'R_GRF_Y', 'R_GRF_Z']]$/;"	v
+displayed_data	vicon_imu_data_process/process_rawdata.py	/^    displayed_data = data[['R_GRF_X','R_GRF_Y','R_GRF_Z']]$/;"	v
+displayed_variables	vicon_imu_data_process/process_rawdata.py	/^    displayed_variables = ['L_GRF_Z']$/;"	v
+draw_axes	scikit-kinematics/src/skinematics/view.py	/^    def draw_axes(self):$/;"	m	class:Orientation_OGL
+draw_heatmap	vicon_imu_data_process/process_rawdata.py	/^    def draw_heatmap(*args,**kwargs):$/;"	f	function:plot_statistic_value_under_fpa
+draw_pointer	scikit-kinematics/src/skinematics/view.py	/^    def draw_pointer(self, vertices):$/;"	m	class:Orientation_OGL
+drop_value	estimation_assessment/visualization.py	/^                                                                        drop_value = 0.0,$/;"	v
+drop_value	estimation_assessment/visualization.py	/^                                                                  drop_value = 0.0,$/;"	v
+end	scikit-kinematics/docs/make.bat	/^:end$/;"	l
+estimated_variable	estimation_assessment/visualization.py	/^                                                                        estimated_variable = 'GRF',$/;"	v
+estimated_variable	estimation_assessment/visualization.py	/^                                                                  estimated_variable = 'GRF',$/;"	v
+estimated_variable	estimation_assessment/visualization.py	/^                                                   estimated_variable='GRF',$/;"	v
+estimated_variable_dirct	vicon_imu_data_process/const.py	/^estimated_variable_dirct = {'GRF': 'GRF_Z', 'GRFx':'GRF_X', 'GRFy': 'GRF_Y','KFM': 'KNEE_MOMENT_X', 'KAM':'KNEE_MOMENT_Y', 'KFA':'KNEE_ANGLE_X', 'KAA': 'KNEE_ANGLE_Y'}$/;"	v
+estimation_accuracy	estimation_assessment/visualization.py	/^def estimation_accuracy(estimation, actual, labels_names):$/;"	f
+evaluate_models_on_unseen_subjects	estimation_assessment/scores.py	/^def evaluate_models_on_unseen_subjects(combination_investigation_results, trials=None):$/;"	f
+exclude_patterns	scikit-kinematics/docs/conf.py	/^exclude_patterns = ['_build']$/;"	v
+exit	scikit-kinematics/src/skinematics/view.py	/^    def exit(self):$/;"	m	class:Display
+export	scikit-kinematics/src/skinematics/quat.py	/^    def export(self, to='rotmat'):$/;"	m	class:Quaternion
+extensions	scikit-kinematics/docs/conf.py	/^extensions = [$/;"	v
+extract_droplanding_period	vicon_imu_data_process/wearable_toolkit.py	/^    def extract_droplanding_period(self):$/;"	m	class:Visual3dCsvReader
+extract_droplanding_period	vicon_imu_data_process/wearable_toolkit.py	/^    def extract_droplanding_period(self):$/;"	m	class:XsenTxtReader
+extract_imu_fields	vicon_imu_data_process/const.py	/^extract_imu_fields = lambda imus, fields: [imu + "_" + field for imu in imus for field in fields]$/;"	v
+extract_subject_drop_landing_data	vicon_imu_data_process/process_rawdata.py	/^def extract_subject_drop_landing_data(sub_idx: int)->np.ndarray:$/;"	f
+extract_video_fields	vicon_imu_data_process/const.py	/^extract_video_fields = lambda videos, angles: [video + "_" + position + "_" + angle for video in videos$/;"	v
+fbackward	scikit-kinematics/src/skinematics/view.py	/^    def fbackward(self):$/;"	m	class:Display
+fforward	scikit-kinematics/src/skinematics/view.py	/^    def fforward(self):$/;"	m	class:Display
+file_dir	scikit-kinematics/src/skinematics/imus.py	/^file_dir = os.path.dirname(__file__)$/;"	v
+file_dir	scikit-kinematics/src/skinematics/markers.py	/^file_dir = os.path.dirname(__file__)$/;"	v
+file_dir	scikit-kinematics/src/skinematics/quat.py	/^file_dir = os.path.dirname(__file__)$/;"	v
+file_dir	scikit-kinematics/src/skinematics/rotmat.py	/^file_dir = os.path.dirname(__file__)$/;"	v
+file_dir	scikit-kinematics/src/skinematics/vector.py	/^file_dir = os.path.dirname(__file__)$/;"	v
+file_dir	scikit-kinematics/src/skinematics/view.py	/^file_dir = os.path.dirname(__file__)$/;"	v
+fill_missing_marker	vicon_imu_data_process/wearable_toolkit.py	/^    def fill_missing_marker(self, calibrate_makers, motion_markers):$/;"	m	class:ViconCsvReader
+find_peak_max	vicon_imu_data_process/wearable_toolkit.py	/^    def find_peak_max(data_clip, height, width=None, prominence=None):$/;"	m	class:SageCsvReader
+find_trajectory	scikit-kinematics/src/skinematics/markers.py	/^def find_trajectory(r0, Position, Orientation):$/;"	f
+forward	scikit-kinematics/src/skinematics/view.py	/^    def forward(self):$/;"	m	class:Display
+generate_coordinate	vicon_imu_data_process/wearable_math.py	/^def generate_coordinate(points):$/;"	f
+generate_labels_csv	vicon_imu_data_process/wearable_toolkit.py	/^    def generate_labels_csv(self):$/;"	m	class:ViconCsvReader
+get_a_model_test_results	estimation_assessment/scores.py	/^def get_a_model_test_results(training_testing_folders, selection,**kwargs):$/;"	f
+get_angular_velocity	vicon_imu_data_process/wearable_toolkit.py	/^    def get_angular_velocity(self, segment, direction):$/;"	m	class:ViconCsvReader
+get_angular_velocity_theta	vicon_imu_data_process/wearable_toolkit.py	/^    def get_angular_velocity_theta(self, segment, check_len):$/;"	m	class:ViconCsvReader
+get_data	scikit-kinematics/src/skinematics/imus.py	/^    def get_data(self, in_file=None, in_data=None):$/;"	m	class:IMU_Base
+get_data	scikit-kinematics/src/skinematics/sensors/manual.py	/^    def get_data(self, in_file=None, in_data=None):$/;"	m	class:MyOwnSensor
+get_data	scikit-kinematics/src/skinematics/sensors/polulu.py	/^    def get_data(self, in_file, in_data=125):$/;"	m	class:Polulu
+get_data	scikit-kinematics/src/skinematics/sensors/vicon.py	/^    def get_data(self, in_file, in_data=None):$/;"	m	class:Vicon
+get_data	scikit-kinematics/src/skinematics/sensors/xio.py	/^    def get_data(self, in_file, in_data=None):$/;"	m	class:XIO
+get_data	scikit-kinematics/src/skinematics/sensors/xio_ngimu.py	/^    def get_data(self, in_file, in_data=None):$/;"	m	class:NGIMU
+get_data	scikit-kinematics/src/skinematics/sensors/xsens.py	/^    def get_data(self, in_file, in_data=None):$/;"	m	class:XSens
+get_data	scikit-kinematics/src/skinematics/sensors/yei.py	/^    def get_data(self, in_file, in_data=None):$/;"	m	class:YEI
+get_data_to_h5	vicon_imu_data_process/load_rawdata.py	/^    def get_data_to_h5(self):$/;"	m	class:V3DReader
+get_data_to_h5	vicon_imu_data_process/load_rawdata.py	/^    def get_data_to_h5(self):$/;"	m	class:ViconReader
+get_data_to_h5	vicon_imu_data_process/load_rawdata.py	/^    def get_data_to_h5(self):$/;"	m	class:XsenReader
+get_dir	scikit-kinematics/src/skinematics/misc.py	/^def get_dir(DialogTitle='Select Directory', DefaultName='.'):$/;"	f
+get_evaluation_metrics	estimation_assessment/scores.py	/^def get_evaluation_metrics(pd_labels, pd_predictions,verbose=0):$/;"	f
+get_field_data	vicon_imu_data_process/wearable_toolkit.py	/^    def get_field_data(self, sensor, field):$/;"	m	class:SageCsvReader
+get_file	scikit-kinematics/src/skinematics/misc.py	/^def get_file(FilterSpec='*', DialogTitle='Select File: ', DefaultName=''):$/;"	f
+get_first_event_index	vicon_imu_data_process/wearable_toolkit.py	/^    def get_first_event_index(self):$/;"	m	class:SageCsvReader
+get_frame_range	vicon_imu_data_process/wearable_toolkit.py	/^    def get_frame_range(self):$/;"	m	class:ViconCsvReader
+get_investigation_assessment	estimation_assessment/scores.py	/^def get_investigation_assessment(combination_investigation_results):$/;"	f
+get_investigation_metrics	estimation_assessment/scores.py	/^def get_investigation_metrics(combination_investigation_results, metric_fields=['r2']):$/;"	f
+get_investigation_training_testing_folders	estimation_assessment/scores.py	/^def get_investigation_training_testing_folders(combination_investigation_results, train_test_id=None):$/;"	f
+get_joint_angles	vicon_imu_data_process/wearable_toolkit.py	/^    def get_joint_angles(self, sub_info,joint):$/;"	m	class:ViconCsvReader
+get_list_investigation_metrics	estimation_assessment/visualization.py	/^def get_list_investigation_metrics(list_combination_investigation_results, metric_fields=['r2']):$/;"	f
+get_marker_position	vicon_imu_data_process/wearable_toolkit.py	/^    def get_marker_position(self, marker_name):$/;"	m	class:ViconCsvReader
+get_multi_models_test_results	estimation_assessment/scores.py	/^def get_multi_models_test_results(list_training_testing_folders, list_selection, **kwargs):$/;"	f
+get_norm	vicon_imu_data_process/wearable_toolkit.py	/^    def get_norm(self, sensor, field, is_plot=False):$/;"	m	class:SageCsvReader
+get_relative_position	vicon_imu_data_process/wearable_math.py	/^def get_relative_position(origin, x_axis, y_axis, z_axis, point):$/;"	f
+get_right_external_kam	vicon_imu_data_process/wearable_toolkit.py	/^    def get_right_external_kam(self, sub_info):$/;"	m	class:ViconCsvReader
+get_rotmatirx	vicon_imu_data_process/data_augment.py	/^def get_rotmatirx(rot_angles):$/;"	f
+get_rshank_angle	vicon_imu_data_process/wearable_toolkit.py	/^    def get_rshank_angle(self, direction):$/;"	m	class:ViconCsvReader
+get_screensize	scikit-kinematics/src/skinematics/misc.py	/^def get_screensize():$/;"	f
+get_subject_ids_names	vicon_imu_data_process/process_rawdata.py	/^def get_subject_ids_names(selected_subject_ids):$/;"	f
+get_testing_results	estimation_assessment/scores.py	/^def get_testing_results(testing_folder):$/;"	f
+get_walking_strike_off	vicon_imu_data_process/wearable_toolkit.py	/^    def get_walking_strike_off(self, strike_delay, off_delay, segment, cut_off_fre_strike_off=None,$/;"	m	class:SageCsvReader
+get_world_position	vicon_imu_data_process/wearable_math.py	/^def get_world_position(origin, x_axis, y_axis, z_axis, relative_point):$/;"	f
+gpus	estimation_study.py	/^gpus=tf.config.list_logical_devices(device_type='GPU')$/;"	v
+gpus	jupyter-lab/develop.py	/^gpus = tf.config.experimental.list_physical_devices(device_type='GPU')$/;"	v
+html_favicon	scikit-kinematics/docs/conf.py	/^html_favicon = '_static\/skinematics.ico'$/;"	v
+html_logo	scikit-kinematics/docs/conf.py	/^html_logo = '_static\/skinematics.png'$/;"	v
+html_static_path	scikit-kinematics/docs/conf.py	/^html_static_path = ['_static']$/;"	v
+html_theme	scikit-kinematics/docs/conf.py	/^html_theme = 'classic'$/;"	v
+html_theme_options	scikit-kinematics/docs/conf.py	/^html_theme_options = {$/;"	v
+htmlhelp_basename	scikit-kinematics/docs/conf.py	/^htmlhelp_basename = 'skinematics_doc'$/;"	v
+hue	estimation_assessment/visualization.py	/^                                                                  hue = 'IMU number'$/;"	v
+hyperparams	vicon_imu_data_process/process_rawdata.py	/^    hyperparams={}$/;"	v
+imu_data_augment	vicon_imu_data_process/data_augment.py	/^def imu_data_augment(subjects_trials_dataset, rot_mats=None,save_to_hdf5=None):$/;"	f
+inFile	scikit-kinematics/src/skinematics/sensors/polulu.py	/^    inFile = r'..\\tests\\data\\data_polulu.txt'$/;"	v	class:Polulu
+in_data	scikit-kinematics/src/skinematics/sensors/manual.py	/^    in_data = {'rate':xsens_sensor.rate,$/;"	v	class:MyOwnSensor
+in_data	scikit-kinematics/src/skinematics/sensors/polulu.py	/^    in_data = {'rate':125}$/;"	v	class:Polulu
+in_file	scikit-kinematics/src/skinematics/imus.py	/^    in_file = r'tests\/data\/data_xsens.txt'$/;"	v	class:Mahony
+in_file	scikit-kinematics/src/skinematics/view.py	/^    in_file = r'.\\tests\\data\\data_xsens.txt'$/;"	v
+initParameters	estimation_study.py	/^def initParameters(labels_names=None,features_names=None):$/;"	f
+initial_orientation	scikit-kinematics/src/skinematics/imus.py	/^    initial_orientation = np.array([ [1,0,0],$/;"	v	class:Mahony
+initial_position	scikit-kinematics/src/skinematics/imus.py	/^    initial_position = np.r_[0,0,0]$/;"	v	class:Mahony
+integrative_investigation	jupyter-lab/develop.py	/^def integrative_investigation(investigation_variables, prefix_name='', test_multi_trials=False,**kwargs):$/;"	f
+interp_data	vicon_imu_data_process/wearable_toolkit.py	/^    def interp_data(self,a_imu_txt):$/;"	m	class:XsenTxtReader
+inv	scikit-kinematics/src/skinematics/quat.py	/^    def inv(self):$/;"	m	class:Quaternion
+inverse_estimated_variable_dict	vicon_imu_data_process/const.py	/^inverse_estimated_variable_dict = dict([val,key] for key,val in estimated_variable_dirct.items())$/;"	v
+inverse_norm	vicon_imu_data_process/process_rawdata.py	/^def inverse_norm(norm_datasets:np.ndarray, col_names:list, norm_type:str)->np.ndarray:$/;"	f
+investigation_config_results	estimation_assessment/scores.py	/^    investigation_config_results =  get_investigation_training_testing_folders(combination_investigation_results,'training_123113')$/;"	v
+investigation_variables	jupyter-lab/develop.py	/^investigation_variables={$/;"	v
+is_qualified_ron_event	vicon_imu_data_process/wearable_toolkit.py	/^    def is_qualified_ron_event(ron_i):$/;"	f	function:translate_step_event_to_step_id
+kalman	scikit-kinematics/src/skinematics/imus.py	/^def kalman(rate, acc, omega, mag,$/;"	f
+labels_fields	vicon_imu_data_process/process_rawdata.py	/^    labels_fields = ['L_GRF_X','L_GRF_Y','L_GRF_Z','R_GRF_X','R_GRF_Y','R_GRF_Z']$/;"	v
+landing_manner	estimation_assessment/visualization.py	/^                                                                        landing_manner='double_legs',$/;"	v
+landing_manner	estimation_assessment/visualization.py	/^                                                                  landing_manner='double_legs',$/;"	v
+landing_manner	estimation_assessment/visualization.py	/^                                                   landing_manner='double_legs', $/;"	v
+latex_documents	scikit-kinematics/docs/conf.py	/^latex_documents = [$/;"	v
+latex_elements	scikit-kinematics/docs/conf.py	/^latex_elements = {$/;"	v
+lineplot_IMU_number_LSTM_unit_accuracy	estimation_assessment/visualization.py	/^def lineplot_IMU_number_LSTM_unit_accuracy(combination_investigation_results, $/;"	f
+lineplot_IMU_number_LSTM_unit_execution_time	estimation_assessment/visualization.py	/^def lineplot_IMU_number_LSTM_unit_execution_time(combination_investigation_results, $/;"	f
+list_combination_investigation_results	estimation_assessment/visualization.py	/^        list_combination_investigation_results = [$/;"	v
+list_selections	estimation_assessment/visualization.py	/^        list_selections = [$/;"	v
+load_normalize_data	vicon_imu_data_process/process_rawdata.py	/^def load_normalize_data(hyperparams, scaler='standard', **kwargs):$/;"	f
+load_subjects_dataset	vicon_imu_data_process/process_rawdata.py	/^def load_subjects_dataset(subjects_trials=None, h5_file_name="features_labels_rawdatasets.hdf5"):$/;"	f
+load_trained_model	estimation_assessment/scores.py	/^def load_trained_model(training_folder, best_model=True):$/;"	f
+log	scikit-kinematics/src/skinematics/view.py	/^    def log(self):$/;"	m	class:Display
+logical_cpus	jupyter-lab/develop.py	/^logical_cpus = tf.config.experimental.list_logical_devices(device_type='CPU')$/;"	v
+logical_gpus	jupyter-lab/develop.py	/^logical_gpus = tf.config.experimental.list_logical_devices(device_type='GPU')$/;"	v
+make_gauss	scikit-kinematics/src/skinematics/simulations/simulate_movements.py	/^def make_gauss(rate=1000, duration=1, t_0=0.5, sigma=0.1):$/;"	f
+make_positive_rotations	scikit-kinematics/tests/positive_rotations.py	/^def make_positive_rotations():$/;"	f
+man_pages	scikit-kinematics/docs/conf.py	/^man_pages = [$/;"	v
+master_doc	scikit-kinematics/docs/conf.py	/^master_doc = 'index'$/;"	v
+metrics	estimation_assessment/visualization.py	/^        metrics = get_list_investigation_metrics(combination_investigation_results)$/;"	v
+model_forecast	estimation_models/rnn_models.py	/^def model_forecast(model, series, hyperparams):$/;"	f
+model_v1	estimation_models/rnn_models.py	/^def model_v1(hyperparams):$/;"	f
+multi_subject_data	vicon_imu_data_process/process_rawdata.py	/^    multi_subject_data={}$/;"	v
+myPath	scikit-kinematics/tests/test_imus.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_markers.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_misc.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_quat.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_rotmat.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_sensor_manual.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_sensor_polulu.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_sensor_vicon.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_sensor_xio.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_sensor_xio_ngimu.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_sensor_xsens.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_sensor_yei.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_skinematics.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/test_vector.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/tests/tt.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+myPath	scikit-kinematics/xtest_view.py	/^myPath = os.path.dirname(os.path.abspath(__file__))$/;"	v
+my_callbacks	estimation_models/rnn_models.py	/^def my_callbacks(training_folder):$/;"	f
+my_sensor	scikit-kinematics/src/skinematics/sensors/manual.py	/^    my_sensor = MyOwnSensor(in_file='My own 123 sensor.', in_data=in_data)$/;"	v	class:MyOwnSensor
+my_sensor	scikit-kinematics/src/skinematics/sensors/polulu.py	/^    my_sensor = Polulu(in_file=inFile, in_data=in_data)$/;"	v	class:Polulu
+my_sensor	scikit-kinematics/src/skinematics/sensors/vicon.py	/^    my_sensor = Vicon(in_file=r'..\\tests\\data\\LeftFoot-marche01.c3d')    $/;"	v	class:Vicon
+my_sensor	scikit-kinematics/src/skinematics/sensors/xio.py	/^    my_sensor = XIO(in_file=test_dir)$/;"	v	class:XIO
+my_sensor	scikit-kinematics/src/skinematics/sensors/xio_ngimu.py	/^    my_sensor = NGIMU(in_file=test_dir)$/;"	v	class:NGIMU
+my_sensor	scikit-kinematics/src/skinematics/sensors/xsens.py	/^    my_sensor = XSens(in_file=r'..\\tests\\data\\data_xsens.txt')    $/;"	v	class:XSens
+my_sensor	scikit-kinematics/src/skinematics/sensors/yei.py	/^    my_sensor = YEI(in_file=r'..\\tests\\data\\data_yei.txt')    $/;"	v	class:YEI
+norm_datasets	vicon_imu_data_process/process_rawdata.py	/^def norm_datasets(datasets:np.ndarray,col_names:str,norm_type='mean_std')->np.ndarray:$/;"	f
+normalization_parameters	vicon_imu_data_process/process_rawdata.py	/^def normalization_parameters(row_idx,col_names,datarange="all_subject", norm_type="mean_std", raw_datasets_path=".\/datasets_files\/raw_datasets.hdf5"):$/;"	f
+normalize	scikit-kinematics/src/skinematics/vector.py	/^def normalize(v):$/;"	f
+normalized	scikit-kinematics/src/skinematics/vector.py	/^    normalized = normalize(a)$/;"	v
+normalized	scikit-kinematics/src/skinematics/vector.py	/^    normalized = normalize(np.cross(a,a))$/;"	v
+numpydoc_show_class_members	scikit-kinematics/docs/conf.py	/^numpydoc_show_class_members = False$/;"	v
+on_key_event	scikit-kinematics/src/skinematics/view.py	/^    def on_key_event(self, event):$/;"	m	class:Display
+onclick	scikit-kinematics/src/skinematics/view.py	/^    def onclick(self, event):$/;"	m	class:Display
+onmotion	scikit-kinematics/src/skinematics/view.py	/^    def onmotion(self, event):$/;"	m	class:Display
+onrelease	scikit-kinematics/src/skinematics/view.py	/^    def onrelease(self, event):$/;"	m	class:Display
+openGL_installed	scikit-kinematics/src/skinematics/view.py	/^    openGL_installed = False$/;"	v
+openGL_installed	scikit-kinematics/src/skinematics/view.py	/^    openGL_installed = True$/;"	v
+optional_imports	scikit-kinematics/src/skinematics/__init__.py	/^optional_imports = ['imus', 'misc']$/;"	v
+orientation	scikit-kinematics/src/skinematics/view.py	/^def orientation(quats, out_file=None, title_text=None, deltaT=100):$/;"	f
+out_s	scikit-kinematics/src/skinematics/rotmat.py	/^    out_s = stm_s(axis=0, angle='0', transl='x,0,z')$/;"	v
+p	scikit-kinematics/tests/test_quat.py	/^    p = quat.Quaternion(np.array([[0,0,0.5], [0,0,0.1]]))$/;"	v	class:TestSequenceFunctions
+parase_list_investigation_metrics	estimation_assessment/visualization.py	/^def parase_list_investigation_metrics(list_combination_investigation_results, landing_manner='all', estimated_variable='all', syn_features_label='both', use_frame_index =True, LSTM_unit='all', sensor_config='all',IMU_number='all', drop_value=None, metric_fields=['r2'],sort_variable=None):$/;"	f
+parase_plot_data	estimation_assessment/visualization.py	/^def parase_plot_data(combination_investigation_results, landing_manner='all', estimated_variable='all', syn_features_label='both', use_frame_index='both', LSTM_unit='all', sensor_config='all',IMU_number='all', drop_value=None, metric_fields=['r2'],sort_variable=None):$/;"	f
+parase_training_testing_folders	estimation_assessment/scores.py	/^def parase_training_testing_folders(investigation_config_results, landing_manner='all', estimated_variable='all', syn_features_label='both', use_frame_index='both', LSTM_unit='all', IMU_number='all', sensor_configurations='all'):$/;"	f
+parent_dir	scikit-kinematics/src/skinematics/sensors/manual.py	/^parent_dir = os.path.abspath(os.path.join( os.path.dirname(__file__), '..' ))$/;"	v
+parent_dir	scikit-kinematics/src/skinematics/sensors/polulu.py	/^parent_dir = os.path.abspath(os.path.join( os.path.dirname(__file__), '..' ))$/;"	v
+parent_dir	scikit-kinematics/src/skinematics/sensors/vicon.py	/^parent_dir = os.path.abspath(os.path.join( os.path.dirname(__file__), '..' ))$/;"	v
+parent_dir	scikit-kinematics/src/skinematics/sensors/xio.py	/^parent_dir = os.path.abspath(os.path.join( os.path.dirname(__file__), '..' ))$/;"	v
+parent_dir	scikit-kinematics/src/skinematics/sensors/xsens.py	/^parent_dir = os.path.abspath(os.path.join( os.path.dirname(__file__), '..' ))$/;"	v
+parent_dir	scikit-kinematics/src/skinematics/sensors/yei.py	/^parent_dir = os.path.abspath(os.path.join( os.path.dirname(__file__), '..' ))$/;"	v
+partial_fit	vicon_imu_data_process/wearable_toolkit.py	/^    def partial_fit(self, X, y=None):$/;"	m	class:DivideMaxScalar
+pd_assessment	estimation_assessment/scores.py	/^    pd_assessment = evaluate_models_on_unseen_subjects(combination_investigation_results)$/;"	v
+pi	scikit-kinematics/src/skinematics/quat.py	/^pi = np.pi$/;"	v
+plane_orientation	scikit-kinematics/src/skinematics/vector.py	/^def plane_orientation(p0, p1, p2):$/;"	f
+plot_actual_estimation_curves	estimation_assessment/visualization.py	/^def plot_actual_estimation_curves(pd_labels, pd_predictions, testing_folder=None, fig_save_folder=None,**kwargs):$/;"	f
+plot_combination_investigation_results	estimation_assessment/visualization.py	/^def plot_combination_investigation_results(combination_investigation_results, investigation_variable='Sensor configuration', displayed_variables=['r2','r_rmse']):$/;"	f
+plot_estimation_accuracy	estimation_assessment/visualization.py	/^def plot_estimation_accuracy(pd_error, pd_NRMSE):$/;"	f
+plot_estimation_error	estimation_assessment/visualization.py	/^def plot_estimation_error(labels,predictions,labels_names,fig_save_folder=None,**kwargs):$/;"	f
+plot_history	estimation_assessment/visualization.py	/^def plot_history(history):$/;"	f
+plot_model_evaluation_on_unseen_subject	estimation_assessment/visualization.py	/^def plot_model_evaluation_on_unseen_subject(combination_investigation_results, investigation_variable='Sensor configurations', displayed_metrics = ['r2','r_rmse']):$/;"	f
+plot_prediction	estimation_assessment/visualization.py	/^def plot_prediction(pd_labels, pd_predictions, testing_folder,**kwargs):$/;"	f
+plot_prediction_statistic	estimation_assessment/visualization.py	/^def plot_prediction_statistic(features, labels, predictions,testing_folder):$/;"	f
+plot_rawdataset_curves	vicon_imu_data_process/process_rawdata.py	/^def plot_rawdataset_curves(datasets, col_names=None, figwidth=9.5, figheight=3, figtitle="Figure", show=False, col_wrap=3,  **args):$/;"	f
+plot_sensorconfig_investigation_results	estimation_assessment/visualization.py	/^def plot_sensorconfig_investigation_results(combination_investigation_results, landing_manner='both', estimated_variable='both', $/;"	f
+plot_sensorconfig_modelsize_investigation_results	estimation_assessment/visualization.py	/^def plot_sensorconfig_modelsize_investigation_results(combination_investigation_results, landing_manner='double_legs', estimated_variable='[GRF]', syn_features_label='both', LSTM_unit='all', IMU_number='all', title=None, drop_value=None, metric_fields=['r2']):$/;"	f
+plot_statistic_actual_estimation_curves	estimation_assessment/visualization.py	/^def plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections, **kwargs):$/;"	f
+plot_statistic_value_under_fpa	vicon_imu_data_process/process_rawdata.py	/^def plot_statistic_value_under_fpa(data: list, col_names:list, displayed_variables, subjects: list, trial_categories):$/;"	f
+plot_statistic_variables	vicon_imu_data_process/process_rawdata.py	/^def plot_statistic_variables(pd_variables,x='trial categories',y='PKAM',hue=None,col=None,col_wrap=None,kind='bar'):$/;"	f
+plottable	scikit-kinematics/src/skinematics/view.py	/^plottable = [np.ndarray, pd.core.frame.DataFrame, pd.core.series.Series]$/;"	v
+position	scikit-kinematics/src/skinematics/view.py	/^    def position(self, event):$/;"	m	class:Display
+progressbar	scikit-kinematics/src/skinematics/misc.py	/^def progressbar(it, prefix = "", size = 60):$/;"	f
+project	scikit-kinematics/docs/conf.py	/^project = u'skinematics'$/;"	v
+project	scikit-kinematics/src/skinematics/vector.py	/^def project(v1,v2, projection_type='1D'):$/;"	f
+pygments_style	scikit-kinematics/docs/conf.py	/^pygments_style = 'sphinx'$/;"	v
+q	scikit-kinematics/tests/test_quat.py	/^    q = quat.Quaternion(np.array([0,0,0.5]))$/;"	v	class:TestSequenceFunctions
+q_Kalman	scikit-kinematics/src/skinematics/imus.py	/^    q_Kalman = sensor.quat$/;"	v	class:Mahony
+q_Madgwick	scikit-kinematics/src/skinematics/imus.py	/^    q_Madgwick = sensor.quat$/;"	v	class:Mahony
+q_analytical	scikit-kinematics/src/skinematics/imus.py	/^    q_analytical = sensor.quat$/;"	v	class:Mahony
+q_conj	scikit-kinematics/src/skinematics/quat.py	/^def q_conj(q):$/;"	f
+q_inv	scikit-kinematics/src/skinematics/quat.py	/^def q_inv(q):$/;"	f
+q_mult	scikit-kinematics/src/skinematics/quat.py	/^def q_mult(p,q):$/;"	f
+q_scalar	scikit-kinematics/src/skinematics/quat.py	/^def q_scalar(inQuat):$/;"	f
+q_shortest_rotation	scikit-kinematics/src/skinematics/vector.py	/^def q_shortest_rotation(v1,v2):$/;"	f
+q_vector	scikit-kinematics/src/skinematics/quat.py	/^def q_vector(inQuat):$/;"	f
+quat	scikit-kinematics/src/skinematics/rotmat.py	/^    quat = seq2quat(angles)$/;"	v
+quat2deg	scikit-kinematics/src/skinematics/quat.py	/^def quat2deg(inQuat):$/;"	f
+quat2seq	scikit-kinematics/src/skinematics/quat.py	/^def quat2seq(quats, seq='nautical'):$/;"	f
+quitFun	scikit-kinematics/src/skinematics/view.py	/^    def quitFun(self):$/;"	m	class:VarSelector
+r2_metrics	estimation_assessment/scores.py	/^    r2_metrics = get_investigation_metrics(combination_investigation_results)$/;"	v
+read_datafile	scikit-kinematics/src/skinematics/sensors/xio.py	/^def read_datafile(in_file):$/;"	f
+read_datafile	scikit-kinematics/src/skinematics/sensors/xio_ngimu.py	/^def read_datafile(in_file):$/;"	f
+read_ratefile	scikit-kinematics/src/skinematics/sensors/xio.py	/^def read_ratefile(reg_file):$/;"	f
+read_ratefile	scikit-kinematics/src/skinematics/sensors/xio_ngimu.py	/^def read_ratefile(reg_file):$/;"	f
+read_rawdata	vicon_imu_data_process/process_rawdata.py	/^def read_rawdata(trials: int,col_names: list,raw_datasets_path=None,**args)-> np.ndarray:$/;"	f
+read_subject_trials	vicon_imu_data_process/process_rawdata.py	/^def read_subject_trials(subject_id_name: str, trials: int, data_fields: list, raw_datasets_path=None, **kwargs):$/;"	f
+reading	vicon_imu_data_process/wearable_toolkit.py	/^    def reading(file_path):$/;"	m	class:ViconCsvReader
+release	scikit-kinematics/docs/conf.py	/^release = '0.8.8'$/;"	v
+required_imports	scikit-kinematics/src/skinematics/__init__.py	/^required_imports = ['markers', 'quat', 'rotmat', 'vector', 'sensors']$/;"	v
+rigid_transform_3d	vicon_imu_data_process/wearable_toolkit.py	/^def rigid_transform_3d(a, b):$/;"	f
+rot_angles	vicon_imu_data_process/data_augment.py	/^    rot_angles = {'x_angles':np.linspace(-1,1,1),'y_angles':np.linspace(-1,1,1),'z_angles':np.linspace(-1,1,1)}$/;"	v
+rot_matrix	vicon_imu_data_process/data_augment.py	/^    rot_matrix = get_rotmatirx(rot_angles)$/;"	v
+rotate_vector	scikit-kinematics/src/skinematics/vector.py	/^def rotate_vector(vector, q):$/;"	f
+rotation_matrix_to_euler_angles	vicon_imu_data_process/wearable_toolkit.py	/^def rotation_matrix_to_euler_angles(R):$/;"	f
+run	scikit-kinematics/src/skinematics/view.py	/^    def run(self, rate=100, looping=True):$/;"	m	class:Orientation_OGL
+runner	scikit-kinematics/tests/test_imus.py	/^    runner = unittest.TextTestRunner()$/;"	v	class:TestSequenceFunctions
+save_as	scikit-kinematics/src/skinematics/simulations/simulate_movements.py	/^def save_as(imu_data, data_format, file_name):$/;"	f
+save_file	scikit-kinematics/src/skinematics/misc.py	/^def save_file(FilterSpec='*',DialogTitle='Save File: ', DefaultName=''):$/;"	f
+save_subjects_dataset_to_a_h5	vicon_imu_data_process/process_rawdata.py	/^def save_subjects_dataset_to_a_h5(subjects_trials_dataset, h5_file_name="augment_features_labels_rawdatasets.hdf5"):$/;"	f
+save_test_result	estimation_assessment/scores.py	/^def save_test_result(pd_features, pd_labels, pd_predictions, testing_folder):$/;"	f
+save_trained_model	estimation_models/rnn_models.py	/^def save_trained_model(trained_model,history,training_folder,**kwargs):$/;"	f
+save_training_process	vicon_imu_data_process/process_rawdata.py	/^def save_training_process(training_folder, loss):$/;"	f
+save_training_results	vicon_imu_data_process/process_rawdata.py	/^def save_training_results(training_folder, model, loss):$/;"	f
+selectAndQuit	scikit-kinematics/src/skinematics/view.py	/^    def selectAndQuit(self):$/;"	m	class:VarSelector
+selectPlotVar	scikit-kinematics/src/skinematics/view.py	/^    def selectPlotVar(self):$/;"	m	class:Display
+selected_subject_ids	vicon_imu_data_process/process_rawdata.py	/^    selected_subject_ids=['P_08','P_09','P_10', 'P_11', 'P_12', 'P_13', 'P_14', 'P_15','P_16','P_17','P_18','P_19','P_20','P_21','P_22','P_23', 'P_24']$/;"	v
+selected_subject_ids_names	vicon_imu_data_process/process_rawdata.py	/^    selected_subject_ids_names = get_subject_ids_names(selected_subject_ids)$/;"	v
+sensor	scikit-kinematics/src/skinematics/imus.py	/^    sensor = XSens(in_file=in_file, R_init=initial_orientation,$/;"	v	class:Mahony
+seq	scikit-kinematics/src/skinematics/quat.py	/^    seq = quat2seq(np.vstack((a,b)), seq='Euler')$/;"	v
+seq2quat	scikit-kinematics/src/skinematics/rotmat.py	/^def seq2quat(rot_angles, seq='nautical'):$/;"	f
+sequence	scikit-kinematics/src/skinematics/rotmat.py	/^def sequence(R, to ='Euler'):$/;"	f
+setLowerLimit	scikit-kinematics/src/skinematics/view.py	/^    def setLowerLimit(self, event):$/;"	m	class:Display
+setRate	scikit-kinematics/src/skinematics/view.py	/^    def setRate(self, event):$/;"	m	class:Display
+setUp	scikit-kinematics/tests/test_imus.py	/^    def setUp(self):$/;"	m	class:TestSequenceFunctions
+setUp	scikit-kinematics/tests/test_markers.py	/^    def setUp(self):$/;"	m	class:TestSequenceFunctions
+setUp	scikit-kinematics/tests/test_quat.py	/^    def setUp(self):$/;"	m	class:TestSequenceFunctions
+setUp	scikit-kinematics/tests/test_rotmat.py	/^    def setUp(self):$/;"	m	class:TestSequenceFunctions
+setUp	scikit-kinematics/tests/test_vector.py	/^    def setUp(self):$/;"	m	class:TestSequenceFunctions
+setUpperLimit	scikit-kinematics/src/skinematics/view.py	/^    def setUpperLimit(self, event):$/;"	m	class:Display
+set_qtype	scikit-kinematics/src/skinematics/imus.py	/^    def set_qtype(self, type_value):                $/;"	m	class:IMU_Base
+set_subjects_trials	vicon_imu_data_process/process_rawdata.py	/^def set_subjects_trials(subject_ids=None, selected=True, landing_manner='double_legs', target_leg='R',selected_dataset=None):$/;"	f
+setup_plot	estimation_assessment/visualization.py	/^def setup_plot(g, **kwargs):$/;"	f
+showAll	scikit-kinematics/src/skinematics/view.py	/^    def showAll(self):$/;"	m	class:Display
+show_result	scikit-kinematics/src/skinematics/imus.py	/^    def show_result(imu_data):$/;"	m	class:Mahony
+simulate_imu	scikit-kinematics/src/skinematics/simulations/simulate_movements.py	/^def simulate_imu(rate, t_move, t_total, q_init=[0,0,0], rotation_axis=[0,0,1],$/;"	f
+source_suffix	scikit-kinematics/docs/conf.py	/^source_suffix = '.rst'$/;"	v
+split_dataset	vicon_imu_data_process/dataset.py	/^def split_dataset(norm_subjects_trials_data, train_subject_indices, test_subject_indices, hyperparams, model_type='tf_keras', test_multi_trials=False):$/;"	f
+stm	scikit-kinematics/src/skinematics/rotmat.py	/^def stm(axis='x', angle=0, translation=[0, 0, 0]):$/;"	f
+stm_s	scikit-kinematics/src/skinematics/rotmat.py	/^def stm_s(axis='x', angle='0', transl='0,0,0'):$/;"	f
+subject_heights	vicon_imu_data_process/process_rawdata.py	/^    subject_heights = [float(subject_infos['body height'][sub_name]) for sub_name in selected_subject_ids_names]$/;"	v
+subject_id_name	estimation_assessment/scores.py	/^                                                                                subject_id_name=subject_id_name,$/;"	v
+subject_id_name	estimation_assessment/scores.py	/^    subject_id_name='P_10_zhangboyuan'$/;"	v
+subject_ids_names	vicon_imu_data_process/process_rawdata.py	/^    subject_ids_names = [ss for ss in subject_infos.index]$/;"	v
+subject_infos	vicon_imu_data_process/process_rawdata.py	/^    subject_infos = pd.read_csv(os.path.join(DATA_PATH, 'subject_info.csv'), index_col=0, header=0)$/;"	v
+subject_masses	vicon_imu_data_process/process_rawdata.py	/^    subject_masses = [float(subject_infos['body weight'][sub_name]) for sub_name in selected_subject_ids_names]$/;"	v
+subjects_trials	vicon_imu_data_process/data_augment.py	/^    subjects_trials = set_subjects_trials(selected=True, landing_manner='double_legs')$/;"	v
+subjects_trials_dataset	vicon_imu_data_process/data_augment.py	/^    subjects_trials_dataset = load_subjects_dataset(subjects_trials)$/;"	v
+suite	scikit-kinematics/tests/test_imus.py	/^    suite = unittest.TestSuite()$/;"	v	class:TestSequenceFunctions
+syn_features_label	estimation_assessment/visualization.py	/^                                                                        syn_features_label = False,$/;"	v
+syn_features_label	estimation_assessment/visualization.py	/^                                                                  syn_features_label = False,$/;"	v
+syn_features_label	estimation_assessment/visualization.py	/^                                                   syn_features_label=False,$/;"	v
+syn_features_labels_events	vicon_imu_data_process/process_rawdata.py	/^def syn_features_labels_events(subjects_trials_data, hyperparams):$/;"	f
+sync_via_correlation	vicon_imu_data_process/wearable_toolkit.py	/^def sync_via_correlation(data1, data2, verbose=False):$/;"	f
+t1	estimation_assessment/visualization.py	/^        t1 = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/4_collected_sensor_lstm\/metrics.csv"$/;"	v
+t2	estimation_assessment/visualization.py	/^        t2 = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/4_collected_sensor_lstm\/6_7_8_imu\/6_7_8_imu_all_lstm\/metrics.csv"$/;"	v
+t3	estimation_assessment/visualization.py	/^        t3 = [$/;"	v
+t_dh	scikit-kinematics/src/skinematics/rotmat.py	/^    t_dh = dh(60,15,0,0)$/;"	v
+t_left	estimation_assessment/visualization.py	/^        t_left = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/4_collected_sensor_lstm\/additional_single_imu\/metrics.csv"$/;"	v
+t_right	estimation_assessment/visualization.py	/^        t_right = "\/media\/sun\/DATA\/Drop_landing_workspace\/suntao\/Results\/Experiment_results\/training_testing\/2_collected_full_cv\/r2_metrics.csv"$/;"	v
+target2orient	scikit-kinematics/src/skinematics/vector.py	/^def target2orient(target, orient_type='quat'):$/;"	f
+templates_path	scikit-kinematics/docs/conf.py	/^templates_path = ['_templates']$/;"	v
+test_Euler	scikit-kinematics/tests/test_rotmat.py	/^    def test_Euler(self):$/;"	m	class:TestSequenceFunctions
+test_Fick	scikit-kinematics/tests/test_rotmat.py	/^    def test_Fick(self):$/;"	m	class:TestSequenceFunctions
+test_GramSchmidt	scikit-kinematics/tests/test_vector.py	/^    def test_GramSchmidt(self):$/;"	m	class:TestSequenceFunctions
+test_GramSchmidt_vector	scikit-kinematics/tests/test_vector.py	/^    def test_GramSchmidt_vector(self):$/;"	m	class:TestSequenceFunctions
+test_Helmholtz	scikit-kinematics/tests/test_rotmat.py	/^    def test_Helmholtz(self):$/;"	m	class:TestSequenceFunctions
+test_IMU_calc_orientation_position	scikit-kinematics/tests/test_imus.py	/^    def test_IMU_calc_orientation_position(self):$/;"	m	class:TestSequenceFunctions
+test_IMU_vicon	scikit-kinematics/tests/test_sensor_vicon.py	/^    def test_IMU_vicon(self):$/;"	m	class:TestSequenceFunctions
+test_IMU_xsens	scikit-kinematics/tests/test_sensor_xsens.py	/^    def test_IMU_xsens(self):$/;"	m	class:TestSequenceFunctions
+test_IMU_xsens	scikit-kinematics/tests/tt.py	/^def test_IMU_xsens(self):$/;"	f
+test_Quaternions	scikit-kinematics/tests/test_quat.py	/^    def test_Quaternions(self):$/;"	m	class:TestSequenceFunctions
+test_R_axis0	scikit-kinematics/tests/test_rotmat.py	/^    def test_R_axis0(self):$/;"	m	class:TestSequenceFunctions
+test_R_axis1	scikit-kinematics/tests/test_rotmat.py	/^    def test_R_axis1(self):$/;"	m	class:TestSequenceFunctions
+test_R_axis2	scikit-kinematics/tests/test_rotmat.py	/^    def test_R_axis2(self):$/;"	m	class:TestSequenceFunctions
+test_analytical	scikit-kinematics/tests/test_imus.py	/^    def test_analytical(self):$/;"	m	class:TestSequenceFunctions
+test_analyze3dmarkers	scikit-kinematics/tests/test_markers.py	/^    def test_analyze3dmarkers(self):$/;"	m	class:TestSequenceFunctions
+test_angle	scikit-kinematics/tests/test_vector.py	/^    def test_angle(self):$/;"	m	class:TestSequenceFunctions
+test_calc_angvel	scikit-kinematics/tests/test_quat.py	/^    def test_calc_angvel(self):$/;"	m	class:TestSequenceFunctions
+test_calc_quat	scikit-kinematics/tests/test_quat.py	/^    def test_calc_quat(self):$/;"	m	class:TestSequenceFunctions
+test_convert	scikit-kinematics/tests/test_quat.py	/^    def test_convert(self):$/;"	m	class:TestSequenceFunctions
+test_convert	scikit-kinematics/tests/test_rotmat.py	/^    def test_convert(self):$/;"	m	class:TestSequenceFunctions
+test_deg2quat	scikit-kinematics/tests/test_quat.py	/^    def test_deg2quat(self):$/;"	m	class:TestSequenceFunctions
+test_dh	scikit-kinematics/tests/test_rotmat.py	/^    def test_dh(self):$/;"	m	class:TestSequenceFunctions
+test_dh_s	scikit-kinematics/tests/test_rotmat.py	/^    def test_dh_s(self):$/;"	m	class:TestSequenceFunctions
+test_dir	scikit-kinematics/src/skinematics/sensors/xio.py	/^    test_dir = r'..\/tests\/data\/data_xio'    $/;"	v	class:XIO
+test_dir	scikit-kinematics/src/skinematics/sensors/xio_ngimu.py	/^    test_dir = r'..\/tests\/data\/data_ngimu'    $/;"	v	class:NGIMU
+test_get_screensize	scikit-kinematics/tests/test_misc.py	/^    def test_get_screensize(self):$/;"	m	class:TestSequenceFunctions
+test_import_manual	scikit-kinematics/tests/test_sensor_manual.py	/^    def test_import_manual(self):$/;"	m	class:TestSequenceFunctions
+test_import_polulu	scikit-kinematics/tests/test_sensor_polulu.py	/^    def test_import_polulu(self):$/;"	m	class:TestSequenceFunctions
+test_import_vicon	scikit-kinematics/tests/test_sensor_vicon.py	/^    def test_import_vicon(self):$/;"	m	class:TestSequenceFunctions
+test_import_xio	scikit-kinematics/tests/test_sensor_xio.py	/^    def test_import_xio(self):$/;"	m	class:TestSequenceFunctions
+test_import_xio	scikit-kinematics/tests/test_sensor_xio_ngimu.py	/^    def test_import_xio(self):$/;"	m	class:TestSequenceFunctions
+test_import_xsens	scikit-kinematics/tests/test_sensor_xsens.py	/^    def test_import_xsens(self):$/;"	m	class:TestSequenceFunctions
+test_import_xsens	scikit-kinematics/tests/tt.py	/^def test_import_xsens():$/;"	f
+test_import_yei	scikit-kinematics/tests/test_sensor_yei.py	/^    def test_import_yei(self):$/;"	m	class:TestSequenceFunctions
+test_kalman	scikit-kinematics/tests/test_imus.py	/^    def test_kalman(self):$/;"	m	class:TestSequenceFunctions
+test_madgwick	scikit-kinematics/tests/test_imus.py	/^    def test_madgwick(self):$/;"	m	class:TestSequenceFunctions
+test_mahony	scikit-kinematics/tests/test_imus.py	/^    def test_mahony(self):$/;"	m	class:TestSequenceFunctions
+test_model	estimation_assessment/scores.py	/^def test_model(training_folder, xy_test, scaler, **kwargs):$/;"	f
+test_model_on_unseen_subject	estimation_assessment/scores.py	/^def test_model_on_unseen_subject(training_folder, subject_id_name=None, trials=None):$/;"	f
+test_model_on_unseen_trial	estimation_assessment/scores.py	/^def test_model_on_unseen_trial(training_folder, subject_id_name=None,trial='01',hyperparams=None,norm_subjects_trials_data=None, scaler=None):$/;"	f
+test_normalize	scikit-kinematics/tests/test_vector.py	/^    def test_normalize(self):$/;"	m	class:TestSequenceFunctions
+test_planeOrientation	scikit-kinematics/tests/test_vector.py	/^    def test_planeOrientation(self):$/;"	m	class:TestSequenceFunctions
+test_progressbar	scikit-kinematics/tests/test_misc.py	/^    def test_progressbar(self):$/;"	m	class:TestSequenceFunctions
+test_project	scikit-kinematics/tests/test_vector.py	/^    def test_project(self):$/;"	m	class:TestSequenceFunctions
+test_q_conj	scikit-kinematics/tests/test_quat.py	/^    def test_q_conj(self):$/;"	m	class:TestSequenceFunctions
+test_q_inv	scikit-kinematics/tests/test_quat.py	/^    def test_q_inv(self):$/;"	m	class:TestSequenceFunctions
+test_q_mult	scikit-kinematics/tests/test_quat.py	/^    def test_q_mult(self):$/;"	m	class:TestSequenceFunctions
+test_q_vector	scikit-kinematics/tests/test_quat.py	/^    def test_q_vector(self):$/;"	m	class:TestSequenceFunctions
+test_qrotate	scikit-kinematics/tests/test_vector.py	/^    def test_qrotate(self):$/;"	m	class:TestSequenceFunctions
+test_quat2deg	scikit-kinematics/tests/test_quat.py	/^    def test_quat2deg(self):$/;"	m	class:TestSequenceFunctions
+test_quat2seq	scikit-kinematics/tests/test_quat.py	/^    def test_quat2seq(self):$/;"	m	class:TestSequenceFunctions
+test_rotate_vector	scikit-kinematics/tests/test_vector.py	/^    def test_rotate_vector(self):$/;"	m	class:TestSequenceFunctions
+test_seq2quat	scikit-kinematics/tests/test_rotmat.py	/^    def test_seq2quat(self):$/;"	m	class:TestSequenceFunctions
+test_set_qtype	scikit-kinematics/tests/test_imus.py	/^    def test_set_qtype(self):$/;"	m	class:TestSequenceFunctions
+test_skinematics	scikit-kinematics/tests/test_skinematics.py	/^    def test_skinematics(self):$/;"	m	class:TestSequenceFunctions
+test_symbolic	scikit-kinematics/tests/test_rotmat.py	/^    def test_symbolic(self):$/;"	m	class:TestSequenceFunctions
+test_target2orient	scikit-kinematics/tests/test_vector.py	/^    def test_target2orient(self):$/;"	m	class:TestSequenceFunctions
+test_unit_q	scikit-kinematics/tests/test_quat.py	/^    def test_unit_q(self):$/;"	m	class:TestSequenceFunctions
+test_view_orientation	scikit-kinematics/xtest_view.py	/^    def test_view_orientation(self):$/;"	m	class:TestSequenceFunctions
+test_view_ts	scikit-kinematics/xtest_view.py	/^    def test_view_ts(self):$/;"	m	class:TestSequenceFunctions
+testmat	scikit-kinematics/src/skinematics/rotmat.py	/^    testmat = np.array([[np.sqrt(2)\/2, -np.sqrt(2)\/2, 0],$/;"	v
+testmat2	scikit-kinematics/src/skinematics/rotmat.py	/^    testmat2 = np.tile(np.reshape(testmat, (1,-1)), (2,1))$/;"	v
+texinfo_documents	scikit-kinematics/docs/conf.py	/^texinfo_documents = [$/;"	v
+title	estimation_assessment/visualization.py	/^                                                                        title = ' estimation in double-leg drop landing',$/;"	v
+title	estimation_assessment/visualization.py	/^                                                                  title = ' estimation in double-leg drop landing',$/;"	v
+title	estimation_assessment/visualization.py	/^                                                   title=' estimation in double-leg drop landing',$/;"	v
+train_model	estimation_models/rnn_models.py	/^def train_model(model, hyperparams, train_set, valid_set, training_mode='Integrative_way'):$/;"	f
+train_model_narx	estimation_models/rnn_models.py	/^def train_model_narx(model, hyperparams, train_set, valid_set, training_mode='Integrative_way'):$/;"	f
+train_test_loops	estimation_study.py	/^def train_test_loops(hyperparams=None, fold_number=1, test_multi_trials=False):$/;"	f
+training_folder	estimation_assessment/scores.py	/^    training_folder =  get_investigation_training_testing_folders(combination_investigation_results,'training_123113')$/;"	v
+transfer_allsubject_to_a_h5	vicon_imu_data_process/load_rawdata.py	/^def transfer_allsubject_to_a_h5():$/;"	f
+transfer_rawdata_to_h5	vicon_imu_data_process/load_rawdata.py	/^def transfer_rawdata_to_h5():$/;"	f
+transform	vicon_imu_data_process/wearable_toolkit.py	/^    def transform(self, X):$/;"	m	class:DivideMaxScalar
+transform_to_step_events	vicon_imu_data_process/wearable_toolkit.py	/^    def transform_to_step_events(ron_i):$/;"	f	function:translate_step_event_to_step_id
+translate_step_event_to_step_id	vicon_imu_data_process/wearable_toolkit.py	/^def translate_step_event_to_step_id(events_dict, max_step_length):$/;"	f
+trial	estimation_assessment/scores.py	/^                                                                                trial=trial)$/;"	v
+trial	estimation_assessment/scores.py	/^    trial = '01'$/;"	v
+trial_categories	vicon_imu_data_process/process_rawdata.py	/^    trial_categories = ['baseline','fpa_01','fpa_02','fpa_03','fpa_04','fap_05']$/;"	v
+trial_categories	vicon_imu_data_process/process_rawdata.py	/^    trial_categories = ['fpa_01','fpa_02','fpa_03','fpa_04','fap_05']$/;"	v
+ts	scikit-kinematics/src/skinematics/view.py	/^def ts(data = None):$/;"	f
+unit_q	scikit-kinematics/src/skinematics/quat.py	/^def unit_q(inData):$/;"	f
+updatePlot	scikit-kinematics/src/skinematics/view.py	/^    def updatePlot(self):$/;"	m	class:Display
+update_xPos	scikit-kinematics/src/skinematics/view.py	/^    def update_xPos(self, xLim):$/;"	m	class:Display
+version	scikit-kinematics/docs/conf.py	/^version = '0.8.8'$/;"	v
+windowed_dataset	vicon_imu_data_process/dataset.py	/^def windowed_dataset(series, hyperparams,shuffle_buffer=1000):$/;"	f
+xsens_sensor	scikit-kinematics/src/skinematics/sensors/manual.py	/^    xsens_sensor = XSens(in_file=r'..\\tests\\data\\data_xsens.txt')    $/;"	v	class:MyOwnSensor
+y	estimation_assessment/visualization.py	/^                                                                        y='execution_time'$/;"	v
+zoom	scikit-kinematics/src/skinematics/view.py	/^    def zoom(self):$/;"	m	class:Display
