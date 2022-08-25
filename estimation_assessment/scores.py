@@ -16,12 +16,10 @@ if __name__=='__main__':
     sys.path.append('./')
 
 from vicon_imu_data_process.dataset import *
-from vicon_imu_data_process import process_rawdata as pro_rd
+from vicon_imu_data_process import process_landing_data as pro_rd
 
 from estimation_models.rnn_models import *
-
 from sklearn.metrics import r2_score, mean_squared_error as mse
-
 from vicon_imu_data_process.const import SAMPLE_FREQUENCY
 
 def calculate_scores(y_true, y_pred):
@@ -84,25 +82,6 @@ def calculate_model_time_complexity(model, series, hyperparams):
 
     return time_cost
 
-
-'''
-
- load (best) trained model
-
-'''
-def load_trained_model(training_folder, best_model=True):
-    trained_model_file = os.path.join(training_folder,'trained_model','my_model.h5')
-    #print("Trained model file: ", trained_model_file)
-    
-    trained_model = tf.keras.models.load_model(trained_model_file)
-    
-    if(best_model): # load the best model parameter
-        best_trained_model_weights = os.path.join(training_folder, "online_checkpoint","cp.ckpt")
-        trained_model.load_weights(best_trained_model_weights)
-    else:
-        print("DO NOT LOAD ITS BEST MODEL!")
-        
-    return trained_model
 
 
 
@@ -199,7 +178,7 @@ def save_test_result(pd_features, pd_labels, pd_predictions, testing_folder):
 Test a trained model on a subject' a trial
 
 '''
-def test_model_on_unseen_trial(training_folder, subject_id_name=None,trial='01',hyperparams=None,norm_subjects_trials_data=None, scaler=None):
+def test_model_on_unseen_trial(training_folder, subject_id_name=None,trial='01', hyperparams=None, norm_subjects_trials_data=None, scaler=None):
 
     #1) load hyperparameters
     if(hyperparams==None):

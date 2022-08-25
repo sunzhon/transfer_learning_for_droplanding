@@ -11,7 +11,7 @@ import pandas as pd
 import yaml
 import h5py
 print("tensorflow version:",tf.__version__)
-import vicon_imu_data_process.process_rawdata as pro_rd
+import vicon_imu_data_process.process_landing_data as pro_rd
 
 import copy
 import re
@@ -38,23 +38,85 @@ import matplotlib.pyplot as plt
 Model_V1 definition
 '''
 def model_v1(hyperparams):
-    model = tf.keras.models.Sequential([
-      #tf.keras.layers.Conv1D(filters=10, kernel_size=4, strides=1, padding="causal", activation="relu", input_shape=[None, hyperparams['features_num']]),
-      #tf.keras.layers.Dense(units=60, input_shape=[None, int(hyperparams['features_num'])],activation='relu'),
-      # consider using bidirection LSTM, since we use return_sequences, so the previous state should be also update by considering advanced info.
-      tf.keras.layers.Bidirectional(
-      tf.keras.layers.LSTM(int(hyperparams['lstm_units']), 
-                           return_sequences=True, 
-                           activation='tanh',
-                           input_shape=[None,int(hyperparams['features_num'])]
-                          )),
-      tf.keras.layers.Dropout(0.2),
-      tf.keras.layers.Dense(60,activation='relu'), # linear without activation func
-      tf.keras.layers.Dropout(0.2),
-      tf.keras.layers.Dense(30,activation='relu'), # linear without activation func
-      tf.keras.layers.Dense(int(hyperparams['labels_num'])) # linear without activation func
-    ])
+    if(hyperparams['trained_model_folder']==None):
+        # new defined model
+        model = tf.keras.models.Sequential([
+            tf.keras.layers.Bidirectional(
+                tf.keras.layers.LSTM(int(hyperparams['lstm_units']), 
+                                     return_sequences=True, 
+                                     activation='tanh',
+                                     input_shape=[None,int(hyperparams['features_num'])]
+                                    )),
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.Dense(60,activation='relu'), # linear without activation func
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.Dense(30,activation='relu'), # linear without activation func
+            tf.keras.layers.Dense(int(hyperparams['labels_num'])) # linear without activation func
+        ])
+    else: # use trainded model
+        trained_model = load_trained_model(hyperparams['trained_model_folder'])
+        trained_model.layers[0].trainable=False
+        model = trained_model
+
     return model
+
+
+
+
+
+'''
+Model_V2 definition
+'''
+def model_v2(hyperparams):
+    if(hyperparams['trained_model_folder'] == None): # new defined model
+        model = tf.keras.models.Sequential([
+        # consider using bidirection LSTM, since we use return_sequences, so the previous state should be also update by considering advanced info.
+        tf.keras.layers.Bidirectional(
+            tf.keras.layers.LSTM(int(hyperparams['lstm_units']), 
+                                 return_sequences=True, 
+                                 activation='tanh',
+                                 input_shape=[None,int(hyperparams['features_num'])]
+                                )),
+        tf.keras.layers.Bidirectional(
+            tf.keras.layers.LSTM(int(hyperparams['lstm_units']), 
+                                 return_sequences=True, 
+                                 activation='tanh'
+                                )),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(60,activation='relu'), # linear without activation func
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(30,activation='relu'), # linear without activation func
+        tf.keras.layers.Dense(int(hyperparams['labels_num'])) # linear without activation func
+    ])
+    else:# use trainded model
+        trained_model = load_trained_model(hyperparams['trained_model_folder'])
+        trained_model.layers[0].trainable=False
+        trained_model.layers[1].trainable=False
+        model = trained_model
+
+    return model
+
+
+'''
+
+ load (best) trained model
+
+'''
+def load_trained_model(training_folder, best_model=True):
+    trained_model_file = os.path.join(training_folder,'trained_model','my_model.h5')
+    #print("Trained model file: ", trained_model_file)
+    
+    trained_model = tf.keras.models.load_model(trained_model_file)
+    
+    if(best_model): # load the best model parameter
+        best_trained_model_weights = os.path.join(training_folder, "online_checkpoint","cp.ckpt")
+        trained_model.load_weights(best_trained_model_weights)
+    else:
+        print("DO NOT LOAD ITS BEST MODEL!")
+        
+    return trained_model
+
+
 
 
 
@@ -85,7 +147,6 @@ def train_model(model, hyperparams, train_set, valid_set, training_mode='Integra
     tf.random.set_seed(51)
     np.random.seed(51)
     
-    
     # crerate train results folder
     training_folder = pro_rd.create_training_files(hyperparams=hyperparams)
 
@@ -102,7 +163,8 @@ def train_model(model, hyperparams, train_set, valid_set, training_mode='Integra
     summary_writer = tf.summary.create_file_writer(sensorboard_file)
     
     # optimizer
-    optimizer = tf.keras.optimizers.SGD(learning_rate=hyperparams['learning_rate'], momentum=0.9)
+    #optimizer = tf.keras.optimizers.SGD(learning_rate=hyperparams['learning_rate'], momentum=0.9)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=hyperparams['learning_rate'])
     
     """ Integrated mode   """
     if training_mode=='Integrative_way':
@@ -207,7 +269,7 @@ def model_forecast(model, series, hyperparams):
 
     if(series.shape[1]==(labels_num + features_num)):
         # transfer numpy data into tensors from features
-        ds = tf.data.Dataset.from_tensor_slices(series[:,:-labels_num]) # features
+        ds = tf.data.Dataset.from_tensor_slices(series[:,:-labels_num]) # select features from combined data with features and labels
     else:
         ds = tf.data.Dataset.from_tensor_slices(series) # features
 
