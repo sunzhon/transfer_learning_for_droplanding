@@ -120,7 +120,7 @@ def train_test_loops(hyperparams=None, test_multi_trials=False):
     cross_val_scores = []
     
     #3) Load normalized dataset and its scaler
-    norm_subjects_trials_data = pro_rd.load_subjects_dataset(h5_file_name = hyperparams['raw_dataset_path'],selected_data_fields=hyperparams['columns_names'])
+    norm_subjects_trials_data = pro_rd.load_subjects_dataset(h5_file_name = hyperparams['raw_dataset_path'], selected_data_fields=hyperparams['columns_names'])
     scaler = pro_rd.load_scaler(hyperparams['scaler_file'])
 
     #4) leave-one-out cross-validation
@@ -147,15 +147,13 @@ def train_test_loops(hyperparams=None, test_multi_trials=False):
         #ii) split dataset
         train_set, valid_set, xy_test = split_dataset(norm_subjects_trials_data, train_subject_indices, test_subject_indices, hyperparams, model_type=model_type, test_multi_trials=test_multi_trials)
 
-
         #iii) train model
         trained_model, history_dict, training_folder = train_model(model, hyperparams, train_set, valid_set)
-        #trained_model, history_dict, training_folder = train_model_narx(model, hyperparams, train_set, valid_set)
         
         #iv) test model
         if(isinstance(xy_test, list)): # multi trials as test dataset
             for trial_idx, a_trial_xy_test in enumerate(xy_test):
-                features, labels, predictions, testing_folder,execution_time = es_as.test_model(training_folder, a_trial_xy_test, scaler)
+                features, labels, predictions, testing_folder, execution_time = es_as.test_model(training_folder, a_trial_xy_test, scaler)
                 training_testing_results['training_folder'].append(training_folder)
                 training_testing_results['testing_folder'].append(testing_folder)
                 cross_val_scores.append([loop_times, trial_idx] + list(es_as.calculate_scores(labels, predictions)))

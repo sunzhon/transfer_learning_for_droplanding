@@ -1,0 +1,12 @@
+tensorflow version: 2.5.0
+device: cpu
+target domain subjects: ['P_14_hunan', 'P_20_xuanweicheng', 'P_23_wangjinhong', 'P_24_liziqing']
+test subjects id names: ['P_14_hunan']
+Model selection: Aug_DANN
+source_loader len: 333, target_train_loader len:273, n_batch: 273
+Validation loss decreased (inf --> 0.582633).  Saving model ...
+Epoch: [ 1/100], reg_loss: 2.2736, transfer_loss: 0.6951, total_Loss: 0.6951, test_loss 0.582633, test_acc: -0.1470
+EarlyStopping counter: 1 out of 10
+Epoch: [ 2/100], reg_loss: 2.2447, transfer_loss: 0.6941, total_Loss: 0.6941, test_loss 0.584728, test_acc: -0.1516
+Validation loss decreased (0.582633 --> 0.571153).  Saving model ...
+Epoch: [ 3/100], reg_loss: 2.2206, transfer_loss: 0.6933, total_Loss: 0.6933, test_loss 0.571153, test_acc: -0.1244

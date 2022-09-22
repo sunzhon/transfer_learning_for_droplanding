@@ -18,8 +18,14 @@ from statannotations.Annotator import Annotator
 sys.path.append(os.getenv('STPY_WORKSPACE'))
 if os.getenv("STPY_WORKSPACE")!=None:
     from CRCF.plot_utilities import *
-    sys.path.append('./../')
+
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+added_path = os.path.join(current_dir,"./../")
+sys.path.append(added_path)
 from vicon_imu_data_process.const import SAMPLE_FREQUENCY
+
+
 
 if __name__ == '__main__':
     from scores import *
@@ -412,19 +418,23 @@ def setup_plot(g, **kwargs):
 '''
 
 
-def parase_plot_data(combination_investigation_results, landing_manner='all', estimated_variable='all', syn_features_label='both', use_frame_index='both', LSTM_unit='all', sensor_config='all',IMU_number='all', drop_value=None, metric_fields=['r2'],sort_variable=None):
+def parase_plot_data(combination_investigation_results, landing_manner='all', estimated_variable='all', syn_features_label='both', use_frame_index='both', LSTM_unit='all', sensor_config='all',IMU_number='all', drop_value=None, metric_fields=['r2'],sort_variable=None, **kwargs):
 
     #1) load assessment metrics
     metrics = get_investigation_metrics(combination_investigation_results,metric_fields=metric_fields)
     # drop some cases (test)
     metrics.index = np.arange(0, metrics.shape[0])
     if(drop_value!=None):
-        selected_data = metrics.loc[(metrics['metrics']=='r2') & (metrics['scores']>=drop_value)]
-        if('Metrics ID' in metrics.columns): # if metrics has column: 'Metrics ID'
-            metrics = metrics.loc[metrics['Metrics ID'].isin(selected_data['Metrics ID'])]
-        else:
-            metrics = metrics.drop(metrics[metrics['scores']<drop_value].index)
-        print('DROP R2 cases below :{}'.format(drop_value))
+        if(('metrics' in metrics.columns) and ('scores' in metrics.columns)):
+            selected_data = metrics.loc[(metrics['metrics']=='r2') & (metrics['scores']>=drop_value)]
+            if('Metrics ID' in metrics.columns): # if metrics has column: 'Metrics ID'
+                metrics = metrics.loc[metrics['Metrics ID'].isin(selected_data['Metrics ID'])]
+            else:
+                metrics = metrics.drop(metrics[metrics['scores']<drop_value].index)
+            print('DROP R2 cases below :{}'.format(drop_value))
+        elif('r2' in metrics.columns):
+            metrics = metrics.drop(metrics[metrics['r2']<drop_value].index)
+            print('DROP R2 cases below :{}'.format(drop_value))
 
     #2) pick necessary metrics
     if 'landing_manners' in metrics.columns: # has this investigation
@@ -488,18 +498,33 @@ def parase_plot_data(combination_investigation_results, landing_manner='all', es
         else:
             print('IMU number is not right, it should be {}'.format(set(metrics['IMU number'])))
             #sys.exit()
+        metrics['IMU number'] = metrics['IMU number'].astype(str)
 
     #3) add average scores of each sensor configurations
-    metrics['average scores'] = 0.0
-    mean_scores_of_sensors = metrics.groupby('Sensor configurations').median()
-    for sensor_config in list(set(metrics['Sensor configurations'])):
-        metrics.loc[metrics['Sensor configurations']==sensor_config,'average scores'] = mean_scores_of_sensors.loc[sensor_config, 'scores']
+    if 'Sensor configurations' in metrics.columns: # has this investigation
+        metrics['average scores'] = 0.0
+        mean_scores_of_sensors = metrics.groupby('Sensor configurations').median()
+        for sensor_config in list(set(metrics['Sensor configurations'])):
+            metrics.loc[metrics['Sensor configurations']==sensor_config,'average scores'] = mean_scores_of_sensors.loc[sensor_config, 'scores']
 
     #5) sort value
     if(sort_variable!=None):
         metrics[sort_variable] = metrics[sort_variable].astype('float64')
         metrics.sort_values(by=[sort_variable], ascending=True, inplace=True)
-        metrics[sort_variable] = metrics[sort_variable].astype('int')
+        #metrics[sort_variable] = metrics[sort_variable].astype('int')
+
+
+    #6) other fliters
+    if kwargs!=None:
+        for key, value in kwargs.items():
+            if(key in metrics.columns):
+                if set(value) <= set(metrics[key]): # a value of the test id
+                    metrics = metrics.loc[metrics[key].isin(value)]
+                elif(value=='all'):
+                    print('All {} are used'.format(key))
+                else:
+                    print('{} is not right, it should be {}'.format(key, set(metrics[key])))
+                    sys.exit()
     
 
     return metrics
@@ -578,7 +603,7 @@ def plot_sensorconfig_modelsize_investigation_results(combination_investigation_
 Parase list of combination_investigation_results
 
 """
-def parase_list_investigation_metrics(list_combination_investigation_results, landing_manner='all', estimated_variable='all', syn_features_label='both', use_frame_index =True, LSTM_unit='all', sensor_config='all',IMU_number='all', drop_value=None, metric_fields=['r2'],sort_variable=None):
+def parase_list_investigation_metrics(list_combination_investigation_results,**filters):
 
     if(not isinstance(list_combination_investigation_results,list)):
         list_combination_investigation_results = [list_combination_investigation_results]
@@ -587,15 +612,7 @@ def parase_list_investigation_metrics(list_combination_investigation_results, la
     for combination_investigation_result in list_combination_investigation_results:
         print(combination_investigation_result)
         list_metrics.append(parase_plot_data(combination_investigation_result, 
-                                             landing_manner=landing_manner, 
-                                             estimated_variable=estimated_variable, 
-                                             syn_features_label=syn_features_label,
-                                             use_frame_index = use_frame_index,
-                                             LSTM_unit=LSTM_unit,
-                                             IMU_number = IMU_number,
-                                             drop_value=drop_value,
-                                             metric_fields=metric_fields,
-                                             sort_variable='LSTM units'    
+                                             **filters
                                             ))
         metrics=pd.concat(list_metrics,axis=0)
 
@@ -1031,6 +1048,9 @@ def boxplot_IMU_number_accuracy(combination_investigation_results, landing_manne
 
     return save_figure(os.path.dirname(combination_investigation_results[0]),fig_name=title,fig_format='svg'), metrics
 
+
+
+
 def boxplot_single_imu_estimation_accuracy(combination_investigation_results):
 
     landing_manner= "double_legs"
@@ -1111,10 +1131,233 @@ def boxplot_single_imu_estimation_accuracy(combination_investigation_results):
     save_figure(os.path.dirname(combination_investigation_results[1]),'single_IMU',fig_format='svg')
 
 
+'''
+P6, compare different models
+
+'''
+def boxplot_models_accuracy(combination_investigation_results, title=None, metric_fields=['r2'], hue=None, statannotation_flag=True, **kwargs):
+
+    #1) load assessment metrics
+    if(not isinstance(combination_investigation_results,list)):
+        combination_investigation_results = [combination_investigation_results]
+
+    list_metrics=[]
+    for combination_investigation_result in combination_investigation_results:
+        list_metrics.append(parase_plot_data(combination_investigation_result, 
+                                             metric_fields=metric_fields, **kwargs
+                                            ))
+
+    metrics=pd.concat(list_metrics,axis=0)
+
+
+    #2) plot
+    # i) plot configurations
+    figsize=(5,4)
+    fig = plt.figure(figsize=figsize,constrained_layout=False)
+    gs1 = gridspec.GridSpec(2,2)#13
+    gs1.update(hspace=0.25,wspace=0.34,top=0.95,bottom=0.11,left=0.13,right=0.95)
+    axs = []
+    axs.append(fig.add_subplot(gs1[0:2, 0:2]))
+
+    #ii) plot colors
+    if hue != None:
+        palette =  sns.color_palette("Paired")
+    else:
+        palette = None
+
+    sns.set(font_scale=1.15,style='whitegrid')
+    states_palette = sns.color_palette("YlGnBu", n_colors=8)
+    colors = sns.color_palette("YlGnBu") 
+
+    #iii) sensor configurations
+    idx=0
+    x='model_selection'; y = 'r2'
+    #displayed_data = metrics.loc[metrics['Sensor configurations'].isin(imu_config)]
+    hue_plot_params = {
+        'data': metrics,
+        'x': x,
+        'y': y,
+        'hue': hue,
+        "showfliers": False,
+        "showmeans": True,
+        "color": colors[idx],
+        "palette": states_palette
+        }
+
+
+    g = sns.boxplot(ax=axs[idx], **hue_plot_params)
+    g.set_xlabel('Models')
+    g.set_ylabel('$R^2$')
+    g.set_ylim(0.4,1.0)
+    g.set_yticks([0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 1.0])
+    g.grid(visible=True, axis='both',which='major')
+    if hue!=None:
+        g.legend(ncol=3,title='Event-based alignment',loc='lower right')
+        #g.get_legend().remove()
+    #fig.suptitle(re.search('[A-Z]+',estimated_variable).group(0)+title)
+
+
+    # statistical test
+    if(statannotation_flag):
+        #test_method="Mann-Whitney"
+        test_method="t-test_ind"
+        pairs = (
+            [('baseline','DANN')]
+        )
+
+        annotator=Annotator(g,pairs=pairs,**hue_plot_params)
+        annotator.configure(test=test_method, text_format='star', loc='outside')
+        annotator.apply_and_annotate()
+
+    return save_figure(os.path.dirname(combination_investigation_results[0]),fig_name=title,fig_format='svg'), metrics
+
+
+
+'''
+P6 plot ensemble curves of the actual and estimattion
+
+'''
+
+def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections, **kwargs):
+
+    # 1) loading test data 
+    multi_test_results = get_multi_models_test_results(list_training_testing_folders, list_selections)
+
+    # i) plot configurations
+    figsize=(7,7)
+    sns.set(font_scale=1.15,style='whitegrid')
+    fig = plt.figure(figsize=figsize,constrained_layout=False)
+    gs1 = gridspec.GridSpec(2,4)#13
+    gs1.update(hspace=0.25,wspace=0.34,top=0.93,bottom=0.12,left=0.06,right=0.95)
+    axs = []
+    axs.append(fig.add_subplot(gs1[0, 0:2]))
+    axs.append(fig.add_subplot(gs1[0, 2:4]))
+    axs.append(fig.add_subplot(gs1[1, 0:2]))
+    axs.append(fig.add_subplot(gs1[1, 2:4]))
+
+    hue = None
+    if hue != None:
+        palette = sns.color_palette("Paired")
+    else:
+        palette = None
+    colors = sns.color_palette("YlGnBu")
+
+    for idx, estimation_values in enumerate(multi_test_results):
+        x=None; y = None
+        hue_plot_params = {
+            'data': estimation_values,
+            'x': x,
+            'y': y,
+            'hue': None,
+            "palette": palette,
+            "color": colors[idx]
+            }
+        g = sns.lineplot(ax=axs[idx], **hue_plot_params)
+        g.set_xlabel('Time [s]')
+        g.set_xlim(0, 0.8)
+        g.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
+        if idx == 0:
+            g.set_ylim(-0.1, 2)
+            g.set_yticks([0, 1, 2])
+        elif idx==1:
+            g.set_ylim(-0.21, 4)
+            g.set_yticks([0, 1, 2, 3, 4])
+        elif idx ==2:
+            g.set_ylim(-0.2, 4)
+            g.set_yticks([0, 1, 2, 3, 4])
+        else:
+            g.set_ylim(-0.25, 5)
+            g.set_yticks([0, 1, 2, 3, 4, 5])
+            
+        '''
+        if('legends' in display_configs):
+            g.legend(ncol=1,title=None,loc='upper right',labels=display_configs['legends'][idx])
+        if('ylabel' in display_configs):
+            g.set_ylabel(display_configs['ylabel'][idx])
+        if('subplot_titles' in display_configs):
+            g.set_title(label=display_configs['subplot_titles'][idx])
+        '''
+        g.grid(visible=True, axis='both',which='major')
+        
+    
+    
+    return save_figure(os.path.dirname(list_training_testing_folders[0]),fig_format='svg'), multi_test_results
+
+
+
+
+def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections=None, ylabels=None, figsize=(15,12), col_wrap=3,  **kwargs):
+    
+    #1) get testing results: estimation and ground truth
+    multi_test_results = get_multi_models_test_results(list_training_testing_folders, list_selections)
+    
+    #2) set figures
+    row_num = math.ceil(len(list_training_testing_folders)/col_wrap)
+    fig = plt.figure(figsize=figsize,constrained_layout=False)
+    gs1 = gridspec.GridSpec(row_num,col_wrap)
+    gs1.update(hspace=0.25,wspace=0.34,top=0.93,bottom=0.12,left=0.06,right=0.95)
+    axs = []
+    for row_idx in range(row_num):
+        for col_idx in range(col_wrap):
+            axs.append(fig.add_subplot(gs1[row_idx, col_idx:col_idx+1]))
+            
+    
+    sns.set(font_scale=1.15,style='whitegrid')
+    palette = sns.color_palette("Paired")
+    colors = sns.color_palette("YlGnBu")
+    if ylabels==None:
+        ylabels = [str(os.path.basename(os.path.dirname(a_model_results_foler))) for a_model_results_foler in list_training_testing_folders]
+    
+    for idx, (ylabel, estimation_values) in enumerate(zip(ylabels, multi_test_results)):
+        estimation_values.rename(columns={'Actual R_KNEE_MOMENT_X': 'Ground truth', 'Estimated R_KNEE_MOMENT_X': 'Estimation'}, inplace=True)
+        x=None; y = None
+        hue_plot_params = {
+            'data': estimation_values,
+            'x': x,
+            'y': y,
+            'hue': None,
+            #"palette": palette,
+            #"color": colors[idx]
+            }
+        g = sns.lineplot(ax=axs[idx], **hue_plot_params)
+        g.set_xlabel('Time [s]')
+        g.set_ylabel(ylabel)
+        g.set_xlim(0, 0.8)
+        g.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
+        g.set_ylim(-1.0, 3.0)
+        g.set_yticks([-1.0, -0.5,0.0, 0.5, 1.0, 1.3, 1.5, 1.7, 2.0, 2.2, 2.5, 3.0])
+        
+    return save_figure(os.path.dirname(list_training_testing_folders[0]),fig_format='svg'), multi_test_results
+
+
+
 
 if __name__ == '__main__':
 
-    if True: # calculate metrics
+
+    selection=7*[{'child_test_id':['test_1']}]
+    combination_investigation_results = [
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/baseline_v4/testing_result_folders.txt",
+                                     #"/home/sun/drop_landing_workspace/results/training_testing/model_comparison/baseline_v5/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/data_augmentation/2_5d_imu_augment/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/finetuning_v2/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/normal_dann_v2/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/repeated_dann_v2/testing_result_folders.txt",
+                                     #"/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v2/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/baseline_v4/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/data_augmentation/2_5d_imu_augment/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v4/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v5/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v6/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v7/testing_result_folders.txt",
+                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v8/testing_result_folders.txt",
+                                    ]
+    p6plot_statistic_actual_estimation_curves(combination_investigation_results,selection)
+
+    pdb.set_trace()
+
+
+    if False: # calculate metrics
         combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/Four_variable_optimal_imu_config/KEM_single_leg/testing_result_folders.txt"
         metrics = get_list_investigation_metrics(combination_investigation_results)
         combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/Four_variable_optimal_imu_config/vGRF_single_leg/testing_result_folders.txt"
@@ -1162,7 +1405,6 @@ if __name__ == '__main__':
                                                                  )
 
 
-    pdb.set_trace()
     
     if False: # Fig. 7 execution time
         # combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/execution_time/metrics.csv"
@@ -1177,7 +1419,6 @@ if __name__ == '__main__':
                                                                         #hue = 'IMU number'
                                                                        )
 
-        pdb.set_trace()
 
     if False: #  Fig. 8 
         #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/3_collected_modeling/additional_imu_all_imu_all_lstm_double_GRF/8_imu_all_lstm_units/testing_result_folders.txt"
@@ -1189,8 +1430,6 @@ if __name__ == '__main__':
                                                    title=' estimation in double-leg drop landing',
                                                    LSTM_unit=[100], drop_value=0.0)
 
-
-        pdb.set_trace()
 
 
     if False: # Fig. 9
@@ -1219,3 +1458,17 @@ if __name__ == '__main__':
 
         fig_path, metrics = plot_statistic_actual_estimation_curves(list_combination_investigation_results,
                                                                 list_selections)
+
+
+    # P6 visualization
+    if True:
+        #combination_investigation_results = "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-10/baseline/testing_result_folders.txt"
+        #combination_investigation_results = "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-10/DANN/testing_result_folders.txt"
+        combination_investigation_results = "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-12/testing_result_folders.txt"
+        metrics = get_list_investigation_metrics(combination_investigation_results)
+
+        pdb.set_trace()
+        combination_investigation_results = ["/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-10/baseline/metrics.csv",
+                                             "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-10/DANN/metrics.csv"]
+        fig_path, r2 = boxplot_models_accuracy(combination_investigation_results)
+

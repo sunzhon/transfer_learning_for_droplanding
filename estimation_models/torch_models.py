@@ -3,14 +3,14 @@
  Import necessary packages
 
 '''
-import tensorflow as tf
+import torch
+print("pytorch version:",torch.__version__)
 import numpy as np
 import pdb
 import os
 import pandas as pd
 import yaml
 import h5py
-print("tensorflow version:",tf.__version__)
 import vicon_imu_data_process.process_landing_data as pro_rd
 
 import copy
@@ -30,71 +30,45 @@ import time
 
 # NARX
 from sklearn.linear_model import LinearRegression
-#from fireTS.models import NARX
-import matplotlib.pyplot as plt
 
 
 '''
 Model_V1 definition
 '''
-def model_v1(hyperparams):
-    if(hyperparams['trained_model_folder']==None):
-        # new defined model
-        model = tf.keras.models.Sequential([
-            tf.keras.layers.Bidirectional(
-                tf.keras.layers.LSTM(int(hyperparams['lstm_units']), 
-                                     return_sequences=True, 
-                                     activation='tanh',
-                                     input_shape=[None,int(hyperparams['features_num'])]
-                                    )),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(60,activation='relu'), # linear without activation func
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(30,activation='relu'), # linear without activation func
-            tf.keras.layers.Dense(int(hyperparams['labels_num'])) # linear without activation func
-        ])
-    else: # use trainded model
-        trained_model = load_trained_model(hyperparams['trained_model_folder'])
-        trained_model.layers[0].trainable=False
-        model = trained_model
 
-    return model
+class MLNNBackbone(nn.Module):
+    def __init__(self, n_input=49, seg_len=80, n_output=1, lstm_unit=60):
+        super(MLNNBackbone, self).__init__()
+        self.layer_input = nn.LSTM(input_size=n_input, hidden_size = lstm_unit, num_layers=1, dropout=0.2, bidirectional=True,batch_first=True)
+        self.linear_1 = nn.Linear(60,60)
+        self.relu_1 = nn.ReLU()
+        self.dropout_1 = nn.Dropout(p=0.2)
+        self.linear_2 = nn.Linear(60,30)
+        self.relu_2 = nn.ReLU()
+        self.dropout_2 = nn.Dropout(p=0.2)
+        self.linear_3 = nn.Linear(30,n_output)
+        self.relu_3 = nn.Tanh()
 
+        self.lstm_unit = lstm_unit
+        self.seq_len = seq_len
+        self._feature_dim = n_input
 
+    def forward(self, x): # input dim = [batch_size, seq_en, features_len]
+        x, (hidden, c) = self.layer_input(x) # output dim  = [batch, seq_len, model dim]
+        hidden = torch.cat([hidden[:,-2,:], hidden[:,-1,:]], dim=1) # hidden, [batch_size, model_dim *2]
+        x = self.linear_1(hidden) # linear input dim =[batch, -1]
+        x = self.relu_1(x)
+        x = self.dropout_1(x)
+        x = self.linear_2(x)
+        x = self.relu_2(x)
+        x = self.dropout_2(x)
+        x = self.linear_3(x)
+        x = self.relu_3(x)
+        return x
 
+    def output_num(self):
+        return self._feature_dim
 
-
-'''
-Model_V2 definition
-'''
-def model_v2(hyperparams):
-    if(hyperparams['trained_model_folder'] == None): # new defined model
-        model = tf.keras.models.Sequential([
-        # consider using bidirection LSTM, since we use return_sequences, so the previous state should be also update by considering advanced info.
-        tf.keras.layers.Bidirectional(
-            tf.keras.layers.LSTM(int(hyperparams['lstm_units']), 
-                                 return_sequences=True, 
-                                 activation='tanh',
-                                 input_shape=[None,int(hyperparams['features_num'])]
-                                )),
-        tf.keras.layers.Bidirectional(
-            tf.keras.layers.LSTM(int(hyperparams['lstm_units']), 
-                                 return_sequences=True, 
-                                 activation='tanh'
-                                )),
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(60,activation='relu'), # linear without activation func
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(30,activation='relu'), # linear without activation func
-        tf.keras.layers.Dense(int(hyperparams['labels_num'])) # linear without activation func
-    ])
-    else:# use trainded model
-        trained_model = load_trained_model(hyperparams['trained_model_folder'])
-        trained_model.layers[0].trainable=False
-        trained_model.layers[1].trainable=False
-        model = trained_model
-
-    return model
 
 
 '''
@@ -163,6 +137,7 @@ def train_model(model, hyperparams, train_set, valid_set, training_mode='Integra
     summary_writer = tf.summary.create_file_writer(sensorboard_file)
     
     # optimizer
+    #optimizer = tf.keras.optimizers.SGD(learning_rate=hyperparams['learning_rate'], momentum=0.9)
     optimizer = tf.keras.optimizers.Adam(learning_rate=hyperparams['learning_rate'])
     
     """ Integrated mode   """
@@ -212,7 +187,7 @@ def train_model(model, hyperparams, train_set, valid_set, training_mode='Integra
 
 
 '''
-def save_trained_model(trained_model, history=None, training_folder=None, **kwargs):
+def save_trained_model(trained_model,history,training_folder,**kwargs):
 
     #-------- load hyperparameters------------# 
     hyperparams_file = training_folder + "/hyperparams.yaml"
@@ -248,14 +223,13 @@ def save_trained_model(trained_model, history=None, training_folder=None, **kwar
     trained_model.save(saved_model_file)
     
     #iii) save training history
-    if(history!=None):
-        # get the dictionary containing each metric and the loss for each epoch
-        history_folder = os.path.join(training_folder,'train_process')
-        history_file = os.path.join(history_folder,'my_history')
+    # get the dictionary containing each metric and the loss for each epoch
+    history_folder = os.path.join(training_folder,'train_process')
+    history_file = os.path.join(history_folder,'my_history')
 
-        # write it under the form of a json file
-        with open(history_file,'w') as fd:
-            json.dump(history.history, fd)
+    # write it under the form of a json file
+    with open(history_file,'w') as fd:
+        json.dump(history.history, fd)
 
 
 # Model prediction
@@ -297,15 +271,6 @@ def model_forecast(model, series, hyperparams):
     return model_prediction,  dt
 
 
-
-'''
-
-def model_narx(hyperparams):
-    exog_order = hyperparams['features_num'] * [5]
-    auto_order = 5
-    mdl = NARX(LinearRegression(), auto_order = auto_order, exog_order = exog_order)
-    return mdl
-'''
 
 
 def train_model_narx(model, hyperparams, train_set, valid_set, training_mode='Integrative_way'):

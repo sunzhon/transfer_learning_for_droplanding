@@ -108,13 +108,13 @@ def integrative_investigation():
     hyperparams['model_selection']='RNN_v1'
     hyperparams['window_size'] = 80 # 4
     hyperparams['shift_step'] = 80 # 1
-    training_testing_results, xy_test, scaler = train_test_loops(hyperparams, test_multi_trials=3)
+    training_testing_results, xy_test, scaler = train_test_loops(hyperparams, test_multi_trials=10)
 
     #2) fine-tuning model with landing data
-    print('Fine tuning model')
+    print('Fine tuning a pretrained model')
     #i) hyperparameter setup
-    hyperparams = initParameters(labels_names=['R_KNEE_MOMENT_X'],features_names= ['TIME'] + const.extract_imu_fields(const.IMU_SENSOR_LIST,const.ACC_GYRO_FIELDS),data_file = 'kam_norm_landing_data.hdf5')
-    hyperparams['scaler_file'] = 'kam_landing_scaler_file'
+    hyperparams = initParameters(labels_names=['R_KNEE_MOMENT_X'],features_names= ['TIME'] + const.extract_imu_fields(const.IMU_SENSOR_LIST,const.ACC_GYRO_FIELDS),data_file = '5subjects_kam_norm_landing_data.hdf5')
+    hyperparams['scaler_file'] = '5subjects_kam_landing_scaler_file'
     hyperparams['model_selection']='RNN_v1'
     hyperparams['window_size'] = 80 # 4
     hyperparams['shift_step'] = 80 # 1
@@ -125,7 +125,7 @@ def integrative_investigation():
     #training_folder = "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-08-19/training_152333"
     hyperparams['trained_model_folder'] = training_folder
     print(termcolor.colored('Transfer learning by fine-tuning walking model with landing data','green'))
-    training_testing_results, xy_test, scaler = train_test_loops(hyperparams, test_multi_trials=3)
+    training_testing_results, xy_test, scaler = train_test_loops(hyperparams, test_multi_trials=10)
 
     return 0
 
