@@ -1,184 +1,305 @@
 tensorflow version: 2.5.0
+device: cpu
 target domain subjects: ['P_14_hunan', 'P_20_xuanweicheng', 'P_23_wangjinhong', 'P_24_liziqing']
 test subjects id names: ['P_14_hunan']
 Model selection: baseline
 source_loader len: 333, target_train_loader len:3, n_batch: 3
-Validation loss decreased (inf --> 0.527245).  Saving model ...
-Epoch: [ 1/100], reg_loss: 1.1476, transfer_loss: 0.0000, total_Loss: 1.1476, test_loss 0.527245, test_acc: -0.0401
-Validation loss decreased (0.527245 --> 0.517381).  Saving model ...
-Epoch: [ 2/100], reg_loss: 1.0968, transfer_loss: 0.0000, total_Loss: 1.0968, test_loss 0.517381, test_acc: -0.0172
-Validation loss decreased (0.517381 --> 0.472136).  Saving model ...
-Epoch: [ 3/100], reg_loss: 1.1267, transfer_loss: 0.0000, total_Loss: 1.1267, test_loss 0.472136, test_acc: 0.0750
-Validation loss decreased (0.472136 --> 0.363937).  Saving model ...
-Epoch: [ 4/100], reg_loss: 1.0494, transfer_loss: 0.0000, total_Loss: 1.0494, test_loss 0.363937, test_acc: 0.2933
-Validation loss decreased (0.363937 --> 0.228962).  Saving model ...
-Epoch: [ 5/100], reg_loss: 0.8427, transfer_loss: 0.0000, total_Loss: 0.8427, test_loss 0.228962, test_acc: 0.5650
-Validation loss decreased (0.228962 --> 0.128633).  Saving model ...
-Epoch: [ 6/100], reg_loss: 0.6399, transfer_loss: 0.0000, total_Loss: 0.6399, test_loss 0.128633, test_acc: 0.7561
+test dataset len:25
+Validation loss decreased (inf --> 0.526155).  Saving model ...
+Epoch: [ 1/100], reg_loss: 1.1975, transfer_loss: 0.0000, total_Loss: 1.1975, test_loss 0.526155, test_acc: -0.0362
+test dataset len:25
+Validation loss decreased (0.526155 --> 0.513076).  Saving model ...
+Epoch: [ 2/100], reg_loss: 1.0756, transfer_loss: 0.0000, total_Loss: 1.0756, test_loss 0.513076, test_acc: -0.0128
+test dataset len:25
+Validation loss decreased (0.513076 --> 0.486952).  Saving model ...
+Epoch: [ 3/100], reg_loss: 1.1059, transfer_loss: 0.0000, total_Loss: 1.1059, test_loss 0.486952, test_acc: 0.0397
+test dataset len:25
+Validation loss decreased (0.486952 --> 0.435624).  Saving model ...
+Epoch: [ 4/100], reg_loss: 1.0596, transfer_loss: 0.0000, total_Loss: 1.0596, test_loss 0.435624, test_acc: 0.1454
+test dataset len:25
+Validation loss decreased (0.435624 --> 0.363132).  Saving model ...
+Epoch: [ 5/100], reg_loss: 1.0010, transfer_loss: 0.0000, total_Loss: 1.0010, test_loss 0.363132, test_acc: 0.2936
+test dataset len:25
+Validation loss decreased (0.363132 --> 0.254703).  Saving model ...
+Epoch: [ 6/100], reg_loss: 0.8152, transfer_loss: 0.0000, total_Loss: 0.8152, test_loss 0.254703, test_acc: 0.5137
+test dataset len:25
+Validation loss decreased (0.254703 --> 0.170365).  Saving model ...
+Epoch: [ 7/100], reg_loss: 0.7068, transfer_loss: 0.0000, total_Loss: 0.7068, test_loss 0.170365, test_acc: 0.6804
+test dataset len:25
 EarlyStopping counter: 1 out of 10
-Epoch: [ 7/100], reg_loss: 0.4024, transfer_loss: 0.0000, total_Loss: 0.4024, test_loss 0.306837, test_acc: 0.3383
+Epoch: [ 8/100], reg_loss: 0.5704, transfer_loss: 0.0000, total_Loss: 0.5704, test_loss 0.199436, test_acc: 0.6067
+test dataset len:25
 EarlyStopping counter: 2 out of 10
-Epoch: [ 8/100], reg_loss: 0.3368, transfer_loss: 0.0000, total_Loss: 0.3368, test_loss 0.174076, test_acc: 0.6265
-Validation loss decreased (0.128633 --> 0.100183).  Saving model ...
-Epoch: [ 9/100], reg_loss: 0.2595, transfer_loss: 0.0000, total_Loss: 0.2595, test_loss 0.100183, test_acc: 0.7983
-EarlyStopping counter: 1 out of 10
-Epoch: [10/100], reg_loss: 0.2224, transfer_loss: 0.0000, total_Loss: 0.2224, test_loss 0.129074, test_acc: 0.7368
-EarlyStopping counter: 2 out of 10
-Epoch: [11/100], reg_loss: 0.1759, transfer_loss: 0.0000, total_Loss: 0.1759, test_loss 0.220812, test_acc: 0.5359
+Epoch: [ 9/100], reg_loss: 0.4538, transfer_loss: 0.0000, total_Loss: 0.4538, test_loss 0.251224, test_acc: 0.4863
+test dataset len:25
 EarlyStopping counter: 3 out of 10
-Epoch: [12/100], reg_loss: 0.1827, transfer_loss: 0.0000, total_Loss: 0.1827, test_loss 0.259788, test_acc: 0.4534
+Epoch: [10/100], reg_loss: 0.3328, transfer_loss: 0.0000, total_Loss: 0.3328, test_loss 0.280634, test_acc: 0.4127
+test dataset len:25
 EarlyStopping counter: 4 out of 10
-Epoch: [13/100], reg_loss: 0.1498, transfer_loss: 0.0000, total_Loss: 0.1498, test_loss 0.179383, test_acc: 0.6278
+Epoch: [11/100], reg_loss: 0.2753, transfer_loss: 0.0000, total_Loss: 0.2753, test_loss 0.394053, test_acc: 0.1653
+test dataset len:25
 EarlyStopping counter: 5 out of 10
-Epoch: [14/100], reg_loss: 0.1534, transfer_loss: 0.0000, total_Loss: 0.1534, test_loss 0.184946, test_acc: 0.6132
+Epoch: [12/100], reg_loss: 0.2105, transfer_loss: 0.0000, total_Loss: 0.2105, test_loss 0.699031, test_acc: -0.4785
+test dataset len:25
 EarlyStopping counter: 6 out of 10
-Epoch: [15/100], reg_loss: 0.1330, transfer_loss: 0.0000, total_Loss: 0.1330, test_loss 0.243050, test_acc: 0.4840
+Epoch: [13/100], reg_loss: 0.1799, transfer_loss: 0.0000, total_Loss: 0.1799, test_loss 0.800918, test_acc: -0.7009
+test dataset len:25
 EarlyStopping counter: 7 out of 10
-Epoch: [16/100], reg_loss: 0.1319, transfer_loss: 0.0000, total_Loss: 0.1319, test_loss 0.250095, test_acc: 0.4682
+Epoch: [14/100], reg_loss: 0.1481, transfer_loss: 0.0000, total_Loss: 0.1481, test_loss 1.018966, test_acc: -1.1738
+test dataset len:25
 EarlyStopping counter: 8 out of 10
-Epoch: [17/100], reg_loss: 0.1312, transfer_loss: 0.0000, total_Loss: 0.1312, test_loss 0.201161, test_acc: 0.5760
+Epoch: [15/100], reg_loss: 0.1449, transfer_loss: 0.0000, total_Loss: 0.1449, test_loss 0.895219, test_acc: -0.9120
+test dataset len:25
 EarlyStopping counter: 9 out of 10
-Epoch: [18/100], reg_loss: 0.1123, transfer_loss: 0.0000, total_Loss: 0.1123, test_loss 0.177750, test_acc: 0.6278
+Epoch: [16/100], reg_loss: 0.1233, transfer_loss: 0.0000, total_Loss: 0.1233, test_loss 0.735749, test_acc: -0.5690
+test dataset len:25
 EarlyStopping counter: 10 out of 10
-Epoch: [19/100], reg_loss: 0.1081, transfer_loss: 0.0000, total_Loss: 0.1081, test_loss 0.238133, test_acc: 0.4986
-Best result: 0.7983
+Epoch: [17/100], reg_loss: 0.1213, transfer_loss: 0.0000, total_Loss: 0.1213, test_loss 0.896247, test_acc: -0.9086
+test dataset len:25
+Best result: 0.6804
 test subjects id names: ['P_20_xuanweicheng']
 Model selection: baseline
 source_loader len: 333, target_train_loader len:3, n_batch: 3
-Validation loss decreased (inf --> 1.265576).  Saving model ...
-Epoch: [ 1/100], reg_loss: 0.9625, transfer_loss: 0.0000, total_Loss: 0.9625, test_loss 1.265576, test_acc: -0.0385
-Validation loss decreased (1.265576 --> 1.248005).  Saving model ...
-Epoch: [ 2/100], reg_loss: 0.8600, transfer_loss: 0.0000, total_Loss: 0.8600, test_loss 1.248005, test_acc: -0.0190
-Validation loss decreased (1.248005 --> 1.195613).  Saving model ...
-Epoch: [ 3/100], reg_loss: 0.7863, transfer_loss: 0.0000, total_Loss: 0.7863, test_loss 1.195613, test_acc: 0.0260
-Validation loss decreased (1.195613 --> 1.085682).  Saving model ...
-Epoch: [ 4/100], reg_loss: 0.6966, transfer_loss: 0.0000, total_Loss: 0.6966, test_loss 1.085682, test_acc: 0.1177
-Validation loss decreased (1.085682 --> 0.895699).  Saving model ...
-Epoch: [ 5/100], reg_loss: 0.7035, transfer_loss: 0.0000, total_Loss: 0.7035, test_loss 0.895699, test_acc: 0.2777
-Validation loss decreased (0.895699 --> 0.724879).  Saving model ...
-Epoch: [ 6/100], reg_loss: 0.5758, transfer_loss: 0.0000, total_Loss: 0.5758, test_loss 0.724879, test_acc: 0.4184
-Validation loss decreased (0.724879 --> 0.496879).  Saving model ...
-Epoch: [ 7/100], reg_loss: 0.3952, transfer_loss: 0.0000, total_Loss: 0.3952, test_loss 0.496879, test_acc: 0.5962
-Validation loss decreased (0.496879 --> 0.346111).  Saving model ...
-Epoch: [ 8/100], reg_loss: 0.3805, transfer_loss: 0.0000, total_Loss: 0.3805, test_loss 0.346111, test_acc: 0.7188
+test dataset len:30
+Validation loss decreased (inf --> 1.264440).  Saving model ...
+Epoch: [ 1/100], reg_loss: 0.9459, transfer_loss: 0.0000, total_Loss: 0.9459, test_loss 1.264440, test_acc: -0.0345
+test dataset len:30
+Validation loss decreased (1.264440 --> 1.236347).  Saving model ...
+Epoch: [ 2/100], reg_loss: 1.0202, transfer_loss: 0.0000, total_Loss: 1.0202, test_loss 1.236347, test_acc: -0.0137
+test dataset len:30
+Validation loss decreased (1.236347 --> 1.198993).  Saving model ...
+Epoch: [ 3/100], reg_loss: 0.8223, transfer_loss: 0.0000, total_Loss: 0.8223, test_loss 1.198993, test_acc: 0.0165
+test dataset len:30
+Validation loss decreased (1.198993 --> 1.134510).  Saving model ...
+Epoch: [ 4/100], reg_loss: 0.7869, transfer_loss: 0.0000, total_Loss: 0.7869, test_loss 1.134510, test_acc: 0.0714
+test dataset len:30
+Validation loss decreased (1.134510 --> 1.033770).  Saving model ...
+Epoch: [ 5/100], reg_loss: 0.7250, transfer_loss: 0.0000, total_Loss: 0.7250, test_loss 1.033770, test_acc: 0.1585
+test dataset len:30
+Validation loss decreased (1.033770 --> 0.864089).  Saving model ...
+Epoch: [ 6/100], reg_loss: 0.6983, transfer_loss: 0.0000, total_Loss: 0.6983, test_loss 0.864089, test_acc: 0.3015
+test dataset len:30
+Validation loss decreased (0.864089 --> 0.660744).  Saving model ...
+Epoch: [ 7/100], reg_loss: 0.5217, transfer_loss: 0.0000, total_Loss: 0.5217, test_loss 0.660744, test_acc: 0.4701
+test dataset len:30
+Validation loss decreased (0.660744 --> 0.548607).  Saving model ...
+Epoch: [ 8/100], reg_loss: 0.4616, transfer_loss: 0.0000, total_Loss: 0.4616, test_loss 0.548607, test_acc: 0.5579
+test dataset len:30
+Validation loss decreased (0.548607 --> 0.428290).  Saving model ...
+Epoch: [ 9/100], reg_loss: 0.3385, transfer_loss: 0.0000, total_Loss: 0.3385, test_loss 0.428290, test_acc: 0.6532
+test dataset len:30
+Validation loss decreased (0.428290 --> 0.312413).  Saving model ...
+Epoch: [10/100], reg_loss: 0.2758, transfer_loss: 0.0000, total_Loss: 0.2758, test_loss 0.312413, test_acc: 0.7480
+test dataset len:30
+Validation loss decreased (0.312413 --> 0.295246).  Saving model ...
+Epoch: [11/100], reg_loss: 0.3085, transfer_loss: 0.0000, total_Loss: 0.3085, test_loss 0.295246, test_acc: 0.7556
+test dataset len:30
+Validation loss decreased (0.295246 --> 0.243635).  Saving model ...
+Epoch: [12/100], reg_loss: 0.2034, transfer_loss: 0.0000, total_Loss: 0.2034, test_loss 0.243635, test_acc: 0.7938
+test dataset len:30
+Validation loss decreased (0.243635 --> 0.213395).  Saving model ...
+Epoch: [13/100], reg_loss: 0.2036, transfer_loss: 0.0000, total_Loss: 0.2036, test_loss 0.213395, test_acc: 0.8158
+test dataset len:30
 EarlyStopping counter: 1 out of 10
-Epoch: [ 9/100], reg_loss: 0.2788, transfer_loss: 0.0000, total_Loss: 0.2788, test_loss 0.420239, test_acc: 0.6656
-EarlyStopping counter: 2 out of 10
-Epoch: [10/100], reg_loss: 0.2576, transfer_loss: 0.0000, total_Loss: 0.2576, test_loss 0.457942, test_acc: 0.6338
-EarlyStopping counter: 3 out of 10
-Epoch: [11/100], reg_loss: 0.2212, transfer_loss: 0.0000, total_Loss: 0.2212, test_loss 0.403611, test_acc: 0.6749
-Validation loss decreased (0.346111 --> 0.296141).  Saving model ...
-Epoch: [12/100], reg_loss: 0.1779, transfer_loss: 0.0000, total_Loss: 0.1779, test_loss 0.296141, test_acc: 0.7611
+Epoch: [14/100], reg_loss: 0.1534, transfer_loss: 0.0000, total_Loss: 0.1534, test_loss 0.219757, test_acc: 0.8056
+test dataset len:30
+Validation loss decreased (0.213395 --> 0.187415).  Saving model ...
+Epoch: [15/100], reg_loss: 0.1426, transfer_loss: 0.0000, total_Loss: 0.1426, test_loss 0.187415, test_acc: 0.8345
+test dataset len:30
 EarlyStopping counter: 1 out of 10
-Epoch: [13/100], reg_loss: 0.1538, transfer_loss: 0.0000, total_Loss: 0.1538, test_loss 0.299350, test_acc: 0.7609
+Epoch: [16/100], reg_loss: 0.1314, transfer_loss: 0.0000, total_Loss: 0.1314, test_loss 0.218338, test_acc: 0.8061
+test dataset len:30
 EarlyStopping counter: 2 out of 10
-Epoch: [14/100], reg_loss: 0.1416, transfer_loss: 0.0000, total_Loss: 0.1416, test_loss 0.357806, test_acc: 0.7141
+Epoch: [17/100], reg_loss: 0.1135, transfer_loss: 0.0000, total_Loss: 0.1135, test_loss 0.192435, test_acc: 0.8302
+test dataset len:30
 EarlyStopping counter: 3 out of 10
-Epoch: [15/100], reg_loss: 0.1099, transfer_loss: 0.0000, total_Loss: 0.1099, test_loss 0.358997, test_acc: 0.7104
+Epoch: [18/100], reg_loss: 0.1021, transfer_loss: 0.0000, total_Loss: 0.1021, test_loss 0.239363, test_acc: 0.7907
+test dataset len:30
 EarlyStopping counter: 4 out of 10
-Epoch: [16/100], reg_loss: 0.1341, transfer_loss: 0.0000, total_Loss: 0.1341, test_loss 0.327848, test_acc: 0.7370
+Epoch: [19/100], reg_loss: 0.1025, transfer_loss: 0.0000, total_Loss: 0.1025, test_loss 0.210126, test_acc: 0.8155
+test dataset len:30
 EarlyStopping counter: 5 out of 10
-Epoch: [17/100], reg_loss: 0.1124, transfer_loss: 0.0000, total_Loss: 0.1124, test_loss 0.324935, test_acc: 0.7424
+Epoch: [20/100], reg_loss: 0.0912, transfer_loss: 0.0000, total_Loss: 0.0912, test_loss 0.219577, test_acc: 0.8061
+test dataset len:30
+Validation loss decreased (0.187415 --> 0.169062).  Saving model ...
+Epoch: [21/100], reg_loss: 0.0936, transfer_loss: 0.0000, total_Loss: 0.0936, test_loss 0.169062, test_acc: 0.8533
+test dataset len:30
+EarlyStopping counter: 1 out of 10
+Epoch: [22/100], reg_loss: 0.0983, transfer_loss: 0.0000, total_Loss: 0.0983, test_loss 0.195083, test_acc: 0.8293
+test dataset len:30
+EarlyStopping counter: 2 out of 10
+Epoch: [23/100], reg_loss: 0.0816, transfer_loss: 0.0000, total_Loss: 0.0816, test_loss 0.236592, test_acc: 0.7943
+test dataset len:30
+EarlyStopping counter: 3 out of 10
+Epoch: [24/100], reg_loss: 0.0873, transfer_loss: 0.0000, total_Loss: 0.0873, test_loss 0.213019, test_acc: 0.8151
+test dataset len:30
+EarlyStopping counter: 4 out of 10
+Epoch: [25/100], reg_loss: 0.0787, transfer_loss: 0.0000, total_Loss: 0.0787, test_loss 0.220299, test_acc: 0.8054
+test dataset len:30
+EarlyStopping counter: 5 out of 10
+Epoch: [26/100], reg_loss: 0.0753, transfer_loss: 0.0000, total_Loss: 0.0753, test_loss 0.212698, test_acc: 0.8138
+test dataset len:30
 EarlyStopping counter: 6 out of 10
-Epoch: [18/100], reg_loss: 0.1306, transfer_loss: 0.0000, total_Loss: 0.1306, test_loss 0.333912, test_acc: 0.7346
+Epoch: [27/100], reg_loss: 0.0646, transfer_loss: 0.0000, total_Loss: 0.0646, test_loss 0.245643, test_acc: 0.7857
+test dataset len:30
 EarlyStopping counter: 7 out of 10
-Epoch: [19/100], reg_loss: 0.1019, transfer_loss: 0.0000, total_Loss: 0.1019, test_loss 0.339075, test_acc: 0.7276
+Epoch: [28/100], reg_loss: 0.0641, transfer_loss: 0.0000, total_Loss: 0.0641, test_loss 0.241900, test_acc: 0.7889
+test dataset len:30
 EarlyStopping counter: 8 out of 10
-Epoch: [20/100], reg_loss: 0.0983, transfer_loss: 0.0000, total_Loss: 0.0983, test_loss 0.321965, test_acc: 0.7403
+Epoch: [29/100], reg_loss: 0.0665, transfer_loss: 0.0000, total_Loss: 0.0665, test_loss 0.227308, test_acc: 0.8000
+test dataset len:30
 EarlyStopping counter: 9 out of 10
-Epoch: [21/100], reg_loss: 0.0857, transfer_loss: 0.0000, total_Loss: 0.0857, test_loss 0.320069, test_acc: 0.7440
+Epoch: [30/100], reg_loss: 0.0605, transfer_loss: 0.0000, total_Loss: 0.0605, test_loss 0.215353, test_acc: 0.8126
+test dataset len:30
 EarlyStopping counter: 10 out of 10
-Epoch: [22/100], reg_loss: 0.0899, transfer_loss: 0.0000, total_Loss: 0.0899, test_loss 0.317175, test_acc: 0.7472
-Best result: 0.7611
+Epoch: [31/100], reg_loss: 0.0564, transfer_loss: 0.0000, total_Loss: 0.0564, test_loss 0.230175, test_acc: 0.8007
+test dataset len:30
+Best result: 0.8533
 test subjects id names: ['P_23_wangjinhong']
 Model selection: baseline
 source_loader len: 333, target_train_loader len:3, n_batch: 3
-Validation loss decreased (inf --> 0.641079).  Saving model ...
-Epoch: [ 1/100], reg_loss: 1.1712, transfer_loss: 0.0000, total_Loss: 1.1712, test_loss 0.641079, test_acc: -0.1474
-Validation loss decreased (0.641079 --> 0.611458).  Saving model ...
-Epoch: [ 2/100], reg_loss: 1.0905, transfer_loss: 0.0000, total_Loss: 1.0905, test_loss 0.611458, test_acc: -0.0805
-Validation loss decreased (0.611458 --> 0.572618).  Saving model ...
-Epoch: [ 3/100], reg_loss: 0.9874, transfer_loss: 0.0000, total_Loss: 0.9874, test_loss 0.572618, test_acc: -0.0075
-Validation loss decreased (0.572618 --> 0.489694).  Saving model ...
-Epoch: [ 4/100], reg_loss: 0.9307, transfer_loss: 0.0000, total_Loss: 0.9307, test_loss 0.489694, test_acc: 0.1435
-Validation loss decreased (0.489694 --> 0.380466).  Saving model ...
-Epoch: [ 5/100], reg_loss: 0.7849, transfer_loss: 0.0000, total_Loss: 0.7849, test_loss 0.380466, test_acc: 0.3504
-Validation loss decreased (0.380466 --> 0.296916).  Saving model ...
-Epoch: [ 6/100], reg_loss: 0.5954, transfer_loss: 0.0000, total_Loss: 0.5954, test_loss 0.296916, test_acc: 0.4872
+test dataset len:30
+Validation loss decreased (inf --> 0.625694).  Saving model ...
+Epoch: [ 1/100], reg_loss: 1.2742, transfer_loss: 0.0000, total_Loss: 1.2742, test_loss 0.625694, test_acc: -0.1101
+test dataset len:30
 EarlyStopping counter: 1 out of 10
-Epoch: [ 7/100], reg_loss: 0.3808, transfer_loss: 0.0000, total_Loss: 0.3808, test_loss 0.474689, test_acc: 0.1064
+Epoch: [ 2/100], reg_loss: 1.2120, transfer_loss: 0.0000, total_Loss: 1.2120, test_loss 0.643760, test_acc: -0.1601
+test dataset len:30
 EarlyStopping counter: 2 out of 10
-Epoch: [ 8/100], reg_loss: 0.3998, transfer_loss: 0.0000, total_Loss: 0.3998, test_loss 0.300916, test_acc: 0.4517
-Validation loss decreased (0.296916 --> 0.262204).  Saving model ...
-Epoch: [ 9/100], reg_loss: 0.2631, transfer_loss: 0.0000, total_Loss: 0.2631, test_loss 0.262204, test_acc: 0.5474
-Validation loss decreased (0.262204 --> 0.246424).  Saving model ...
-Epoch: [10/100], reg_loss: 0.3185, transfer_loss: 0.0000, total_Loss: 0.3185, test_loss 0.246424, test_acc: 0.5667
+Epoch: [ 3/100], reg_loss: 1.1914, transfer_loss: 0.0000, total_Loss: 1.1914, test_loss 0.635307, test_acc: -0.1520
+test dataset len:30
+Validation loss decreased (0.625694 --> 0.583196).  Saving model ...
+Epoch: [ 4/100], reg_loss: 1.0097, transfer_loss: 0.0000, total_Loss: 1.0097, test_loss 0.583196, test_acc: -0.0535
+test dataset len:30
+Validation loss decreased (0.583196 --> 0.502519).  Saving model ...
+Epoch: [ 5/100], reg_loss: 0.9855, transfer_loss: 0.0000, total_Loss: 0.9855, test_loss 0.502519, test_acc: 0.1050
+test dataset len:30
+Validation loss decreased (0.502519 --> 0.405426).  Saving model ...
+Epoch: [ 6/100], reg_loss: 0.8776, transfer_loss: 0.0000, total_Loss: 0.8776, test_loss 0.405426, test_acc: 0.2931
+test dataset len:30
+Validation loss decreased (0.405426 --> 0.328086).  Saving model ...
+Epoch: [ 7/100], reg_loss: 0.6433, transfer_loss: 0.0000, total_Loss: 0.6433, test_loss 0.328086, test_acc: 0.4464
+test dataset len:30
+Validation loss decreased (0.328086 --> 0.251193).  Saving model ...
+Epoch: [ 8/100], reg_loss: 0.5682, transfer_loss: 0.0000, total_Loss: 0.5682, test_loss 0.251193, test_acc: 0.5687
+test dataset len:30
+Validation loss decreased (0.251193 --> 0.228344).  Saving model ...
+Epoch: [ 9/100], reg_loss: 0.4258, transfer_loss: 0.0000, total_Loss: 0.4258, test_loss 0.228344, test_acc: 0.5936
+test dataset len:30
 EarlyStopping counter: 1 out of 10
-Epoch: [11/100], reg_loss: 0.2390, transfer_loss: 0.0000, total_Loss: 0.2390, test_loss 0.264779, test_acc: 0.5213
+Epoch: [10/100], reg_loss: 0.3599, transfer_loss: 0.0000, total_Loss: 0.3599, test_loss 0.250934, test_acc: 0.5510
+test dataset len:30
 EarlyStopping counter: 2 out of 10
-Epoch: [12/100], reg_loss: 0.1712, transfer_loss: 0.0000, total_Loss: 0.1712, test_loss 0.324891, test_acc: 0.4118
+Epoch: [11/100], reg_loss: 0.3565, transfer_loss: 0.0000, total_Loss: 0.3565, test_loss 0.293807, test_acc: 0.4745
+test dataset len:30
 EarlyStopping counter: 3 out of 10
-Epoch: [13/100], reg_loss: 0.1872, transfer_loss: 0.0000, total_Loss: 0.1872, test_loss 0.283426, test_acc: 0.4941
-Validation loss decreased (0.246424 --> 0.243434).  Saving model ...
-Epoch: [14/100], reg_loss: 0.1463, transfer_loss: 0.0000, total_Loss: 0.1463, test_loss 0.243434, test_acc: 0.5717
-EarlyStopping counter: 1 out of 10
-Epoch: [15/100], reg_loss: 0.1294, transfer_loss: 0.0000, total_Loss: 0.1294, test_loss 0.249003, test_acc: 0.5630
-EarlyStopping counter: 2 out of 10
-Epoch: [16/100], reg_loss: 0.1480, transfer_loss: 0.0000, total_Loss: 0.1480, test_loss 0.280673, test_acc: 0.5090
-EarlyStopping counter: 3 out of 10
-Epoch: [17/100], reg_loss: 0.1200, transfer_loss: 0.0000, total_Loss: 0.1200, test_loss 0.309734, test_acc: 0.4575
+Epoch: [12/100], reg_loss: 0.2407, transfer_loss: 0.0000, total_Loss: 0.2407, test_loss 0.301395, test_acc: 0.4492
+test dataset len:30
 EarlyStopping counter: 4 out of 10
-Epoch: [18/100], reg_loss: 0.1437, transfer_loss: 0.0000, total_Loss: 0.1437, test_loss 0.280202, test_acc: 0.5080
+Epoch: [13/100], reg_loss: 0.2430, transfer_loss: 0.0000, total_Loss: 0.2430, test_loss 0.326990, test_acc: 0.3979
+test dataset len:30
 EarlyStopping counter: 5 out of 10
-Epoch: [19/100], reg_loss: 0.1285, transfer_loss: 0.0000, total_Loss: 0.1285, test_loss 0.278397, test_acc: 0.5165
+Epoch: [14/100], reg_loss: 0.1999, transfer_loss: 0.0000, total_Loss: 0.1999, test_loss 0.366364, test_acc: 0.3343
+test dataset len:30
 EarlyStopping counter: 6 out of 10
-Epoch: [20/100], reg_loss: 0.1166, transfer_loss: 0.0000, total_Loss: 0.1166, test_loss 0.285222, test_acc: 0.5060
+Epoch: [15/100], reg_loss: 0.1583, transfer_loss: 0.0000, total_Loss: 0.1583, test_loss 0.373305, test_acc: 0.3286
+test dataset len:30
 EarlyStopping counter: 7 out of 10
-Epoch: [21/100], reg_loss: 0.0939, transfer_loss: 0.0000, total_Loss: 0.0939, test_loss 0.277195, test_acc: 0.5172
+Epoch: [16/100], reg_loss: 0.1403, transfer_loss: 0.0000, total_Loss: 0.1403, test_loss 0.363931, test_acc: 0.3397
+test dataset len:30
 EarlyStopping counter: 8 out of 10
-Epoch: [22/100], reg_loss: 0.0993, transfer_loss: 0.0000, total_Loss: 0.0993, test_loss 0.298088, test_acc: 0.4843
+Epoch: [17/100], reg_loss: 0.1327, transfer_loss: 0.0000, total_Loss: 0.1327, test_loss 0.355949, test_acc: 0.3648
+test dataset len:30
 EarlyStopping counter: 9 out of 10
-Epoch: [23/100], reg_loss: 0.0875, transfer_loss: 0.0000, total_Loss: 0.0875, test_loss 0.299362, test_acc: 0.4814
+Epoch: [18/100], reg_loss: 0.1146, transfer_loss: 0.0000, total_Loss: 0.1146, test_loss 0.320389, test_acc: 0.4258
+test dataset len:30
 EarlyStopping counter: 10 out of 10
-Epoch: [24/100], reg_loss: 0.0853, transfer_loss: 0.0000, total_Loss: 0.0853, test_loss 0.283640, test_acc: 0.5067
-Best result: 0.5717
+Epoch: [19/100], reg_loss: 0.1063, transfer_loss: 0.0000, total_Loss: 0.1063, test_loss 0.289113, test_acc: 0.4805
+test dataset len:30
+Best result: 0.5936
 test subjects id names: ['P_24_liziqing']
 Model selection: baseline
 source_loader len: 333, target_train_loader len:3, n_batch: 3
-Validation loss decreased (inf --> 1.469589).  Saving model ...
-Epoch: [ 1/100], reg_loss: 0.8512, transfer_loss: 0.0000, total_Loss: 0.8512, test_loss 1.469589, test_acc: -0.0202
+test dataset len:30
+Validation loss decreased (inf --> 1.485700).  Saving model ...
+Epoch: [ 1/100], reg_loss: 0.9446, transfer_loss: 0.0000, total_Loss: 0.9446, test_loss 1.485700, test_acc: -0.0306
+test dataset len:30
+Validation loss decreased (1.485700 --> 1.447729).  Saving model ...
+Epoch: [ 2/100], reg_loss: 0.7908, transfer_loss: 0.0000, total_Loss: 0.7908, test_loss 1.447729, test_acc: -0.0041
+test dataset len:30
+Validation loss decreased (1.447729 --> 1.416834).  Saving model ...
+Epoch: [ 3/100], reg_loss: 0.9302, transfer_loss: 0.0000, total_Loss: 0.9302, test_loss 1.416834, test_acc: 0.0180
+test dataset len:30
+Validation loss decreased (1.416834 --> 1.356514).  Saving model ...
+Epoch: [ 4/100], reg_loss: 0.7505, transfer_loss: 0.0000, total_Loss: 0.7505, test_loss 1.356514, test_acc: 0.0608
+test dataset len:30
+Validation loss decreased (1.356514 --> 1.249389).  Saving model ...
+Epoch: [ 5/100], reg_loss: 0.7351, transfer_loss: 0.0000, total_Loss: 0.7351, test_loss 1.249389, test_acc: 0.1367
+test dataset len:30
+Validation loss decreased (1.249389 --> 1.069576).  Saving model ...
+Epoch: [ 6/100], reg_loss: 0.5618, transfer_loss: 0.0000, total_Loss: 0.5618, test_loss 1.069576, test_acc: 0.2631
+test dataset len:30
+Validation loss decreased (1.069576 --> 0.925793).  Saving model ...
+Epoch: [ 7/100], reg_loss: 0.3945, transfer_loss: 0.0000, total_Loss: 0.3945, test_loss 0.925793, test_acc: 0.3631
+test dataset len:30
+Validation loss decreased (0.925793 --> 0.750292).  Saving model ...
+Epoch: [ 8/100], reg_loss: 0.3447, transfer_loss: 0.0000, total_Loss: 0.3447, test_loss 0.750292, test_acc: 0.4852
+test dataset len:30
+Validation loss decreased (0.750292 --> 0.618217).  Saving model ...
+Epoch: [ 9/100], reg_loss: 0.2749, transfer_loss: 0.0000, total_Loss: 0.2749, test_loss 0.618217, test_acc: 0.5769
+test dataset len:30
+Validation loss decreased (0.618217 --> 0.557503).  Saving model ...
+Epoch: [10/100], reg_loss: 0.2231, transfer_loss: 0.0000, total_Loss: 0.2231, test_loss 0.557503, test_acc: 0.6193
+test dataset len:30
+Validation loss decreased (0.557503 --> 0.479926).  Saving model ...
+Epoch: [11/100], reg_loss: 0.1745, transfer_loss: 0.0000, total_Loss: 0.1745, test_loss 0.479926, test_acc: 0.6731
+test dataset len:30
+Validation loss decreased (0.479926 --> 0.407994).  Saving model ...
+Epoch: [12/100], reg_loss: 0.1633, transfer_loss: 0.0000, total_Loss: 0.1633, test_loss 0.407994, test_acc: 0.7224
+test dataset len:30
+Validation loss decreased (0.407994 --> 0.398709).  Saving model ...
+Epoch: [13/100], reg_loss: 0.1464, transfer_loss: 0.0000, total_Loss: 0.1464, test_loss 0.398709, test_acc: 0.7289
+test dataset len:30
+Validation loss decreased (0.398709 --> 0.393685).  Saving model ...
+Epoch: [14/100], reg_loss: 0.1053, transfer_loss: 0.0000, total_Loss: 0.1053, test_loss 0.393685, test_acc: 0.7326
+test dataset len:30
+Validation loss decreased (0.393685 --> 0.365778).  Saving model ...
+Epoch: [15/100], reg_loss: 0.0908, transfer_loss: 0.0000, total_Loss: 0.0908, test_loss 0.365778, test_acc: 0.7516
+test dataset len:30
 EarlyStopping counter: 1 out of 10
-Epoch: [ 2/100], reg_loss: 0.8253, transfer_loss: 0.0000, total_Loss: 0.8253, test_loss 1.488975, test_acc: -0.0322
-Validation loss decreased (1.469589 --> 1.468140).  Saving model ...
-Epoch: [ 3/100], reg_loss: 0.7909, transfer_loss: 0.0000, total_Loss: 0.7909, test_loss 1.468140, test_acc: -0.0166
-Validation loss decreased (1.468140 --> 1.366340).  Saving model ...
-Epoch: [ 4/100], reg_loss: 0.7546, transfer_loss: 0.0000, total_Loss: 0.7546, test_loss 1.366340, test_acc: 0.0555
-Validation loss decreased (1.366340 --> 1.201083).  Saving model ...
-Epoch: [ 5/100], reg_loss: 0.5880, transfer_loss: 0.0000, total_Loss: 0.5880, test_loss 1.201083, test_acc: 0.1722
-Validation loss decreased (1.201083 --> 1.045346).  Saving model ...
-Epoch: [ 6/100], reg_loss: 0.4755, transfer_loss: 0.0000, total_Loss: 0.4755, test_loss 1.045346, test_acc: 0.2810
-Validation loss decreased (1.045346 --> 0.693469).  Saving model ...
-Epoch: [ 7/100], reg_loss: 0.3890, transfer_loss: 0.0000, total_Loss: 0.3890, test_loss 0.693469, test_acc: 0.5271
-Validation loss decreased (0.693469 --> 0.517947).  Saving model ...
-Epoch: [ 8/100], reg_loss: 0.2778, transfer_loss: 0.0000, total_Loss: 0.2778, test_loss 0.517947, test_acc: 0.6494
+Epoch: [16/100], reg_loss: 0.1006, transfer_loss: 0.0000, total_Loss: 0.1006, test_loss 0.374608, test_acc: 0.7456
+test dataset len:30
+Validation loss decreased (0.365778 --> 0.331370).  Saving model ...
+Epoch: [17/100], reg_loss: 0.0872, transfer_loss: 0.0000, total_Loss: 0.0872, test_loss 0.331370, test_acc: 0.7756
+test dataset len:30
 EarlyStopping counter: 1 out of 10
-Epoch: [ 9/100], reg_loss: 0.1875, transfer_loss: 0.0000, total_Loss: 0.1875, test_loss 0.691859, test_acc: 0.5280
+Epoch: [18/100], reg_loss: 0.0750, transfer_loss: 0.0000, total_Loss: 0.0750, test_loss 0.340556, test_acc: 0.7682
+test dataset len:30
 EarlyStopping counter: 2 out of 10
-Epoch: [10/100], reg_loss: 0.2141, transfer_loss: 0.0000, total_Loss: 0.2141, test_loss 0.741703, test_acc: 0.4929
+Epoch: [19/100], reg_loss: 0.0735, transfer_loss: 0.0000, total_Loss: 0.0735, test_loss 0.347017, test_acc: 0.7631
+test dataset len:30
 EarlyStopping counter: 3 out of 10
-Epoch: [11/100], reg_loss: 0.1562, transfer_loss: 0.0000, total_Loss: 0.1562, test_loss 0.661311, test_acc: 0.5490
+Epoch: [20/100], reg_loss: 0.0717, transfer_loss: 0.0000, total_Loss: 0.0717, test_loss 0.339622, test_acc: 0.7684
+test dataset len:30
 EarlyStopping counter: 4 out of 10
-Epoch: [12/100], reg_loss: 0.1258, transfer_loss: 0.0000, total_Loss: 0.1258, test_loss 0.550442, test_acc: 0.6260
+Epoch: [21/100], reg_loss: 0.0568, transfer_loss: 0.0000, total_Loss: 0.0568, test_loss 0.429746, test_acc: 0.7061
+test dataset len:30
 EarlyStopping counter: 5 out of 10
-Epoch: [13/100], reg_loss: 0.1258, transfer_loss: 0.0000, total_Loss: 0.1258, test_loss 0.546195, test_acc: 0.6280
+Epoch: [22/100], reg_loss: 0.0659, transfer_loss: 0.0000, total_Loss: 0.0659, test_loss 0.384673, test_acc: 0.7373
+test dataset len:30
 EarlyStopping counter: 6 out of 10
-Epoch: [14/100], reg_loss: 0.0932, transfer_loss: 0.0000, total_Loss: 0.0932, test_loss 0.659845, test_acc: 0.5476
+Epoch: [23/100], reg_loss: 0.0608, transfer_loss: 0.0000, total_Loss: 0.0608, test_loss 0.414449, test_acc: 0.7155
+test dataset len:30
 EarlyStopping counter: 7 out of 10
-Epoch: [15/100], reg_loss: 0.0940, transfer_loss: 0.0000, total_Loss: 0.0940, test_loss 0.691898, test_acc: 0.5257
+Epoch: [24/100], reg_loss: 0.0605, transfer_loss: 0.0000, total_Loss: 0.0605, test_loss 0.397499, test_acc: 0.7277
+test dataset len:30
 EarlyStopping counter: 8 out of 10
-Epoch: [16/100], reg_loss: 0.0907, transfer_loss: 0.0000, total_Loss: 0.0907, test_loss 0.610284, test_acc: 0.5843
+Epoch: [25/100], reg_loss: 0.0501, transfer_loss: 0.0000, total_Loss: 0.0501, test_loss 0.427713, test_acc: 0.7072
+test dataset len:30
 EarlyStopping counter: 9 out of 10
-Epoch: [17/100], reg_loss: 0.0868, transfer_loss: 0.0000, total_Loss: 0.0868, test_loss 0.607590, test_acc: 0.5870
+Epoch: [26/100], reg_loss: 0.0477, transfer_loss: 0.0000, total_Loss: 0.0477, test_loss 0.388688, test_acc: 0.7344
+test dataset len:30
 EarlyStopping counter: 10 out of 10
-Epoch: [18/100], reg_loss: 0.0795, transfer_loss: 0.0000, total_Loss: 0.0795, test_loss 0.676230, test_acc: 0.5381
-Best result: 0.6494
+Epoch: [27/100], reg_loss: 0.0449, transfer_loss: 0.0000, total_Loss: 0.0449, test_loss 0.363703, test_acc: 0.7513
+test dataset len:30
+Best result: 0.7756

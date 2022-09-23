@@ -9,7 +9,7 @@ transfer_loss: adv
 # Optimizer related
 weight_decay: 5e-2
 lr: 0.01
-lr_scheduler: True
+lr_scheduler: False
 lr_gamma: 0.001
 lr_decay: 0.75
 

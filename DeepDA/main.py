@@ -138,7 +138,6 @@ def load_data(args, src_subjects_trials_data, tgt_train_subjects_trials_data, tg
     
     return source_loader, target_train_loader, target_test_loader, n_labels
     
-    #return source_loader, target_train_loader, target_test_loader, n_labels
 
 def get_model(args):
 
@@ -185,6 +184,7 @@ def test(model, target_test_loader, args):
     test_loss = utils.AverageMeter()
     criterion = torch.nn.MSELoss()
     len_target_dataset = len(target_test_loader.dataset)
+    print('test dataset len:{}'.format(len_target_dataset))
     test_acc = utils.AverageMeter()
     with torch.no_grad():
         for idx, (features, labels) in enumerate(target_test_loader):
@@ -230,7 +230,7 @@ def test(model, target_test_loader, args):
             else:
                 testing_folder = None
 
-    return test_acc.avg, test_loss.avg, testing_folder
+    return test_loss.avg, test_acc.avg, testing_folder
 
 
 def train(source_loader, target_train_loader, target_test_loader, model, optimizer, lr_scheduler, args):
@@ -274,8 +274,15 @@ def train(source_loader, target_train_loader, target_test_loader, model, optimiz
             data_target, label_target = data_target.to(args.device), label_target.to(args.device)
             
             reg_loss, transfer_loss = model(data_source, data_target, label_source, label_target)
-            loss = args.regression_loss_weight*reg_loss + args.transfer_loss_weight * transfer_loss
+            '''
+
+            if(transfer_loss.item()>0.1):
+                loss = args.transfer_loss_weight * transfer_loss
+            else:
+                loss = args.regression_loss_weight*reg_loss + args.transfer_loss_weight * transfer_loss
+            '''
             
+            loss = args.regression_loss_weight*reg_loss + args.transfer_loss_weight * transfer_loss
             optimizer.zero_grad()
             '''
             print("\n===========开始迭代========")
@@ -306,18 +313,20 @@ def train(source_loader, target_train_loader, target_test_loader, model, optimiz
             train_loss_transfer.update(transfer_loss.item())
             train_loss_total.update(loss.item())
             
-        log.append([train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg])
+        #log.append([train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg])
+        log.append([train_loss_reg.val, train_loss_transfer.val, train_loss_total.val])
         
         info = 'Epoch: [{:2d}/{}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}'.format(
-                        epoch, args.n_epoch, train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg)
+                        epoch, args.n_epoch, train_loss_reg.val, train_loss_transfer.val, train_loss_total.val)
 
         #ii) Test processing
-        test_acc, test_loss, _ = test(model, target_test_loader, args)
+        test_loss, test_acc, _ = test(model, target_test_loader, args)
         info += ', test_loss {:4f}, test_acc: {:.4f}'.format(test_loss, test_acc)
         np_log = np.array(log, dtype=float)
         np.savetxt('train_log.csv', np_log, delimiter=',', fmt='%.6f')
         # early stopping
-        early_stop(test_loss, test_acc, model)
+        #early_stop(test_loss, test_acc, model)
+        early_stop(train_loss_total.val, test_acc, model)
         if early_stop.early_stop:
             print(info)
             break
@@ -326,7 +335,7 @@ def train(source_loader, target_train_loader, target_test_loader, model, optimiz
     # load the last checkpoint with the best model
     model.load_state_dict(torch.load(os.path.join(training_folder,'best_model.pth')))
     args.save_test=True
-    test_acc, test_loss, testing_folder = test(model, target_test_loader, args)
+    test_loss, test_acc, testing_folder = test(model, target_test_loader, args)
     print('Best result: {:.4f}'.format(early_stop.best_acc))
     # save trainied model
     torch.save(model.state_dict(),os.path.join(training_folder,'trained_model.pth'))
@@ -346,9 +355,6 @@ def k_fold(args, multipe_domains_subjects_trials_data):
     src_subjects_trials_data = multipe_domains_subjects_trials_data[0]
     tgt_subjects_trials_data = multipe_domains_subjects_trials_data[1]
     tgt_subject_ids_names = list(tgt_subjects_trials_data.keys()) 
-    #tgt_subject_ids_names.remove('P_20_xuanweicheng')
-    #tgt_subject_ids_names.remove('P_24_liziqing')
-    #tgt_subject_ids_names = ['P_11_liuchunyu', 'P_13_xulibang', 'P_14_hunan', 'P_16_zhangjinduo', 'P_20_xuanweicheng']
     print("target domain subjects: {}".format(tgt_subject_ids_names))
 
     for train_subject_indices, test_subject_indices in kf.split(tgt_subject_ids_names):
@@ -358,7 +364,7 @@ def k_fold(args, multipe_domains_subjects_trials_data):
 
         # specifiy test and train subjects for debug
         # i-1) choose data for training and testing
-        if(args.model_selection in ['imu_augment', 'Aug_DANN', 'DANN', 'Normal_DANN']):
+        if(args.model_selection in ['imu_augment', 'Aug_DANN', 'DANN', 'Normal_DANN',]):
             tst_subjects_trials_data = multipe_domains_subjects_trials_data[2] # additional domain for only test, it is raw target domain
             tgt_train_subjects_trials_data = {subject_id_name: tgt_subjects_trials_data[subject_id_name] for subject_id_name in train_subject_ids_names}
             tgt_test_subjects_trials_data = {subject_id_name: tst_subjects_trials_data[subject_id_name] for subject_id_name in test_subject_ids_names}

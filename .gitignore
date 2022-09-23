@@ -1,2 +1,5 @@
 tag
 __pycache__
+*.csv
+*.log
+
