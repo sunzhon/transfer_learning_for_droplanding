@@ -53,7 +53,8 @@ class TransferNetForRegression(nn.Module):
         transfer_loss_args = {
             "loss_type": self.transfer_loss,
             "input_dim": feature_dim*80,
-            "hidden_dim": 80 # empirically set for discriminator 
+            "hidden_dim": 80, # empirically set for discriminator 
+            "max_iter": max_iter
         }
         self.adapt_loss = TransferLoss(**transfer_loss_args)
         self.criterion = torch.nn.MSELoss()
@@ -164,3 +165,35 @@ class BaselineModel(nn.Module):
 
         return params
 
+
+class DiscriminatorModel(nn.Module):
+
+    '''
+
+
+
+
+    '''
+    def __init__(self, num_label=1, base_net='discriminator', **kwargs):
+        super(DiscriminatorModel, self).__init__()
+        self.num_label = num_label
+        self.base_network = backbones.get_backbone(base_net)
+        feature_dim = self.base_network.output_num()
+
+        self.output_layer = nn.Linear(feature_dim, num_label)
+
+        self.criterion = torch.nn.MSELoss()
+        self.finetuning=finetuning
+
+    def forward(self, source, target, source_label, target_label):
+        target = self.base_network(target)
+        target_reg = self.output_layer(target)
+        reg_loss = self.criterion(target_reg, target_label)
+        transfer_loss = 0*reg_loss
+
+        return reg_loss, transfer_loss # 0 indicates transfer loss
+
+    def predict(self, x):
+        features = self.base_network(x)
+        reg = self.output_layer(features)
+        return reg

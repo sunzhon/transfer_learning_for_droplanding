@@ -159,6 +159,8 @@ def get_model(args):
     if(args.model_selection=='finetuning'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', finetuning=True).to(args.device)
         model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
+    if(args.model_selection=='discriminator'):
+        model = models.DiscriminatorModel(num_label=args.n_labels, base_net='discriminator').to(args.device)
 
     print('Model selection: {}'.format(args.model_selection))
 
@@ -184,7 +186,6 @@ def test(model, target_test_loader, args):
     test_loss = utils.AverageMeter()
     criterion = torch.nn.MSELoss()
     len_target_dataset = len(target_test_loader.dataset)
-    print('test dataset len:{}'.format(len_target_dataset))
     test_acc = utils.AverageMeter()
     with torch.no_grad():
         for idx, (features, labels) in enumerate(target_test_loader):
@@ -237,10 +238,9 @@ def train(source_loader, target_train_loader, target_test_loader, model, optimiz
     len_source_loader = len(source_loader) # how many batchs
     len_target_loader = len(target_train_loader) # how many batchs, source and target should have similar batch numbers
     n_batch = min(len_source_loader, len_target_loader)
-
-    print('source_loader len: {}, target_train_loader len:{}, n_batch: {}'.format(len_source_loader,len_target_loader, n_batch))
     if n_batch == 0:
         n_batch = args.n_iter_per_epoch 
+    print('source_loader len: {}, target_train_loader len:{}, n_batch: {}'.format(len_source_loader,len_target_loader, n_batch))
 
     # generate iterater of dataloader
     iter_source, iter_target = iter(source_loader), iter(target_train_loader)
@@ -325,8 +325,7 @@ def train(source_loader, target_train_loader, target_test_loader, model, optimiz
         np_log = np.array(log, dtype=float)
         np.savetxt('train_log.csv', np_log, delimiter=',', fmt='%.6f')
         # early stopping
-        #early_stop(test_loss, test_acc, model)
-        early_stop(train_loss_total.val, test_acc, model)
+        early_stop(test_loss, test_acc, model)
         if early_stop.early_stop:
             print(info)
             break
@@ -380,8 +379,10 @@ def k_fold(args, multipe_domains_subjects_trials_data):
         args.n_labels = n_labels
         if args.epoch_based_training:
             args.max_iter = args.n_epoch * min(len(source_loader), len(target_train_loader))
+            print(' epoch based tranining')
         else:
             args.max_iter =   args.n_epoch * args.n_iter_per_epoch
+            print(' epoch based tranining')
 
         # test subjects and trials, {subject_id_name:len(['01','02',...]), ...}
         tgt_test_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tgt_test_subjects_trials_data.items()} 
@@ -415,11 +416,20 @@ def main():
 
     #data path
     args.data_dir = const.DATA_PATH
+
+
     
     # features
     features_name = ['TIME'] + const.extract_imu_fields(const.IMU_SENSOR_LIST, const.ACC_GYRO_FIELDS)
     setattr(args, "features_name", features_name)
     setattr(args, "n_labels", 1)
+
+
+    # train , this max_iter iss important for DANN train
+    if args.epoch_based_training:
+        setattr(args, "max_iter", args.n_epoch * min(len(source_loader), len(target_train_loader)))
+    else:
+        setattr(args, "max_iter", args.n_epoch * args.n_iter_per_epoch)
 
     set_random_seed(args.seed)
 
@@ -429,7 +439,6 @@ def main():
 
     #3) cross_validation for training and evaluation model
     setattr(args, 'test_subject_ids_names', [])
-    setattr(args, "max_iter", 100)
 
     #k_fold(args,src_subjects_trials_data, tgt_subjects_trials_data)
     k_fold(args, multipe_domains_subjects_trials_data)

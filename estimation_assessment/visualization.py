@@ -24,6 +24,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 added_path = os.path.join(current_dir,"./../")
 sys.path.append(added_path)
 from vicon_imu_data_process.const import SAMPLE_FREQUENCY
+from vicon_imu_data_process.const import RESULTS_PATH
 
 
 
@@ -1330,9 +1331,86 @@ def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, lis
     return save_figure(os.path.dirname(list_training_testing_folders[0]),fig_format='svg'), multi_test_results
 
 
+def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=False, save_fig=False, save_format='.svg',title='model comparison', **kwargs):
+    
+    # load metrics
+    metrics = parase_list_investigation_metrics(combination_investigation_metrics,**filters)
+
+    metrics.rename(columns = {'alias_name':'Model name'}, inplace = True)
+    replace_map = {' baseline_v4': 'Baseline', ' finetuning': 'Fine-tuning', ' aug_dann_v5': 'Augmentation DANN',
+               ' repeated_dann_v2': 'Non-augmentation DANN', ' 2_5d_imu_augment': 'IMU augmentation',
+              ' normal_dann_v2': 'Normal DANN'}
+    metrics.replace(replace_map, inplace=True)
+
+    # plot config
+    if('hue' in kwargs.keys()):
+        hue = kwargs['hue']
+    else:
+        hue = None
+
+
+    x='Model name'; y = 'r2';
+    #displayed_data = metrics.loc[metrics['Sensor configurations'].isin(imu_config)]
+    hue_plot_params = {
+        'data': metrics,
+        'x': x,
+        'y': y,
+        'hue':hue,
+        #"showfliers": False,
+        #"showmeans": True
+    }
+
+    g = sns.barplot(**hue_plot_params)
+    g.set_xlabel('Models')
+    g.set_ylabel('$R^2$')
+    #g.set_ylim(0.4,1.0)
+    g.set_yticks([0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 1.0])
+    #g.set_yticks([0.8, 0.85, 0.87, 0.9, 0.93, 0.95, 1.0])
+    g.grid(visible=True, axis='both',which='major')
+
+
+    
+    if ttest:
+        test_method="t-test_ind"
+        pairs = (
+        [('Baseline','IMU augmentation'),('IMU augmentation','Fine-tuning'),('Non-augmentation DANN','Augmentation DANN'), ('Baseline', 'Augmentation DANN')]
+        )
+        pairs = (
+        [(' baseline_v7',' aug_dann_v8')]
+        )
+        annotator=Annotator(g, pairs=pairs,**hue_plot_params)
+        annotator.configure(test=test_method, text_format='star', loc='inside')
+        annotator.apply_and_annotate()
+
+
+    fig=g.get_figure()
+    fig.set_figwidth(26); fig.set_figheight(7)
+    if(save_fig):
+        return save_figure(os.path.dirname(combination_investigation_metrics[0]),fig_name=title,fig_format=save_format)
+    else:
+        return 0
+        
 
 
 if __name__ == '__main__':
+    
+    subjects_ids_names = ['P_08_zhangboyuan', 'P_10_dongxuan', 'P_11_liuchunyu', 'P_13_xulibang', 'P_14_hunan', 'P_15_liuzhaoyu', 'P_16_zhangjinduo', 'P_17_congyuanqi', 'P_18_hezhonghai', 'P_19_xiongyihui', 'P_20_xuanweicheng', 'P_21_wujianing', 'P_22_zhangning', 'P_23_wangjinhong', 'P_24_liziqing']
+    #subjects_ids_names.remove('P_19_xiongyihui')
+    filters={'drop_value':0.4,'sort_variable':'r2','test_subject':subjects_ids_names}
+    fliters={'drop_value':0.0,'sort_variable':'r2'}
+    #filters={'sort_variable':'r2'}
+    combination_investigation_results = [
+        os.path.join(RESULTS_PATH, "training_testing","baseline_v14","testing_result_folders.txt"),
+        os.path.join(RESULTS_PATH, "training_testing","repeated_dann_v4","testing_result_folders.txt")
+                                        ]
+    metrics = get_list_investigation_metrics(combination_investigation_results[0])
+    combination_investigation_metrics = [os.path.join(os.path.dirname(folder),"metrics.csv") for folder in combination_investigation_results]
+    plot_config={"save_fig": True, "save_format":'jpg', "hue": None}
+    p6plot_model_accuracy(combination_investigation_metrics,fliters, ttest=False, **plot_config)
+
+    print('Plot sucessulflY')
+    pdb.set_trace()
+    
 
 
     selection=7*[{'child_test_id':['test_1']}]

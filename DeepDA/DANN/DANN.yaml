@@ -7,16 +7,16 @@ regression_loss_weight: 1.0
 transfer_loss: adv
 
 # Optimizer related
-weight_decay: 5e-2
+weight_decay: 0.001
 lr: 0.01
-lr_scheduler: False
+lr_scheduler: True
 lr_gamma: 0.001
 lr_decay: 0.75
 
 # Training related
-n_iter_per_epoch: 1000
+n_iter_per_epoch: 500
 n_epoch: 100
-early_stopping_patience: 10
+early_stopping_patience: 20
 
 # Others
 seed: 1
