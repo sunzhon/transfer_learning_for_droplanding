@@ -2,21 +2,23 @@
 backbone: mlnn
 
 # Transfer loss related
-transfer_loss_weight: 1.0
-regression_loss_weight: 1.0
+transfer_loss_weight: 20.0
+regression_loss_weight: 5.0
 transfer_loss: adv
 
 # Optimizer related
 weight_decay: 0.001
 lr: 0.01
+
 lr_scheduler: True
-lr_gamma: 0.001
+lr_gamma: 0.001 # 1/n_epoch*10
 lr_decay: 0.75
+momentum: 0.9
 
 # Training related
-n_iter_per_epoch: 500
-n_epoch: 100
-early_stopping_patience: 20
+n_iter_per_epoch: 500 # not use, since using batch
+n_epoch: 60
+early_stopping_patience: 10
 
 # Others
 seed: 1
@@ -28,7 +30,9 @@ use_bottleneck: False
 data_dir: '/media/sun/DATA/drop_landing_workspace/data/'
 
 src_domain: "kam_norm_walking_data.hdf5"
-tgt_domain: "repeated_kam_norm_landing_data.hdf5" 
+  #tcl_domain: "repeated_kam_norm_landing_data.hdf5" 
+  #tre_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5" 
+  #tst_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5" 
 
 labels_name:
   - 'R_KNEE_MOMENT_X'

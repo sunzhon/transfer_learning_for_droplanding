@@ -1,3 +1,0 @@
-tensorflow version: 2.5.0
-target domain subjects: ['P_14_hunan', 'P_20_xuanweicheng', 'P_23_wangjinhong', 'P_24_liziqing']
-test subjects id names: ['P_14_hunan']

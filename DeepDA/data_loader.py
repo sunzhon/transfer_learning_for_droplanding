@@ -82,13 +82,13 @@ class InfiniteDataLoader:
 
 
 class MotionDataset(Dataset):
-    def __init__(self, data_file, features_name, labels_name, transform=None,label_transform=None):
+    def __init__(self, data_file, features_name, labels_name, transform=None,label_transform=None, device='cuda'):
         if(isinstance(data_file,str)):
             subjects_trials_dataset = pro_rd.load_subjects_dataset(h5_file_name = data_file, selected_data_fields=features_name+labels_name)
         elif(isinstance(data_file,dict)):
             subjects_trials_dataset = data_file
         else:
-            print('data_file is wrong')
+            print('data_file is wrong: ', data_file)
             exit()
 
         self.features = []
@@ -96,8 +96,8 @@ class MotionDataset(Dataset):
         self.subjects_trials = []
         for subject_id_name, trials in subjects_trials_dataset.items():
             for trial, data in trials.items():
-                self.features.append(torch.tensor(data.loc[:,features_name].values, dtype=torch.float32))
-                self.labels.append(torch.tensor(data.loc[:,labels_name].values, dtype=torch.float32))
+                self.features.append(torch.tensor(data.loc[:,features_name].values, dtype=torch.float32).to(device))
+                self.labels.append(torch.tensor(data.loc[:,labels_name].values, dtype=torch.float32).to(device))
                 self.subjects_trials.append(subject_id_name+trial)
 
         self.transform = transform
@@ -121,9 +121,9 @@ class MotionDataset(Dataset):
 
 
 
-def load_motiondata(dataset_dict, batch_size, train, num_workers,features_name,labels_name=['R_KNEE_MOMENT_X'],**kwargs):
+def load_motiondata(dataset_dict, batch_size, train, num_workers,features_name,labels_name=['R_KNEE_MOMENT_X'],device='cpu',**kwargs):
     n_labels = len(labels_name)
-    dataset = MotionDataset(dataset_dict,features_name, labels_name)
+    dataset = MotionDataset(dataset_dict,features_name, labels_name,device=device)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, drop_last=False, **kwargs)
 
     return dataloader, n_labels

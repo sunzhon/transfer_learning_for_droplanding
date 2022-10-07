@@ -17,12 +17,13 @@ class TransferNetForRegression(nn.Module):
     num_label is label numbers, which defines output number
 
     '''
-    def __init__(self, num_label=1, base_net='mlnn', transfer_loss='mmd', use_bottleneck=False, bottleneck_width=20, max_iter=1000, target_reg_loss_weight=1.0, **kwargs):
+    def __init__(self, num_label=1, base_net='mlnn', transfer_loss='mmd', use_bottleneck=False, bottleneck_width=20, max_iter=1000, src_reg_loss_weight=2.1, tgt_reg_loss_weight=.0, **kwargs):
         super(TransferNetForRegression, self).__init__()
         self.num_label = num_label
         self.base_network = backbones.get_backbone(base_net)
         self.use_bottleneck = use_bottleneck
-        self.target_reg_loss_weight = target_reg_loss_weight
+        self.src_reg_loss_weight = src_reg_loss_weight
+        self.tgt_reg_loss_weight = tgt_reg_loss_weight
         self.transfer_loss = transfer_loss
         if self.use_bottleneck:
             bottleneck_list = [
@@ -41,11 +42,13 @@ class TransferNetForRegression(nn.Module):
         #self.output_layer = nn.Linear(feature_dim, num_label)
 
         output_list = [
-                nn.Linear(feature_dim,20),
+                nn.Linear(feature_dim,40),
+                nn.Dropout(p=0.2),
                 nn.ReLU(),
-                nn.Linear(20, 20),
+                nn.Linear(40, 100),
+                nn.Dropout(p=0.2),
                 nn.ReLU(),
-                nn.Linear(20, num_label)
+                nn.Linear(100, num_label)
             ]
         self.output_layer = nn.Sequential(*output_list)
 
@@ -59,23 +62,27 @@ class TransferNetForRegression(nn.Module):
         self.adapt_loss = TransferLoss(**transfer_loss_args)
         self.criterion = torch.nn.MSELoss()
 
-    def forward(self, source, target, source_label, target_label):
-        target = self.base_network(target)
+    def forward(self, source, target_cls, target_reg, source_label, target_label_cls, target_label_reg):
+        target_cls = self.base_network(target_cls)
+        target_reg = self.base_network(target_reg)
         source = self.base_network(source)
         if self.use_bottleneck:
             source = self.bottleneck_layer(source)
-            target = self.bottleneck_layer(target)
+            target_cls = self.bottleneck_layer(target_cls)
+            target_reg = self.bottleneck_layer(target_reg)
+
 
         # regression
         source_reg = self.output_layer(source)
-        target_reg = self.output_layer(target)
+        if(self.tgt_reg_loss_weight>0.): #using target reg
+            target_reg = self.output_layer(target_reg)
 
         # regression loss, normal danndo not use target loss since target data without labels
-        reg_loss = self.criterion(source_reg, source_label) + self.target_reg_loss_weight * self.criterion(target_reg, target_label)
+        reg_loss = self.src_reg_loss_weight*self.criterion(source_reg, source_label) + self.tgt_reg_loss_weight*self.criterion(target_reg, target_label_reg)
 
         # transfer
         kwargs = {}
-        transfer_loss = self.adapt_loss(torch.flatten(source,1), torch.flatten(target,1), **kwargs)
+        transfer_loss = self.adapt_loss(torch.flatten(source,1), torch.flatten(target_cls,1), **kwargs)
 
         return reg_loss, transfer_loss
     

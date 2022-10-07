@@ -29,7 +29,7 @@ class AdversarialLoss(nn.Module):
     '''
     Acknowledgement: The adversarial loss implementation is inspired by http://transfer.thuml.ai/
     '''
-    def __init__(self, gamma=1.0, max_iter=1000, use_lambda_scheduler=True, **kwargs):
+    def __init__(self, gamma=4.0, max_iter=1000, use_lambda_scheduler=True, **kwargs):
         super(AdversarialLoss, self).__init__()
         input_dim=kwargs['input_dim']; hidden_dim=kwargs['hidden_dim']
         self.domain_classifier = Discriminator(input_dim, hidden_dim) #分类器
@@ -38,7 +38,6 @@ class AdversarialLoss(nn.Module):
             self.lambda_scheduler = LambdaSheduler(gamma, max_iter)
         
     def forward(self, source, target):
-        lamb = 1.0
         if self.use_lambda_scheduler:
             lamb = self.lambda_scheduler.lamb()
             self.lambda_scheduler.step()
@@ -54,11 +53,11 @@ class AdversarialLoss(nn.Module):
         device = domain_pred.device
         # label source and target data to discriminate the source and target data
         if source: # source domain data was labeled with 1
-            domain_label = torch.ones(len(x), 1).long()
+            domain_label = torch.ones(len(x), 1).long().to(device)
         else: # target domain data was labeled with 0
-            domain_label = torch.zeros(len(x), 1).long()
+            domain_label = torch.zeros(len(x), 1).long().to(device)
         loss_fn = nn.BCELoss()
-        loss_adv = loss_fn(domain_pred, domain_label.float().to(device))
+        loss_adv = loss_fn(domain_pred, domain_label.float())
         #print("adv loss:", loss_adv)
         #print('domain pred: ', domain_pred)
         #print('domain label: ', domain_label)

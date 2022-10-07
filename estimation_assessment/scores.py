@@ -621,7 +621,7 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
         elif(estimated_variable=='all'):
             print('ALl estimated variables are used')
         else:
-            print('specified estimated variable is not right, it should be: {}'.format(set(investigation_config_results['estimated_variables'])))
+            print('specified estimated variable is not right, it should be a list included one or some of these: {}'.format(set(investigation_config_results['estimated_variables'])))
             sys.exit()
 
     if 'syn_features_labels' in investigation_config_results.columns: # has this investigation
@@ -668,7 +668,7 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
         elif(sensor_configurations=='all'):
             print('All sensor configurations are used')
         else:
-            print('sensor configurations is not right, it should be {}'.format(set(investigation_config_results['Sensor configurations'])))
+            print('sensor configurations is not right, it should be a list included one of some of these {}'.format(set(investigation_config_results['Sensor configurations'])))
             sys.exit()
     if 'Test ID' in investigation_config_results.columns: # has this investigation
         if set(test_id) <= set(investigation_config_results['Test ID']): # a value of the test id
@@ -676,7 +676,7 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
         elif(test_id=='all'):
             print('All test_id are used')
         else:
-            print('test_id is not right, it should be {}'.format(set(investigation_config_results['Test ID'])))
+            print('test_id is not right, it should be a list include one or some of these {}'.format(set(investigation_config_results['Test ID'])))
             sys.exit()
 
     # other fliters
@@ -688,7 +688,7 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
                 elif(value=='all'):
                     print('All {} are used'.format(key))
                 else:
-                    print('{} is not right, it should be {}'.format(key, set(investigation_config_results[key])))
+                    print('{} is not right, it should be a list include one of some of these {}'.format(key, set(investigation_config_results[key])))
                     sys.exit()
 
     return investigation_config_results

@@ -1218,76 +1218,76 @@ def boxplot_models_accuracy(combination_investigation_results, title=None, metri
 P6 plot ensemble curves of the actual and estimattion
 
 '''
+#
+#def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections, **kwargs):
+#
+#    # 1) loading test data 
+#    multi_test_results = get_multi_models_test_results(list_training_testing_folders, list_selections)
+#
+#    # i) plot configurations
+#    figsize=(7,7)
+#    sns.set(font_scale=1.15,style='whitegrid')
+#    fig = plt.figure(figsize=figsize,constrained_layout=False)
+#    gs1 = gridspec.GridSpec(2,4)#13
+#    gs1.update(hspace=0.25,wspace=0.34,top=0.93,bottom=0.12,left=0.06,right=0.95)
+#    axs = []
+#    axs.append(fig.add_subplot(gs1[0, 0:2]))
+#    axs.append(fig.add_subplot(gs1[0, 2:4]))
+#    axs.append(fig.add_subplot(gs1[1, 0:2]))
+#    axs.append(fig.add_subplot(gs1[1, 2:4]))
+#
+#    hue = None
+#    if hue != None:
+#        palette = sns.color_palette("Paired")
+#    else:
+#        palette = None
+#    colors = sns.color_palette("YlGnBu")
+#
+#    for idx, estimation_values in enumerate(multi_test_results):
+#        x=None; y = None
+#        hue_plot_params = {
+#            'data': estimation_values,
+#            'x': x,
+#            'y': y,
+#            'hue': None,
+#            "palette": palette,
+#            "color": colors[idx]
+#            }
+#        g = sns.lineplot(ax=axs[idx], **hue_plot_params)
+#        g.set_xlabel('Time [s]')
+#        g.set_xlim(0, 0.8)
+#        g.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
+#        if idx == 0:
+#            g.set_ylim(-0.1, 2)
+#            g.set_yticks([0, 1, 2])
+#        elif idx==1:
+#            g.set_ylim(-0.21, 4)
+#            g.set_yticks([0, 1, 2, 3, 4])
+#        elif idx ==2:
+#            g.set_ylim(-0.2, 4)
+#            g.set_yticks([0, 1, 2, 3, 4])
+#        else:
+#            g.set_ylim(-0.25, 5)
+#            g.set_yticks([0, 1, 2, 3, 4, 5])
+#            
+#        '''
+#        if('legends' in display_configs):
+#            g.legend(ncol=1,title=None,loc='upper right',labels=display_configs['legends'][idx])
+#        if('ylabel' in display_configs):
+#            g.set_ylabel(display_configs['ylabel'][idx])
+#        if('subplot_titles' in display_configs):
+#            g.set_title(label=display_configs['subplot_titles'][idx])
+#        '''
+#        g.grid(visible=True, axis='both',which='major')
+#        
+#    
+#    
+#    return save_figure(os.path.dirname(list_training_testing_folders[0]),fig_format='svg'), multi_test_results
+#
 
-def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections, **kwargs):
-
-    # 1) loading test data 
-    multi_test_results = get_multi_models_test_results(list_training_testing_folders, list_selections)
-
-    # i) plot configurations
-    figsize=(7,7)
-    sns.set(font_scale=1.15,style='whitegrid')
-    fig = plt.figure(figsize=figsize,constrained_layout=False)
-    gs1 = gridspec.GridSpec(2,4)#13
-    gs1.update(hspace=0.25,wspace=0.34,top=0.93,bottom=0.12,left=0.06,right=0.95)
-    axs = []
-    axs.append(fig.add_subplot(gs1[0, 0:2]))
-    axs.append(fig.add_subplot(gs1[0, 2:4]))
-    axs.append(fig.add_subplot(gs1[1, 0:2]))
-    axs.append(fig.add_subplot(gs1[1, 2:4]))
-
-    hue = None
-    if hue != None:
-        palette = sns.color_palette("Paired")
-    else:
-        palette = None
-    colors = sns.color_palette("YlGnBu")
-
-    for idx, estimation_values in enumerate(multi_test_results):
-        x=None; y = None
-        hue_plot_params = {
-            'data': estimation_values,
-            'x': x,
-            'y': y,
-            'hue': None,
-            "palette": palette,
-            "color": colors[idx]
-            }
-        g = sns.lineplot(ax=axs[idx], **hue_plot_params)
-        g.set_xlabel('Time [s]')
-        g.set_xlim(0, 0.8)
-        g.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
-        if idx == 0:
-            g.set_ylim(-0.1, 2)
-            g.set_yticks([0, 1, 2])
-        elif idx==1:
-            g.set_ylim(-0.21, 4)
-            g.set_yticks([0, 1, 2, 3, 4])
-        elif idx ==2:
-            g.set_ylim(-0.2, 4)
-            g.set_yticks([0, 1, 2, 3, 4])
-        else:
-            g.set_ylim(-0.25, 5)
-            g.set_yticks([0, 1, 2, 3, 4, 5])
-            
-        '''
-        if('legends' in display_configs):
-            g.legend(ncol=1,title=None,loc='upper right',labels=display_configs['legends'][idx])
-        if('ylabel' in display_configs):
-            g.set_ylabel(display_configs['ylabel'][idx])
-        if('subplot_titles' in display_configs):
-            g.set_title(label=display_configs['subplot_titles'][idx])
-        '''
-        g.grid(visible=True, axis='both',which='major')
-        
-    
-    
-    return save_figure(os.path.dirname(list_training_testing_folders[0]),fig_format='svg'), multi_test_results
 
 
-
-
-def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections=None, ylabels=None, figsize=(15,12), col_wrap=3,  **kwargs):
+def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections=None, figsize=(15,12), col_wrap=3,  save_fig=False, save_format='.png', font_scale=1, **kwargs):
     
     #1) get testing results: estimation and ground truth
     multi_test_results = get_multi_models_test_results(list_training_testing_folders, list_selections)
@@ -1303,12 +1303,19 @@ def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, lis
             axs.append(fig.add_subplot(gs1[row_idx, col_idx:col_idx+1]))
             
     
-    sns.set(font_scale=1.15,style='whitegrid')
+    sns.set(font_scale=font_scale,style='whitegrid')
     palette = sns.color_palette("Paired")
     colors = sns.color_palette("YlGnBu")
-    if ylabels==None:
-        ylabels = [str(os.path.basename(os.path.dirname(a_model_results_foler))) for a_model_results_foler in list_training_testing_folders]
-    
+    if 'ylabels' not in kwargs.keys():
+        ylabels = len(list_training_testing_folders)*['KEM']
+    else:
+        ylabels = kwargs['ylabels']
+
+    if 'titles' not in kwargs.keys():
+        titles = [str(os.path.basename(os.path.dirname(a_model_results_foler))) for a_model_results_foler in list_training_testing_folders]
+    else:
+        titles = kwargs['titles']
+
     for idx, (ylabel, estimation_values) in enumerate(zip(ylabels, multi_test_results)):
         estimation_values.rename(columns={'Actual R_KNEE_MOMENT_X': 'Ground truth', 'Estimated R_KNEE_MOMENT_X': 'Estimation'}, inplace=True)
         x=None; y = None
@@ -1323,24 +1330,49 @@ def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, lis
         g = sns.lineplot(ax=axs[idx], **hue_plot_params)
         g.set_xlabel('Time [s]')
         g.set_ylabel(ylabel)
+        g.set_title(titles[idx])
+
+        if('xticks' in kwargs.keys()):
+            xticks = kwargs['xticks']
+            g.set_xticks(xticks)
+
+        if('yticks' in kwargs.keys()):
+            yticks = kwargs['yticks']
+            g.set_yticks(yticks)
+            g.set_ylim(yticks[0]-0.1, yticks[-1]+0.1)
+
         g.set_xlim(0, 0.8)
-        g.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
-        g.set_ylim(-1.0, 3.0)
-        g.set_yticks([-1.0, -0.5,0.0, 0.5, 1.0, 1.3, 1.5, 1.7, 2.0, 2.2, 2.5, 3.0])
+        g.grid(visible=True, axis='both',which='major')
+
+
+    if(save_fig):
+        fig_results = save_figure(os.path.dirname(list_training_testing_folders[save_folder_index]),fig_name=title,fig_format=save_format)
+        print(fig_results)
+    else:
+        fig_results = 0
         
-    return save_figure(os.path.dirname(list_training_testing_folders[0]),fig_format='svg'), multi_test_results
+    return fig_results, multi_test_results
 
 
-def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=False, save_fig=False, save_format='.svg',title='model comparison', **kwargs):
+def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=False, save_fig=False, figsize=(14,7), save_format='.svg', font_scale=1, save_folder_index=0, title='model comparison', **kwargs):
     
     # load metrics
     metrics = parase_list_investigation_metrics(combination_investigation_metrics,**filters)
 
-    metrics.rename(columns = {'alias_name':'Model name'}, inplace = True)
-    replace_map = {' baseline_v4': 'Baseline', ' finetuning': 'Fine-tuning', ' aug_dann_v5': 'Augmentation DANN',
-               ' repeated_dann_v2': 'Non-augmentation DANN', ' 2_5d_imu_augment': 'IMU augmentation',
-              ' normal_dann_v2': 'Normal DANN'}
-    metrics.replace(replace_map, inplace=True)
+    if('replace_columns' in kwargs.keys()):
+        replace_columns = kwargs['replace_columns']
+    else:
+        replace_columns = {'alias_name':'Model name'}
+    if('replace_values' in kwargs.keys()):
+        replace_values = kwargs['replace_values']
+    else:
+        replace_values = {}
+
+    metrics.rename(columns =replace_columns, inplace = True)
+    metrics.replace(replace_values, inplace=True)
+
+    # seaborn setup
+    sns.set(font_scale=font_scale)
 
     # plot config
     if('hue' in kwargs.keys()):
@@ -1348,8 +1380,12 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
     else:
         hue = None
 
+    if('x' in kwargs.keys()):
+        x = kwargs['x']
+    else:
+        x = 'Model name' 
 
-    x='Model name'; y = 'r2';
+    y = 'r2'
     #displayed_data = metrics.loc[metrics['Sensor configurations'].isin(imu_config)]
     hue_plot_params = {
         'data': metrics,
@@ -1361,15 +1397,23 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
     }
 
     g = sns.barplot(**hue_plot_params)
-    g.set_xlabel('Models')
+
+    if('xticks' in kwargs.keys()):
+        xticks = kwargs['xticks']
+        g.set_xticks(xticks)
+
+    if('yticks' in kwargs.keys()):
+        yticks = kwargs['yticks']
+        g.set_yticks(yticks)
+        g.set_ylim(yticks[0]-0.1, yticks[-1]+0.1)
+
+
+    g.set_xlabel(x)
     g.set_ylabel('$R^2$')
     #g.set_ylim(0.4,1.0)
-    g.set_yticks([0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 1.0])
-    #g.set_yticks([0.8, 0.85, 0.87, 0.9, 0.93, 0.95, 1.0])
     g.grid(visible=True, axis='both',which='major')
 
-
-    
+    # significantly test
     if ttest:
         test_method="t-test_ind"
         pairs = (
@@ -1384,53 +1428,48 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
 
 
     fig=g.get_figure()
-    fig.set_figwidth(26); fig.set_figheight(7)
+    fig.set_figwidth(figsize[0]); fig.set_figheight(figsize[1])
     if(save_fig):
-        return save_figure(os.path.dirname(combination_investigation_metrics[0]),fig_name=title,fig_format=save_format)
+        results = save_figure(os.path.dirname(combination_investigation_metrics[save_folder_index]),fig_name=title,fig_format=save_format)
+        print(results)
     else:
-        return 0
+        results = 0
         
+    return results
 
 
 if __name__ == '__main__':
-    
-    subjects_ids_names = ['P_08_zhangboyuan', 'P_10_dongxuan', 'P_11_liuchunyu', 'P_13_xulibang', 'P_14_hunan', 'P_15_liuzhaoyu', 'P_16_zhangjinduo', 'P_17_congyuanqi', 'P_18_hezhonghai', 'P_19_xiongyihui', 'P_20_xuanweicheng', 'P_21_wujianing', 'P_22_zhangning', 'P_23_wangjinhong', 'P_24_liziqing']
-    #subjects_ids_names.remove('P_19_xiongyihui')
-    filters={'drop_value':0.4,'sort_variable':'r2','test_subject':subjects_ids_names}
+
+
+
+
+    # baseline
     fliters={'drop_value':0.0,'sort_variable':'r2'}
-    #filters={'sort_variable':'r2'}
     combination_investigation_results = [
-        os.path.join(RESULTS_PATH, "training_testing","baseline_v14","testing_result_folders.txt"),
-        os.path.join(RESULTS_PATH, "training_testing","repeated_dann_v4","testing_result_folders.txt")
-                                        ]
-    metrics = get_list_investigation_metrics(combination_investigation_results[0])
-    combination_investigation_metrics = [os.path.join(os.path.dirname(folder),"metrics.csv") for folder in combination_investigation_results]
-    plot_config={"save_fig": True, "save_format":'jpg', "hue": None}
-    p6plot_model_accuracy(combination_investigation_metrics,fliters, ttest=False, **plot_config)
-
-    print('Plot sucessulflY')
+        os.path.join(RESULTS_PATH, "training_testing","investigation_5trials_baseline","5trials_baseline_v"+str(idx),"testing_result_folders.txt") for idx in range(2,7)
+    ]
     pdb.set_trace()
+
+    #metrics = get_list_investigation_metrics(combination_investigation_results)
+    combination_investigation_metrics = [os.path.join(os.path.dirname(folder),"metrics.csv") for folder in combination_investigation_results]
+    metrics = get_list_investigation_metrics(combination_investigation_metrics)
+
+    subs = list(set(metrics['alias_name']))
+    replace_values = {sub: int(sub.split('v')[1])-1 for sub in subs}
+    print(replace_values)
+
+    plot_config={
+    "save_fig": True, "save_format":"jpg", "save_folder_index": 0,
+    "hue": None,
+    'replace_values': replace_values,
+    'replace_columns': {'alias_name': 'Train subject number'},
+    'x': 'Train subject number',
+    'title': 'baseline',
+    'plot_title': 'baseline'
+    }
+
+    p6plot_model_accuracy(combination_investigation_metrics,fliters, ttest=False, **plot_config)
     
-
-
-    selection=7*[{'child_test_id':['test_1']}]
-    combination_investigation_results = [
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/baseline_v4/testing_result_folders.txt",
-                                     #"/home/sun/drop_landing_workspace/results/training_testing/model_comparison/baseline_v5/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/data_augmentation/2_5d_imu_augment/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/finetuning_v2/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/normal_dann_v2/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/repeated_dann_v2/testing_result_folders.txt",
-                                     #"/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v2/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/baseline_v4/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/data_augmentation/2_5d_imu_augment/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v4/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v5/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v6/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v7/testing_result_folders.txt",
-                                     "/home/sun/drop_landing_workspace/results/training_testing/model_comparison/aug_dann_v8/testing_result_folders.txt",
-                                    ]
-    p6plot_statistic_actual_estimation_curves(combination_investigation_results,selection)
 
     pdb.set_trace()
 

@@ -1,3 +1,5 @@
+#! /bin/pyenv python
+#coding: --utf-8
 import configargparse
 import data_loader
 import os
@@ -11,6 +13,7 @@ import random
 import pdb
 import pandas as pd
 import yaml
+import readline
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import LeaveOneOut
@@ -28,6 +31,8 @@ import process_landing_data as pro_rd
 import const
 from early_stopping import EarlyStopping
 
+# release gpu memory
+torch.cuda.empty_cache()
 
 
 def get_parser():
@@ -55,15 +60,17 @@ def get_parser():
     # data loading related
     parser.add_argument('--data_dir', type=str, required=True)
     parser.add_argument('--src_domain', type=str, required=True)
-    parser.add_argument('--tgt_domain', type=str, required=True)
+    parser.add_argument('--tcl_domain', type=str, required=True)
+    parser.add_argument('--tre_domain', type=str, required=True)
     parser.add_argument('--tst_domain', type=str, default=None)# Test dataset
     parser.add_argument('--labels_name',type=str, nargs='+')
     
     # training related
     parser.add_argument('--batch_size', type=int, default=40)
+    parser.add_argument('--max_iter', type=int, default=1000)
     parser.add_argument('--n_epoch', type=int, default=100)
     parser.add_argument('--early_stop', type=int, default=0, help="Early stopping")
-    parser.add_argument('--epoch_based_training', type=str2bool, default=False, help="Epoch-based training / Iteration-based training")
+    parser.add_argument('--epoch_based_training', type=str2bool, default=True, help="Epoch-based training / Iteration-based training")
     parser.add_argument("--n_iter_per_epoch", type=int, default=20, help="Used in Iteration-based training")
 
     # optimizer related
@@ -90,11 +97,12 @@ def get_parser():
 
     # a trial from a subject in a test
     parser.add_argument('--test_subject',type=str,default='None')
-    parser.add_argument('--tgt_test_subjects_trials_len',type=dict,default={})
+    parser.add_argument('--tst_test_subjects_trials_len',type=dict,default={})
 
     # cross-validation
     parser.add_argument('--n_splits',type=int,default=0) # n_splits kfold or leaveone cross validation n_splits=0
     parser.add_argument('--early_stopping_patience',type=int, default=10) # patience for early stopping
+    parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
 
     return parser
@@ -111,54 +119,66 @@ def set_random_seed(seed=0):
 
 
 def open_datafile(args):
-    # src_domain, tgt_domain data to load
-    folder_src = os.path.join(args.data_dir, args.src_domain)
-    folder_tgt = os.path.join(args.data_dir, args.tgt_domain)
 
+    # dataset fields
     columns = args.features_name + args.labels_name
 
-    source_subjects_trials_dataset = pro_rd.load_subjects_dataset(h5_file_name = folder_src, selected_data_fields=columns)
-    target_subjects_trials_dataset = pro_rd.load_subjects_dataset(h5_file_name = folder_tgt, selected_data_fields=columns)
+    # src_domain, tgt_domain data to load
+    domains = [args.src_domain, args.tcl_domain, args.tre_domain, args.tst_domain]
+    domains_datasets= []
+    for domain in domains:
+        if domain is not None:
+            domain_data_folder = os.path.join(args.data_dir, domain) # source data
+            domain_dataset = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
+        else:
+            domain_dataset = None
+        domains_datasets.append(domain_dataset)
 
-    # using the third dataset for testing: tst_domain
-    if(args.tst_domain!=None):
-        folder_tst = os.path.join(args.data_dir, args.tst_domain)
-        test_subjects_trials_dataset = pro_rd.load_subjects_dataset(h5_file_name = folder_tst, selected_data_fields=columns)
-        return [source_subjects_trials_dataset, target_subjects_trials_dataset, test_subjects_trials_dataset]
-
-    return [source_subjects_trials_dataset, target_subjects_trials_dataset]
+    return domains_datasets
 
 
-def load_data(args, src_subjects_trials_data, tgt_train_subjects_trials_data, tgt_test_subjects_trials_data):
+
+def load_data(args, src_subjects_trials_data, tgt_cls_train_subjects_trials_data, 
+              tgt_reg_train_subjects_trials_data, tgt_test_subjects_trials_data):
 
     # data loader
     source_loader, n_labels = data_loader.load_motiondata(src_subjects_trials_data, args.batch_size, train=True, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
-    target_train_loader, _ = data_loader.load_motiondata(tgt_train_subjects_trials_data, args.batch_size, train=True, num_workers=args.num_workers,features_name=args.features_name, labels_name=args.labels_name)
+
+    target_cls_train_loader, _ = data_loader.load_motiondata(tgt_cls_train_subjects_trials_data, args.batch_size, train=True, num_workers=args.num_workers,features_name=args.features_name, labels_name=args.labels_name)
+
+    target_reg_train_loader, _ = data_loader.load_motiondata(tgt_reg_train_subjects_trials_data, args.batch_size, train=True, num_workers=args.num_workers,features_name=args.features_name, labels_name=args.labels_name)
+
     target_test_loader, _ = data_loader.load_motiondata(tgt_test_subjects_trials_data, 1, train=False, num_workers=args.num_workers, features_name=args.features_name,labels_name=args.labels_name)
     
-    return source_loader, target_train_loader, target_test_loader, n_labels
+    return source_loader, target_cls_train_loader, target_reg_train_loader, target_test_loader, n_labels
     
 
 def get_model(args):
-
     if(args.model_selection=='Normal_DANN'):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=0).to(args.device)
+
     if(args.model_selection=='DANN'):
         model = models.TransferNetForRegression(
-                args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck,target_reg_loss_weight=1).to(args.device)
+                args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
+
     if(args.model_selection=='Aug_DANN'):
         model = models.TransferNetForRegression(
-                args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck,target_reg_loss_weight=1).to(args.device)
+                args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
+
     if(args.model_selection=='baseline'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)
+
     if(args.model_selection=='imu_augment'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)
+
     if(args.model_selection=='pretrained'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)
+
     if(args.model_selection=='finetuning'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', finetuning=True).to(args.device)
         model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
+
     if(args.model_selection=='discriminator'):
         model = models.DiscriminatorModel(num_label=args.n_labels, base_net='discriminator').to(args.device)
 
@@ -171,24 +191,23 @@ def get_optimizer(model, args):
     params = model.get_parameters(initial_lr=initial_lr)
     optimizer = torch.optim.AdamW(params, betas=(0.9, 0.999), eps=1e-08, weight_decay=args.weight_decay)
     #optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=False)
-
-
     return optimizer
+
 
 def get_scheduler(optimizer, args):
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
     return scheduler
 
-def test(model, target_test_loader, args):
+def test(model, test_data_loader, args, **kwargs):
     
     # model evaluation
     model.eval() # declare model evaluation, affects batch normalization and drop out layer
     test_loss = utils.AverageMeter()
     criterion = torch.nn.MSELoss()
-    len_target_dataset = len(target_test_loader.dataset)
+    len_target_dataset = len(test_data_loader.dataset)
     test_acc = utils.AverageMeter()
     with torch.no_grad():
-        for idx, (features, labels) in enumerate(target_test_loader):
+        for idx, (features, labels) in enumerate(test_data_loader):
 
             # load data to device
             features, labels = features.to(args.device), labels.to(args.device)
@@ -197,15 +216,28 @@ def test(model, target_test_loader, args):
             # loss
             loss = criterion(predictions, labels)
             test_loss.update(loss.item())
-
+            
             # metrics: accuracy
-            test_acc.update(es_sc.calculate_scores(labels.squeeze(dim=0).cpu().numpy(), predictions.squeeze(dim=0).cpu().numpy())[0])
+            '''
+            r2=[]
+            for idx in range(labels.shape[0]):
+                a_label = labels[idx,:,:].cpu().numpy()
+                a_prediction = predictions[idx,:,:].cpu().numpy()
+                r2.append(es_sc.calculate_scores(a_label, a_prediction)[0])
+            mean_r2 =  sum(r2)/len(r2)
+            '''
+
+            mean_r2 = torch.mean(f1_score(labels, predictions))
+            test_acc.update(mean_r2)
 
             if(args.save_test):
                 # transfer testing results' form into pandas Dataframe 
+                a_label = labels[0,:,:].cpu().numpy()
+                a_prediction = predictions[0,:,:].cpu().numpy()
+
                 pd_features = pd.DataFrame(data=torch.squeeze(features,dim=0).cpu().numpy(), columns=args.features_name)
-                pd_labels = pd.DataFrame(data=torch.squeeze(labels,dim=0).cpu().numpy(), columns=args.labels_name)
-                pd_predictions = pd.DataFrame(data=torch.squeeze(predictions,dim=0).cpu().numpy(), columns=args.labels_name)
+                pd_labels = pd.DataFrame(data=a_label, columns=args.labels_name)
+                pd_predictions = pd.DataFrame(a_prediction, columns=args.labels_name)
 
                 # create test results folder
                 testing_folder = pro_rd.create_testing_files(args.training_folder)
@@ -215,7 +247,7 @@ def test(model, target_test_loader, args):
                 
                 # find the trail from which subject
                 sum_trial_number=0
-                for subject, trial_number in args.tgt_test_subjects_trials_len.items():
+                for subject, trial_number in args.tst_test_subjects_trials_len.items():
                     #print("idx: {} and trial number: {}".format(idx, trial_number))
                     sum_trial_number+=trial_number
                     if(idx < sum_trial_number):
@@ -227,23 +259,18 @@ def test(model, target_test_loader, args):
                 hyperparams_file = os.path.join(testing_folder,"hyperparams.yaml")
                 with open(hyperparams_file,'w') as fd:
                     yaml.dump(vars(args), fd)
-
             else:
                 testing_folder = None
+
+            if('train_acc_check_times' in kwargs.keys()): # just for checing the acc of train dataset during train progress
+                if(idx>kwargs['train_acc_check_times']): # just test few times, e.g., 4
+                    break
 
     return test_loss.avg, test_acc.avg, testing_folder
 
 
-def train(source_loader, target_train_loader, target_test_loader, model, optimizer, lr_scheduler, args):
-    len_source_loader = len(source_loader) # how many batchs
-    len_target_loader = len(target_train_loader) # how many batchs, source and target should have similar batch numbers
-    n_batch = min(len_source_loader, len_target_loader)
-    if n_batch == 0:
-        n_batch = args.n_iter_per_epoch 
-    print('source_loader len: {}, target_train_loader len:{}, n_batch: {}'.format(len_source_loader,len_target_loader, n_batch))
+def train(source_loader, target_cls_train_loader, target_reg_train_loader, target_test_loader, model, optimizer, lr_scheduler, n_batch, args):
 
-    # generate iterater of dataloader
-    iter_source, iter_target = iter(source_loader), iter(target_train_loader)
 
     # log information
     log = []
@@ -257,57 +284,35 @@ def train(source_loader, target_train_loader, target_test_loader, model, optimiz
     # initialize the early_stopping object
     early_stop = EarlyStopping(save_path=training_folder, patience=args.early_stopping_patience, verbose=True)
 
+
     for epoch in range(1, args.n_epoch+1):
         # i) Train processing
         model.train()
         train_loss_reg = utils.AverageMeter()
         train_loss_transfer = utils.AverageMeter()
         train_loss_total = utils.AverageMeter()
-        
-        if max(len_target_loader, len_source_loader) != 0:
-            iter_source, iter_target = iter(source_loader), iter(target_train_loader)
+
+        # generate iterater of dataloader
+        # iter for each epoch
+        iter_source, iter_target_cls, iter_target_reg = iter(source_loader), iter(target_cls_train_loader),iter(target_reg_train_loader)
         
         for _ in range(n_batch):
             data_source, label_source = next(iter_source) # .next()
-            data_target, label_target = next(iter_target) # .next()
-            data_source, label_source = data_source.to(args.device), label_source.to(args.device)
-            data_target, label_target = data_target.to(args.device), label_target.to(args.device)
-            
-            reg_loss, transfer_loss = model(data_source, data_target, label_source, label_target)
-            '''
+            data_target_cls, label_target_cls = next(iter_target_cls) # .next()
+            data_target_reg, label_target_reg = next(iter_target_reg) # .next()
 
-            if(transfer_loss.item()>0.1):
-                loss = args.transfer_loss_weight * transfer_loss
-            else:
-                loss = args.regression_loss_weight*reg_loss + args.transfer_loss_weight * transfer_loss
-            '''
+            data_source, label_source = data_source.to(args.device), label_source.to(args.device)
+            data_target_cls, label_target_cls = data_target_cls.to(args.device), label_target_cls.to(args.device)
+            data_target_reg, label_target_reg = data_target_reg.to(args.device), label_target_reg.to(args.device)
+             
+            reg_loss, transfer_loss = model(data_source, data_target_cls, data_target_reg, label_source, label_target_cls, label_target_reg)
             
             loss = args.regression_loss_weight*reg_loss + args.transfer_loss_weight * transfer_loss
             optimizer.zero_grad()
-            '''
-            print("\n===========开始迭代========")
-            for name, params in model.named_parameters():
-                print('--> name: ', name)
-                print('--> param: ', params)
-                print('--> grad_required: ', params.requires_grad)
-                print('--> gard_value:', params.grad)
-                print("===")
-            '''
             loss.backward()
             optimizer.step()
             if lr_scheduler:
                 lr_scheduler.step()
-            '''
-            print("\n===========更新之后========")
-            for name, params in model.named_parameters():
-                print('--> name: ', name)
-                print('--> param: ', params)
-                print('--> grad_required: ', params.requires_grad)
-                print('--> gard_value:', params.grad)
-                print("===")
-            print(optimizer)
-            input("=======迭代结束========")
-            '''
 
             train_loss_reg.update(reg_loss.item())
             train_loss_transfer.update(transfer_loss.item())
@@ -316,17 +321,25 @@ def train(source_loader, target_train_loader, target_test_loader, model, optimiz
         #log.append([train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg])
         log.append([train_loss_reg.val, train_loss_transfer.val, train_loss_total.val])
         
-        info = 'Epoch: [{:2d}/{}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}'.format(
+        info = 'Epoch: [{:2d}/{}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}\n'.format(
                         epoch, args.n_epoch, train_loss_reg.val, train_loss_transfer.val, train_loss_total.val)
 
-        #ii) Test processing
+        # Train processing Acc
+        #_, train_src_acc, _ =test(model, source_loader, args, train_acc_check_times=1)
+        #_, train_tgt_acc, _ =test(model, target_reg_train_loader, args, train_acc_check_times=1)
+        #info += 'train_src_acc {:.4f}, train_tgt_acc: {:.4f}\n'.format(train_src_acc, train_tgt_acc)
+
+        #ii) Test processing Acc,
         test_loss, test_acc, _ = test(model, target_test_loader, args)
-        info += ', test_loss {:4f}, test_acc: {:.4f}'.format(test_loss, test_acc)
+        info += 'test_loss {:.4f}, test_acc: {:.4f}\n'.format(test_loss, test_acc)
+
+        #iii) log save
         np_log = np.array(log, dtype=float)
         np.savetxt('train_log.csv', np_log, delimiter=',', fmt='%.6f')
+
         # early stopping
         early_stop(test_loss, test_acc, model)
-        if early_stop.early_stop:
+        if early_stop.early_stop and args.use_early_stop:
             print(info)
             break
         print(info)
@@ -350,43 +363,46 @@ def k_fold(args, multipe_domains_subjects_trials_data):
         # leave-one-out cross-validation
         kf = LeaveOneOut()
 
-    # source and target subjects_trials
+    # get dataset: source and target subjects_trials
     src_subjects_trials_data = multipe_domains_subjects_trials_data[0]
-    tgt_subjects_trials_data = multipe_domains_subjects_trials_data[1]
-    tgt_subject_ids_names = list(tgt_subjects_trials_data.keys()) 
-    print("target domain subjects: {}".format(tgt_subject_ids_names))
+    tcl_subjects_trials_data = multipe_domains_subjects_trials_data[1] # target classification data, not using labels
+    tre_subjects_trials_data = multipe_domains_subjects_trials_data[2] # additional domain for only test, it is raw target domain
+    tst_subjects_trials_data = multipe_domains_subjects_trials_data[3] # additional domain for only test, it is raw target domain
 
-    for train_subject_indices, test_subject_indices in kf.split(tgt_subject_ids_names):
+    src_subject_ids_names = list(src_subjects_trials_data.keys()) 
+    tcl_subject_ids_names = list(tcl_subjects_trials_data.keys()) 
+    tre_subject_ids_names = list(tre_subjects_trials_data.keys()) 
+    tst_subject_ids_names = list(tst_subjects_trials_data.keys()) 
+    assert(set(tre_subjects_trials_data)==set(tst_subjects_trials_data)) # reg target and test target have same subject list, which using labels
+
+    print("source domain subjects: {}\n".format(src_subject_ids_names))
+    print("target classification domain subjects: {}\n".format(tcl_subject_ids_names))
+    print("target regssion domain subjects: {}\n".format(tre_subject_ids_names))
+    print("test domain subjects: {}\n".format(tst_subject_ids_names))
+
+    for train_subject_indices, test_subject_indices in kf.split(tre_subject_ids_names):
         #i) split target data into train and test target dataset 
-        train_subject_ids_names = [tgt_subject_ids_names[subject_idx] for subject_idx in train_subject_indices]
-        test_subject_ids_names = [tgt_subject_ids_names[subject_idx] for subject_idx in test_subject_indices]
+        train_subject_ids_names = [tre_subject_ids_names[subject_idx] for subject_idx in train_subject_indices]
+        test_subject_ids_names = [tre_subject_ids_names[subject_idx] for subject_idx in test_subject_indices]
 
-        # specifiy test and train subjects for debug
-        # i-1) choose data for training and testing
-        if(args.model_selection in ['imu_augment', 'Aug_DANN', 'DANN', 'Normal_DANN',]):
-            tst_subjects_trials_data = multipe_domains_subjects_trials_data[2] # additional domain for only test, it is raw target domain
-            tgt_train_subjects_trials_data = {subject_id_name: tgt_subjects_trials_data[subject_id_name] for subject_id_name in train_subject_ids_names}
-            tgt_test_subjects_trials_data = {subject_id_name: tst_subjects_trials_data[subject_id_name] for subject_id_name in test_subject_ids_names}
-        else: #baseline, pretrain, finetuning, and DANN with repeated IMU
-            tgt_train_subjects_trials_data = {subject_id_name: tgt_subjects_trials_data[subject_id_name] for subject_id_name in train_subject_ids_names}
-            tgt_test_subjects_trials_data = {subject_id_name: tgt_subjects_trials_data[subject_id_name] for subject_id_name in test_subject_ids_names}
+        # specifiy test and train subjects
+        # i-1) choose data for regssion training (using label) and testing
+        tre_train_subjects_trials_data = {subject_id_name: tre_subjects_trials_data[subject_id_name] for subject_id_name in train_subject_ids_names}
+        tst_test_subjects_trials_data = {subject_id_name: tst_subjects_trials_data[subject_id_name] for subject_id_name in test_subject_ids_names}
 
         args.test_subject_ids_names = test_subject_ids_names
-        print('test subjects id names: {}'.format(test_subject_ids_names))
-
-        #ii) load dataloader accodring to source and target subjects_trials_dataset
-        source_loader, target_train_loader, target_test_loader, n_labels = load_data(args, src_subjects_trials_data, tgt_train_subjects_trials_data, tgt_test_subjects_trials_data)
-        args.n_labels = n_labels
-        if args.epoch_based_training:
-            args.max_iter = args.n_epoch * min(len(source_loader), len(target_train_loader))
-            print(' epoch based tranining')
-        else:
-            args.max_iter =   args.n_epoch * args.n_iter_per_epoch
-            print(' epoch based tranining')
+        print('train subjects id names: {}'.format(train_subject_ids_names))
+        print('test subjects id names: {}\n'.format(test_subject_ids_names))
 
         # test subjects and trials, {subject_id_name:len(['01','02',...]), ...}
-        tgt_test_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tgt_test_subjects_trials_data.items()} 
-        args.tgt_test_subjects_trials_len=tgt_test_subjects_trials_len
+        tst_test_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tst_test_subjects_trials_data.items()} 
+        args.tst_test_subjects_trials_len=tst_test_subjects_trials_len
+
+        #ii) load dataloader accodring to source and target subjects_trials_dataset
+        source_loader, target_cls_train_loader, target_reg_train_loader, target_test_loader, n_labels = load_data(args, src_subjects_trials_data, tcl_subjects_trials_data, tre_train_subjects_trials_data, tst_test_subjects_trials_data)
+        args.n_labels = n_labels
+
+
 
 
         #iii) load model
@@ -402,16 +418,55 @@ def k_fold(args, multipe_domains_subjects_trials_data):
         else:
             scheduler = None
 
+
+        len_source_loader = len(source_loader) # how many batchs
+        len_target_cls_loader = len(target_cls_train_loader) # how many batchs, source and target should have similar batch numbers
+        len_target_reg_loader = len(target_reg_train_loader) # how many batchs, source and target should have similar batch numbers
+        n_batch = min(len_source_loader, len_target_cls_loader, len_target_reg_loader)
+        if n_batch == 0:
+            n_batch = args.n_iter_per_epoch 
+        print('source_loader len: {}, target_cls_loader len:{}, target_reg_loader:{}, n_batch: {}'.format(len_source_loader,len_target_cls_loader, len_target_reg_loader, n_batch))
+
+        if args.epoch_based_training:
+            args.max_iter = args.n_epoch * n_batch
+            print('Epoch based tranining')
+        else:
+            args.max_iter =   args.n_epoch * args.n_iter_per_epoch
+            print('Interation based tranining')
+
+
         #vi) train model
-        training_folder, testing_folder = train(source_loader, target_train_loader, target_test_loader, model, optimizer, scheduler, args)
+        training_folder, testing_folder = train(source_loader, target_cls_train_loader, target_reg_train_loader, target_test_loader, model, optimizer, scheduler, n_batch, args)
     
+def model_evaluation(args, multipe_domains_subjects_trials_data):
+
+    # load model
+    model = models.BaselineModel(num_label=args.n_labels, base_net=args.backbone).to(args.device)
+    model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
+
+    #load data
+    tst_subjects_trials_data = multipe_domains_subjects_trials_data[3] # additional domain for only test, it is raw target domain
+    tst_subject_ids_names = list(tst_subjects_trials_data.keys()) 
+    print("test domain subjects: {}".format(tst_subject_ids_names))
+
+    for subject in tst_subject_ids_names:
+        test_subjects_trials_data = {subject: tst_subjects_trials_data[subject]}
+        target_test_loader, _ = data_loader.load_motiondata(test_subjects_trials_data, 1, train=False, num_workers=args.num_workers, features_name=args.features_name,labels_name=args.labels_name)
+
+        # load the last checkpoint with the best model
+        args.save_test=True
+        args.training_folder = os.path.join(os.path.dirname(os.path.join(const.RESULTS_PATH, args.trained_model_state_path)),'model_evaluation')
+        test_loss, test_acc, testing_folder = test(model, target_test_loader, args)
+        print('Test subject: {}, Test loss{:.4f}, test acc: {:.4f}'.format(subject, test_loss, test_acc))
+        print('Test results save at :{}'.format(testing_folder))
     
 def main():
+    ##torch.multiprocessing.set_start_method('spawn') # set this, need to set work_num=0
     #1) hyper parameters
     parser = get_parser()
     parser.set_defaults(backbone='mlnn') # backbone model selection
     args = parser.parse_args()
-    setattr(args, "device", torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+    setattr(args, "device", torch.device('cuda:0' if torch.cuda.is_available() else 'cpu'))
     print("device:", args.device)
 
     #data path
@@ -426,30 +481,39 @@ def main():
 
 
     # train , this max_iter iss important for DANN train
-    if args.epoch_based_training:
-        setattr(args, "max_iter", args.n_epoch * min(len(source_loader), len(target_train_loader)))
-    else:
-        setattr(args, "max_iter", args.n_epoch * args.n_iter_per_epoch)
+    # for SGD
+    args.lr_gamma =1/args.n_epoch*10
 
     set_random_seed(args.seed)
 
     #2) open datafile and load data
-    #src_subjects_trials_data, tgt_subjects_trials_data = open_datafile(args)
     multipe_domains_subjects_trials_data = open_datafile(args)
 
     #3) cross_validation for training and evaluation model
     setattr(args, 'test_subject_ids_names', [])
 
     #k_fold(args,src_subjects_trials_data, tgt_subjects_trials_data)
-    k_fold(args, multipe_domains_subjects_trials_data)
+    if(args.model_selection=='test_model'):
+        model_evaluation(args, multipe_domains_subjects_trials_data)
+    else:
+        k_fold(args, multipe_domains_subjects_trials_data)
 
     
+
+
+def f1_score(y_true:torch.Tensor, y_pred:torch.Tensor, is_training=False) -> torch.Tensor:
+    '''Calculate F1 score. Can work with gpu tensors
+    
+    '''
+    assert(y_true.shape==y_pred.shape)
+    r2 = torch.mean(1-torch.sum((y_true-y_pred)**2,(1,2))/torch.sum((y_true-torch.mean(y_true,1).unsqueeze(2))**2,(1,2)))
+    
+    return r2
 
 
 
 if __name__ == "__main__":
     main()
-
 
 
 
