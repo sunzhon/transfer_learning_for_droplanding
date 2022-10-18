@@ -13,12 +13,13 @@ import random
 import pdb
 import pandas as pd
 import yaml
-import readline
+import copy
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import LeaveOneOut
 from sklearn.model_selection import KFold
 import time as localtimepkg
+import itertools
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -62,7 +63,7 @@ def get_parser():
     parser.add_argument('--src_domain', type=str, required=True)
     parser.add_argument('--tcl_domain', type=str, required=True)
     parser.add_argument('--tre_domain', type=str, required=True)
-    parser.add_argument('--tst_domain', type=str, default=None)# Test dataset
+    parser.add_argument('--tst_domain', type=str, required=True)# Test dataset
     parser.add_argument('--labels_name',type=str, nargs='+')
     
     # training related
@@ -125,33 +126,36 @@ def open_datafile(args):
 
     # src_domain, tgt_domain data to load
     domains = [args.src_domain, args.tcl_domain, args.tre_domain, args.tst_domain]
-    domains_datasets= []
-    for domain in domains:
-        if domain is not None:
+    domains_name = ['src', 'tcl', 'tre', 'tst']
+    multiple_domain_datasets= {}
+    for domain, domain_name in zip(domains, domains_name):
+        if domain !='None':
             domain_data_folder = os.path.join(args.data_dir, domain) # source data
             domain_dataset = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
-        else:
-            domain_dataset = None
-        domains_datasets.append(domain_dataset)
+            multiple_domain_datasets[domain_name] = domain_dataset
 
-    return domains_datasets
+    return multiple_domain_datasets
 
 
 
-def load_data(args, src_subjects_trials_data, tgt_cls_train_subjects_trials_data, 
-              tgt_reg_train_subjects_trials_data, tgt_test_subjects_trials_data):
+#def load_data(args, src_subjects_trials_data, tgt_cls_train_subjects_trials_data, 
+#              tgt_reg_train_subjects_trials_data, tgt_test_subjects_trials_data):
+
+
+def load_data(args, multiple_domain_datasets):
 
     # data loader
-    source_loader, n_labels = data_loader.load_motiondata(src_subjects_trials_data, args.batch_size, train=True, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
+    domain_data_loaders={}
+    for domain_name, domain_data in multiple_domain_datasets.items():
+        if(domain_name!='tst'):
+            a_data_loader, n_labels = data_loader.load_motiondata(domain_data, args.batch_size, train=True, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
+        else:
+            a_data_loader, n_labels = data_loader.load_motiondata(domain_data,1, train=False, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
 
-    target_cls_train_loader, _ = data_loader.load_motiondata(tgt_cls_train_subjects_trials_data, args.batch_size, train=True, num_workers=args.num_workers,features_name=args.features_name, labels_name=args.labels_name)
+        domain_data_loaders[domain_name] = a_data_loader
 
-    target_reg_train_loader, _ = data_loader.load_motiondata(tgt_reg_train_subjects_trials_data, args.batch_size, train=True, num_workers=args.num_workers,features_name=args.features_name, labels_name=args.labels_name)
+    return domain_data_loaders, n_labels
 
-    target_test_loader, _ = data_loader.load_motiondata(tgt_test_subjects_trials_data, 1, train=False, num_workers=args.num_workers, features_name=args.features_name,labels_name=args.labels_name)
-    
-    return source_loader, target_cls_train_loader, target_reg_train_loader, target_test_loader, n_labels
-    
 
 def get_model(args):
     if(args.model_selection=='Normal_DANN'):
@@ -269,8 +273,7 @@ def test(model, test_data_loader, args, **kwargs):
     return test_loss.avg, test_acc.avg, testing_folder
 
 
-def train(source_loader, target_cls_train_loader, target_reg_train_loader, target_test_loader, model, optimizer, lr_scheduler, n_batch, args):
-
+def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
 
     # log information
     log = []
@@ -280,10 +283,8 @@ def train(source_loader, target_cls_train_loader, target_reg_train_loader, targe
     args.save_test = False
     args.training_folder = training_folder
 
-
     # initialize the early_stopping object
     early_stop = EarlyStopping(save_path=training_folder, patience=args.early_stopping_patience, verbose=True)
-
 
     for epoch in range(1, args.n_epoch+1):
         # i) Train processing
@@ -293,21 +294,23 @@ def train(source_loader, target_cls_train_loader, target_reg_train_loader, targe
         train_loss_total = utils.AverageMeter()
 
         # generate iterater of dataloader
-        # iter for each epoch
-        iter_source, iter_target_cls, iter_target_reg = iter(source_loader), iter(target_cls_train_loader),iter(target_reg_train_loader)
+        domains_data_iter={}
+        for name, a_data_loader in domain_data_loaders.items():
+            if name!='tst': # do not need to iter tst data
+                domains_data_iter[name] = iter(a_data_loader)
         
         for _ in range(n_batch):
-            data_source, label_source = next(iter_source) # .next()
-            data_target_cls, label_target_cls = next(iter_target_cls) # .next()
-            data_target_reg, label_target_reg = next(iter_target_reg) # .next()
+            domains_samples = {}
+            for name in domains_data_iter.keys():
+                data, label = next(domains_data_iter[name])
+                data, label = data.to(args.device), label.to(args.device)
+                domains_samples[name] = (data,label)
 
-            data_source, label_source = data_source.to(args.device), label_source.to(args.device)
-            data_target_cls, label_target_cls = data_target_cls.to(args.device), label_target_cls.to(args.device)
-            data_target_reg, label_target_reg = data_target_reg.to(args.device), label_target_reg.to(args.device)
-             
-            reg_loss, transfer_loss = model(data_source, data_target_cls, data_target_reg, label_source, label_target_cls, label_target_reg)
+            reg_loss, transfer_loss = model(domains_samples)
+            reg_loss = args.regression_loss_weight*reg_loss 
+            transfer_loss = args.transfer_loss_weight * transfer_loss
             
-            loss = args.regression_loss_weight*reg_loss + args.transfer_loss_weight * transfer_loss
+            loss = reg_loss + transfer_loss 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -330,7 +333,7 @@ def train(source_loader, target_cls_train_loader, target_reg_train_loader, targe
         #info += 'train_src_acc {:.4f}, train_tgt_acc: {:.4f}\n'.format(train_src_acc, train_tgt_acc)
 
         #ii) Test processing Acc,
-        test_loss, test_acc, _ = test(model, target_test_loader, args)
+        test_loss, test_acc, _ = test(model, domain_data_loaders['tst'], args)
         info += 'test_loss {:.4f}, test_acc: {:.4f}\n'.format(test_loss, test_acc)
 
         #iii) log save
@@ -347,14 +350,14 @@ def train(source_loader, target_cls_train_loader, target_reg_train_loader, targe
     # load the last checkpoint with the best model
     model.load_state_dict(torch.load(os.path.join(training_folder,'best_model.pth')))
     args.save_test=True
-    test_loss, test_acc, testing_folder = test(model, target_test_loader, args)
+    test_loss, test_acc, testing_folder = test(model, domain_data_loaders['tst'], args)
     print('Best result: {:.4f}'.format(early_stop.best_acc))
     # save trainied model
     torch.save(model.state_dict(),os.path.join(training_folder,'trained_model.pth'))
 
     return training_folder, testing_folder
 
-def k_fold(args, multipe_domains_subjects_trials_data):
+def k_fold(args, multiple_domain_datasets):
 
     if(args.n_splits>0):
         # k fold cross validation
@@ -363,46 +366,53 @@ def k_fold(args, multipe_domains_subjects_trials_data):
         # leave-one-out cross-validation
         kf = LeaveOneOut()
 
-    # get dataset: source and target subjects_trials
-    src_subjects_trials_data = multipe_domains_subjects_trials_data[0]
-    tcl_subjects_trials_data = multipe_domains_subjects_trials_data[1] # target classification data, not using labels
-    tre_subjects_trials_data = multipe_domains_subjects_trials_data[2] # additional domain for only test, it is raw target domain
-    tst_subjects_trials_data = multipe_domains_subjects_trials_data[3] # additional domain for only test, it is raw target domain
+    # copy dataset
+    load_domain_dataset = copy.deepcopy(multiple_domain_datasets)
 
-    src_subject_ids_names = list(src_subjects_trials_data.keys()) 
-    tcl_subject_ids_names = list(tcl_subjects_trials_data.keys()) 
-    tre_subject_ids_names = list(tre_subjects_trials_data.keys()) 
-    tst_subject_ids_names = list(tst_subjects_trials_data.keys()) 
-    assert(set(tre_subjects_trials_data)==set(tst_subjects_trials_data)) # reg target and test target have same subject list, which using labels
+    assert(set(multiple_domain_datasets['tre'])==set(multiple_domain_datasets['tst'])) # reg target and test target have same subject list, which using labels
+    # print loaded data domain name
+    for name, data in multiple_domain_datasets.items():
+        print("{} domain subjects: {}\n".format(name, list(data.keys())))
 
-    print("source domain subjects: {}\n".format(src_subject_ids_names))
-    print("target classification domain subjects: {}\n".format(tcl_subject_ids_names))
-    print("target regssion domain subjects: {}\n".format(tre_subject_ids_names))
-    print("test domain subjects: {}\n".format(tst_subject_ids_names))
+    tst_subject_ids_names = list(multiple_domain_datasets['tst'].keys()) 
 
-    for train_subject_indices, test_subject_indices in kf.split(tre_subject_ids_names):
+    '''
+    for train_subject_indices, test_subject_indices in kf.split(tst_subject_ids_names): # typical CV
+    '''
+
+    '''
+    train_test_list = list(range(len(tst_subject_ids_names))) # 4-leave-CV
+    test_index = list(itertools.combinations(train_test_list,4)) # 4-leave-CV
+    for loop, test_subject_indices in enumerate(test_index): # 4-leave-CV
+    if(loop>6): # to saving time, do not loop too much
+        break;
+        train_subject_indices = list(set(train_test_list)-set(test_subject_indices)) # 4-leave-CV
+    '''
+    if True: # only one subject in tst
+        train_subject_indices, test_subject_indices = [0],[0] # only one subject in tst
+
         #i) split target data into train and test target dataset 
-        train_subject_ids_names = [tre_subject_ids_names[subject_idx] for subject_idx in train_subject_indices]
-        test_subject_ids_names = [tre_subject_ids_names[subject_idx] for subject_idx in test_subject_indices]
-
-        # specifiy test and train subjects
-        # i-1) choose data for regssion training (using label) and testing
-        tre_train_subjects_trials_data = {subject_id_name: tre_subjects_trials_data[subject_id_name] for subject_id_name in train_subject_ids_names}
-        tst_test_subjects_trials_data = {subject_id_name: tst_subjects_trials_data[subject_id_name] for subject_id_name in test_subject_ids_names}
-
+        train_subject_ids_names = [tst_subject_ids_names[subject_idx] for subject_idx in train_subject_indices]
+        test_subject_ids_names = [tst_subject_ids_names[subject_idx] for subject_idx in test_subject_indices]
         args.test_subject_ids_names = test_subject_ids_names
         print('train subjects id names: {}'.format(train_subject_ids_names))
         print('test subjects id names: {}\n'.format(test_subject_ids_names))
 
+        # specifiy test and train subjects
+        #i-1) choose data for regssion training (using label) and testing
+        tre_train_dataset = {subject_id_name: multiple_domain_datasets['tre'][subject_id_name] for subject_id_name in train_subject_ids_names}
+        tst_test_dataset = {subject_id_name: multiple_domain_datasets['tst'][subject_id_name] for subject_id_name in test_subject_ids_names}
+        load_domain_dataset['tre'] = tre_train_dataset
+        load_domain_dataset['tst'] = tst_test_dataset
+
         # test subjects and trials, {subject_id_name:len(['01','02',...]), ...}
-        tst_test_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tst_test_subjects_trials_data.items()} 
+        tst_test_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tst_test_dataset.items()} 
         args.tst_test_subjects_trials_len=tst_test_subjects_trials_len
 
+
         #ii) load dataloader accodring to source and target subjects_trials_dataset
-        source_loader, target_cls_train_loader, target_reg_train_loader, target_test_loader, n_labels = load_data(args, src_subjects_trials_data, tcl_subjects_trials_data, tre_train_subjects_trials_data, tst_test_subjects_trials_data)
+        domain_data_loaders, n_labels = load_data(args, load_domain_dataset)
         args.n_labels = n_labels
-
-
 
 
         #iii) load model
@@ -418,14 +428,14 @@ def k_fold(args, multipe_domains_subjects_trials_data):
         else:
             scheduler = None
 
-
-        len_source_loader = len(source_loader) # how many batchs
-        len_target_cls_loader = len(target_cls_train_loader) # how many batchs, source and target should have similar batch numbers
-        len_target_reg_loader = len(target_reg_train_loader) # how many batchs, source and target should have similar batch numbers
-        n_batch = min(len_source_loader, len_target_cls_loader, len_target_reg_loader)
+        loader_len=[]
+        for name, data in domain_data_loaders.items():
+            loader_len.append(len(data))
+            print("{} data's len: {}".format(name,len(data)))
+        n_batch = min(loader_len)
         if n_batch == 0:
             n_batch = args.n_iter_per_epoch 
-        print('source_loader len: {}, target_cls_loader len:{}, target_reg_loader:{}, n_batch: {}'.format(len_source_loader,len_target_cls_loader, len_target_reg_loader, n_batch))
+        print("n_batch: {}".format(n_batch))
 
         if args.epoch_based_training:
             args.max_iter = args.n_epoch * n_batch
@@ -436,16 +446,16 @@ def k_fold(args, multipe_domains_subjects_trials_data):
 
 
         #vi) train model
-        training_folder, testing_folder = train(source_loader, target_cls_train_loader, target_reg_train_loader, target_test_loader, model, optimizer, scheduler, n_batch, args)
+        training_folder, testing_folder = train(domain_data_loaders, model, optimizer, scheduler, n_batch, args)
     
-def model_evaluation(args, multipe_domains_subjects_trials_data):
+def model_evaluation(args, multiple_domain_datasets):
 
     # load model
     model = models.BaselineModel(num_label=args.n_labels, base_net=args.backbone).to(args.device)
     model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
 
     #load data
-    tst_subjects_trials_data = multipe_domains_subjects_trials_data[3] # additional domain for only test, it is raw target domain
+    tst_subjects_trials_data = multiple_domain_datasets['tst'] # additional domain for only test, it is raw target domain
     tst_subject_ids_names = list(tst_subjects_trials_data.keys()) 
     print("test domain subjects: {}".format(tst_subject_ids_names))
 
@@ -471,8 +481,6 @@ def main():
 
     #data path
     args.data_dir = const.DATA_PATH
-
-
     
     # features
     features_name = ['TIME'] + const.extract_imu_fields(const.IMU_SENSOR_LIST, const.ACC_GYRO_FIELDS)
@@ -487,16 +495,16 @@ def main():
     set_random_seed(args.seed)
 
     #2) open datafile and load data
-    multipe_domains_subjects_trials_data = open_datafile(args)
+    multiple_domain_datasets = open_datafile(args)
 
     #3) cross_validation for training and evaluation model
     setattr(args, 'test_subject_ids_names', [])
 
     #k_fold(args,src_subjects_trials_data, tgt_subjects_trials_data)
     if(args.model_selection=='test_model'):
-        model_evaluation(args, multipe_domains_subjects_trials_data)
+        model_evaluation(args, multiple_domain_datasets)
     else:
-        k_fold(args, multipe_domains_subjects_trials_data)
+        k_fold(args, multiple_domain_datasets)
 
     
 

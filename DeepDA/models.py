@@ -62,14 +62,24 @@ class TransferNetForRegression(nn.Module):
         self.adapt_loss = TransferLoss(**transfer_loss_args)
         self.criterion = torch.nn.MSELoss()
 
-    def forward(self, source, target_cls, target_reg, source_label, target_label_cls, target_label_reg):
+    def forward(self, samples):
+        (source, source_label) = samples['src']
+        (target_cls, target_label_cls) = samples['tcl']
+        if(self.tgt_reg_loss_weight>0.): #using target reg
+            (target_reg, target_label_reg) = samples['tre']
+
+        # base_network
         target_cls = self.base_network(target_cls)
-        target_reg = self.base_network(target_reg)
         source = self.base_network(source)
+        if(self.tgt_reg_loss_weight>0.): #using target reg
+            target_reg = self.base_network(target_reg)
+
+        # bootleneck network
         if self.use_bottleneck:
             source = self.bottleneck_layer(source)
             target_cls = self.bottleneck_layer(target_cls)
-            target_reg = self.bottleneck_layer(target_reg)
+            if(self.tgt_reg_loss_weight>0.): #using target reg
+                target_reg = self.bottleneck_layer(target_reg)
 
 
         # regression
@@ -78,7 +88,13 @@ class TransferNetForRegression(nn.Module):
             target_reg = self.output_layer(target_reg)
 
         # regression loss, normal danndo not use target loss since target data without labels
-        reg_loss = self.src_reg_loss_weight*self.criterion(source_reg, source_label) + self.tgt_reg_loss_weight*self.criterion(target_reg, target_label_reg)
+        src_reg_loss =  self.criterion(source_reg, source_label)
+        if(self.tgt_reg_loss_weight>0.): #using target reg
+            tgt_reg_loss =  self.criterion(target_reg, target_label_reg)
+        else:
+            tgt_reg_loss = 0
+
+        reg_loss = self.src_reg_loss_weight*src_reg_loss + self.tgt_reg_loss_weight*tgt_reg_loss
 
         # transfer
         kwargs = {}
@@ -145,10 +161,11 @@ class BaselineModel(nn.Module):
         self.criterion = torch.nn.MSELoss()
         self.finetuning=finetuning
 
-    def forward(self, source, target, source_label, target_label):
-        target = self.base_network(target)
-        target_reg = self.output_layer(target)
-        reg_loss = self.criterion(target_reg, target_label)
+    def forward(self, samples):
+        target_reg, target_label_reg = samples['tre']
+        target_reg = self.base_network(target_reg)
+        target_reg = self.output_layer(target_reg)
+        reg_loss = self.criterion(target_reg, target_label_reg)
         transfer_loss = 0*reg_loss
 
         return reg_loss, transfer_loss # 0 indicates transfer loss

@@ -17,10 +17,14 @@
 
 
 # baseline
-for idx in $(seq 2 4 6 8 10 12 14); do
-    echo "5 landing trial baseline idx: ${idx}"
-    python main.py --config DANN/DANN.yaml --model_selection baseline --tre_domain "5trials_${idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "5trials_${idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "5trials_baseline_v${idx}" --investigation_results_folder "investigation_5trials_baseline_v2/5trials_baseline_v${idx}" | tee "./log/5trials_baseline_${idx}.log"
-done
+#for sub_idx in $(seq 13 14); do
+##for sub_idx in 2 4 6 8 10 12 14; do
+#    #for trial_idx in 5 10 15 20 25; do
+#    for trial_idx in 25; do
+#        echo "${trial_idx} landing trial baseline idx: ${sub_idx}"
+#        python main.py --config DANN/DANN.yaml --model_selection baseline --n_epoch 200 --tre_domain "selected_data/${trial_idx}trials_${sub_idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "selected_data/${trial_idx}trials_${sub_idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "${sub_idx}sub_${trial_idx}trials_baseline_v${sub_idx}" --investigation_results_folder "investigation_baseline_v1/${trial_idx}trials/${sub_idx}sub" | tee "./log/${sub_idx}sub_${trial_idx}trials_baseline.log"
+#    done
+#done
 
 # IMU DATA Augmentation
 #for idx in $(seq 6 6); do
@@ -29,9 +33,12 @@ done
 #done
 
 
-#for idx in $(seq 2 10); do
-#    echo " 5trials imu augmentation idx: ${idx}"
-#python main.py --config DANN/DANN.yaml --model_selection imu_augment --tgt_domain "augment_5trials_${idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "5trials_${idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "5trials_imu_augment_v${idx}" --investigation_results_folder "investigation_5trials_imu_augment/5trials_imu_augment_v${idx}/" | tee "./log/5trials_imu_augment_${idx}.log"
+#for sub_idx in $(seq 5 11); do
+#for sub_idx in 5 7 9 11; do
+#    for trial_idx in 15 20 25; do
+#        echo " ${trial_idx}trials imu augmentation idx: ${sub_idx}"
+#        python main.py --config DANN/DANN.yaml --model_selection imu_augment --tre_domain "augment_data/augment_${trial_idx}trials_${sub_idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "selected_data/${trial_idx}trials_${sub_idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "${sub_idx}sub_${trial_idx}trials_baseline_v${sub_idx}" --investigation_results_folder "investigation_imu_augment_v1/${trial_idx}trials/${sub_idx}sub" | tee "./log/${sub_idx}sub_${trial_idx}trials_imu_augment.log"
+#    done
 #done
 
 
@@ -47,7 +54,7 @@ done
 # only source domain for train
 #for idx in $(seq 6 6); do
 #    echo "10trials test_model idx: ${idx}"
-    #python main.py --config DANN/DANN.yaml --model_selection pretrained --tgt_domain kam_norm_walking_data.hdf5 --config_alias_name preraind_v1 --investigation_results_folder walking_model/pretrained_v1  --config_alias_name pretrained_v1  | tee log/pretrained_v3.log
+#python main.py --config DANN/DANN.yaml --model_selection pretrained --tgt_domain kam_norm_walking_data.hdf5 --config_alias_name preraind_v1 --investigation_results_folder walking_model/pretrained_v1  --config_alias_name pretrained_v1  | tee log/pretrained_v3.log
 #    python main.py --config DANN/DANN.yaml --model_selection test_model  --trained_model_state "training_testing/walking_model/pretrained_v1/training_130423" --tgt_domain kam_norm_walking_data.hdf5 --tst_domain "10trials_${idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "10trials_test_model_v${idx}" --investigation_results_folder "investigation_10trials_test_model/10trials_test_model_v${idx}" | tee "10trials_test_model_${idx}.log"
 #done
 
@@ -82,8 +89,18 @@ done
 #done
 
 
-for idx in $(seq 3 4); do
-    echo " 5 trial normal DANN idx: ${idx}"
-    #python main.py --config DANN/DANN.yaml --model_selection Normal_DANN --tgt_domain "repeated_5trials_{idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "5trials_${idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "5trials_normal_dann_v${idx}" --investigation_results_folder "investigation_5trials_normal_dann_v2/5trials_normal_dann_v${idx}" | tee "./log/5trials_normal_DANN_${idx}.log"
-    python main.py --config DANN/DANN.yaml --model_selection Normal_DANN --tcl_domain "repeated_kam_norm_landing_data.hdf5" --tre_domain "repeated_5trials_${idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "repeated_5trials_${idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "5trials_normal_dann_v${idx}" --investigation_results_folder "investigation_5trials_normal_dann_v2/5trials_normal_dann_v${idx}" | tee "./log/5trials_normal_DANN_${idx}.log"
-done
+#for idx in $(seq 3 4); do
+#    echo " 5 trial normal DANN idx: ${idx}"
+#    #python main.py --config DANN/DANN.yaml --model_selection Normal_DANN --tgt_domain "repeated_5trials_{idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "5trials_${idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "5trials_normal_dann_v${idx}" --investigation_results_folder "investigation_5trials_normal_dann_v2/5trials_normal_dann_v${idx}" | tee "./log/5trials_normal_DANN_${idx}.log"
+#    python main.py --config DANN/DANN.yaml --model_selection Normal_DANN --tcl_domain "repeated_kam_norm_landing_data.hdf5" --tre_domain "repeated_5trials_${idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "repeated_5trials_${idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "5trials_normal_dann_v${idx}" --investigation_results_folder "investigation_5trials_normal_dann_v2/5trials_normal_dann_v${idx}" | tee "./log/5trials_normal_DANN_${idx}.log"
+#done
+
+# inter-subject normal DANN
+#rm -r /home/sun/drop_landing_workspace/results/training_testing/investigation_inersub_normal_dann_v1
+#for sub_idx in '08' '10' '11' '14' '15'; do
+#for sub_idx in '16' '17' '18' '19' '20' '21' '22' '23' '24'; do
+#    echo "inter sub normal DANN idx: ${sub_idx}"
+#    python main.py --config DANN/DANN.yaml --model_selection Normal_DANN --batch_size 20 --src_domain "intersub/sub${sub_idx}_src_kam_norm_landing_data.hdf5" --tcl_domain "intersub/sub${sub_idx}_tcl_kam_norm_landing_data.hdf5" --tre_domain "intersub/sub${sub_idx}_tst_kam_norm_landing_data.hdf5" --tst_domain "intersub/sub${sub_idx}_tst_kam_norm_landing_data.hdf5" --config_alias_name "intersub_dann_${sub_idx}sub_normal_dann_v${idx}" --investigation_results_folder "investigation_intersub_normal_dann_v1/${sub_idx}sub" | tee "./log/${sub_idx}_intersub_normal_DANN.log"
+#
+#done
+

@@ -27,12 +27,12 @@ num_workers: 3
 # bottleneck
 use_bottleneck: False
 
-data_dir: '/media/sun/DATA/drop_landing_workspace/data/'
+data_dir: '/media/sun/DATA/drop_landing_workspace/data'
 
-src_domain: "kam_norm_walking_data.hdf5"
-  #tcl_domain: "repeated_kam_norm_landing_data.hdf5" 
-  #tre_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5" 
-  #tst_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5" 
+src_domain: "None"
+tcl_domain: "None" 
+tre_domain: "None" 
+tst_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5" 
 
 labels_name:
   - 'R_KNEE_MOMENT_X'
