@@ -26,6 +26,15 @@
 #    done
 #done
 
+
+for train_trial_num in 25; do
+    for train_sub_num in $(seq 1 14); do
+        echo "baseline train with ${train_sub_num} subjects and ${train_trial_num} trials"
+        python main.py --config DANN/DANN.yaml --model_selection baseline --n_epoch 200 --online_select_dataset "selected_data/${train_trial_num}trials_15subjects_kam_norm_landing_data.hdf5" --train_sub_num ${train_sub_num} --train_trial_num ${train_trial_num}  --config_alias_name "${train_sub_num}sub_${train_trial_num}trials_baseline_v${train_sub_num}" --investigation_results_folder "investigation_baseline_v2/${train_trial_num}trials/${train_sub_num}sub" | tee "./log/${train_sub_num}sub_${train_trial_num}trials_baseline.log"
+    done
+done
+
+
 # IMU DATA Augmentation
 #for idx in $(seq 6 6); do
 #    echo "DANN idx: ${idx}"

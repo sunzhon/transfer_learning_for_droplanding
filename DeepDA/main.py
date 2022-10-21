@@ -105,6 +105,11 @@ def get_parser():
     parser.add_argument('--early_stopping_patience',type=int, default=10) # patience for early stopping
     parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
+    # dataset loading mode, if this is not None, than use this mode, the data domain created in main.py
+    parser.add_argument('--online_select_dataset',type=str, default=None) # patience for early stopping
+    parser.add_argument('--train_sub_num',type=int, default=5) # patience for early stopping
+    parser.add_argument('--train_trial_num',type=int, default=5) # patience for early stopping
+
 
     return parser
 
@@ -125,21 +130,28 @@ def open_datafile(args):
     columns = args.features_name + args.labels_name
 
     # src_domain, tgt_domain data to load
-    domains = [args.src_domain, args.tcl_domain, args.tre_domain, args.tst_domain]
-    domains_name = ['src', 'tcl', 'tre', 'tst']
-    multiple_domain_datasets= {}
-    for domain, domain_name in zip(domains, domains_name):
-        if domain !='None':
-            domain_data_folder = os.path.join(args.data_dir, domain) # source data
-            domain_dataset = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
-            multiple_domain_datasets[domain_name] = domain_dataset
+    if(args.online_select_dataset==None):
+        domains = [args.src_domain, args.tcl_domain, args.tre_domain, args.tst_domain]
+        domains_name = ['src', 'tcl', 'tre', 'tst']
+        multiple_domain_datasets= {}
+        for domain, domain_name in zip(domains, domains_name):
+            if domain !='None':
+                domain_data_folder = os.path.join(args.data_dir, domain) # source data
+                domain_dataset = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
+                multiple_domain_datasets[domain_name] = domain_dataset
+    else:
+        multiple_domain_datasets= {}
+        domains_name = ['src', 'tcl', 'tre', 'tst']
+        main_data_folder = os.path.join(args.data_dir, args.online_select_dataset) # source data
+        all_dataset = pro_rd.load_subjects_dataset(h5_file_name = main_data_folder, selected_data_fields=columns)
+
+        multiple_domain_datasets['src'] = copy.deepcopy(all_dataset) #source domain, not used
+        multiple_domain_datasets['tcl'] = copy.deepcopy(all_dataset) # target classfication, not used
+        multiple_domain_datasets['tre'] = copy.deepcopy(all_dataset) # target regression, used for basline
+        multiple_domain_datasets['tst'] = copy.deepcopy(all_dataset) # target test, used for basline
 
     return multiple_domain_datasets
 
-
-
-#def load_data(args, src_subjects_trials_data, tgt_cls_train_subjects_trials_data, 
-#              tgt_reg_train_subjects_trials_data, tgt_test_subjects_trials_data):
 
 
 def load_data(args, multiple_domain_datasets):
@@ -369,6 +381,7 @@ def k_fold(args, multiple_domain_datasets):
     # copy dataset
     load_domain_dataset = copy.deepcopy(multiple_domain_datasets)
 
+    # NOTE: tre and tst mush have same subjects
     assert(set(multiple_domain_datasets['tre'])==set(multiple_domain_datasets['tst'])) # reg target and test target have same subject list, which using labels
     # print loaded data domain name
     for name, data in multiple_domain_datasets.items():
@@ -379,17 +392,16 @@ def k_fold(args, multiple_domain_datasets):
     '''
     for train_subject_indices, test_subject_indices in kf.split(tst_subject_ids_names): # typical CV
     '''
+    train_test_list = list(range(len(tst_subject_ids_names))) # all subjects
+    train_sub_num = args.train_sub_num # select how many subjects for training, and remaining for test
+    train_index = list(itertools.combinations(train_test_list,train_sub_num)) # train_sub_num subjects for training, remaining subjects for test -CV
+    for loop, train_subject_indices in enumerate(train_index): # leave-CV
+        if(loop>15): # to saving time, do not loop too much, 15 is enough
+            break;
 
-    '''
-    train_test_list = list(range(len(tst_subject_ids_names))) # 4-leave-CV
-    test_index = list(itertools.combinations(train_test_list,4)) # 4-leave-CV
-    for loop, test_subject_indices in enumerate(test_index): # 4-leave-CV
-    if(loop>6): # to saving time, do not loop too much
-        break;
-        train_subject_indices = list(set(train_test_list)-set(test_subject_indices)) # 4-leave-CV
-    '''
-    if True: # only one subject in tst
-        train_subject_indices, test_subject_indices = [0],[0] # only one subject in tst
+        test_subject_indices = list(set(train_test_list)-set(train_subject_indices)) # leave-CV
+
+
 
         #i) split target data into train and test target dataset 
         train_subject_ids_names = [tst_subject_ids_names[subject_idx] for subject_idx in train_subject_indices]
@@ -409,11 +421,9 @@ def k_fold(args, multiple_domain_datasets):
         tst_test_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tst_test_dataset.items()} 
         args.tst_test_subjects_trials_len=tst_test_subjects_trials_len
 
-
         #ii) load dataloader accodring to source and target subjects_trials_dataset
         domain_data_loaders, n_labels = load_data(args, load_domain_dataset)
         args.n_labels = n_labels
-
 
         #iii) load model
         set_random_seed(args.seed)
@@ -444,10 +454,9 @@ def k_fold(args, multiple_domain_datasets):
             args.max_iter =   args.n_epoch * args.n_iter_per_epoch
             print('Interation based tranining')
 
-
         #vi) train model
         training_folder, testing_folder = train(domain_data_loaders, model, optimizer, scheduler, n_batch, args)
-    
+        
 def model_evaluation(args, multiple_domain_datasets):
 
     # load model
