@@ -26,14 +26,26 @@
 #    done
 #done
 
+#for train_trial_num in 25; do
+#    #for train_sub_num in $(seq 13); do
+#    for train_sub_num in  7 ; do
+#    #for train_sub_num in  1 2 3 4 5 6 7 8 9 10 11 12 13 14; do
+#        echo "baseline train with ${train_sub_num} subjects and ${train_trial_num} trials"
+#        python main.py --config DANN/DANN.yaml --model_selection baseline --n_epoch 100 --tre_domain "selected_data/${train_trial_num}trials_15subjects_kam_norm_landing_data.hdf5" --tst_domain "selected_data/15trials_15subjects_kam_norm_landing_data.hdf5"  --train_sub_num ${train_sub_num} --train_trial_num ${train_trial_num}  --config_alias_name "${train_sub_num}sub_${train_trial_num}trials_baseline_v${train_sub_num}" --investigation_results_folder "investigation_baseline_v3/${train_trial_num}trials/${train_sub_num}sub" | tee "./log/baseline_v3/${train_sub_num}sub_${train_trial_num}trials_baseline.log"
+#    done
+#done
+#
+# knee moment y: kym
+#for train_trial_num in 5 10 15; do
+#    for train_sub_num in $(seq 1 14); do
+#        echo "imu augmentation train with ${train_sub_num} subjects and ${train_trial_num} trials"
+#        python main.py --config DANN/DANN.yaml --model_selection imu_augment --tre_domain "selected_data/${train_trial_num}trials_15subjects_kym_norm_landing_data.hdf5" --tst_domain "selected_data/$25trials_15subjects_kym_norm_landing_data.hdf5" --train_sub_num ${train_sub_num} --train_trial_num ${train_trial_num}  --config_alias_name "${train_sub_num}sub_${train_trial_num}trials_kymbaseline_v${train_sub_num}" --investigation_results_folder "investigation_baseline_kym_v1/${train_trial_num}trials/${train_sub_num}sub" | tee "./log/${train_sub_num}sub_${train_trial_num}trials_baseline_kym.log"
+#    done
+#done
+#
 
-for train_trial_num in 25; do
-    for train_sub_num in $(seq 1 14); do
-        echo "baseline train with ${train_sub_num} subjects and ${train_trial_num} trials"
-        python main.py --config DANN/DANN.yaml --model_selection baseline --n_epoch 200 --online_select_dataset "selected_data/${train_trial_num}trials_15subjects_kam_norm_landing_data.hdf5" --train_sub_num ${train_sub_num} --train_trial_num ${train_trial_num}  --config_alias_name "${train_sub_num}sub_${train_trial_num}trials_baseline_v${train_sub_num}" --investigation_results_folder "investigation_baseline_v2/${train_trial_num}trials/${train_sub_num}sub" | tee "./log/${train_sub_num}sub_${train_trial_num}trials_baseline.log"
-    done
-done
 
+#
 
 # IMU DATA Augmentation
 #for idx in $(seq 6 6); do
@@ -49,6 +61,13 @@ done
 #        python main.py --config DANN/DANN.yaml --model_selection imu_augment --tre_domain "augment_data/augment_${trial_idx}trials_${sub_idx}subjects_kam_norm_landing_data.hdf5" --tst_domain "selected_data/${trial_idx}trials_${sub_idx}subjects_kam_norm_landing_data.hdf5" --config_alias_name "${sub_idx}sub_${trial_idx}trials_baseline_v${sub_idx}" --investigation_results_folder "investigation_imu_augment_v1/${trial_idx}trials/${sub_idx}sub" | tee "./log/${sub_idx}sub_${trial_idx}trials_imu_augment.log"
 #    done
 #done
+
+for train_trial_num in 10 15 20 25 ; do
+    for train_sub_num in $(seq 1 14); do
+        echo "imu augmentation train with ${train_sub_num} subjects and ${train_trial_num} trials"
+        python main.py --config DANN/DANN.yaml --model_selection imu_augment --tre_domain "augment_data/augment_${train_trial_num}trials_15subjects_kam_norm_landing_data.hdf5" --tst_domain "selected_data/25trials_15subjects_kam_norm_landing_data.hdf5" --train_sub_num ${train_sub_num} --train_trial_num ${train_trial_num}  --config_alias_name "${train_sub_num}sub_${train_trial_num}trials_imu_augment_v${train_sub_num}" --investigation_results_folder "investigation_imu_augment_v4/${train_trial_num}trials/${train_sub_num}sub" | tee "./log/imu_augment_v4/${train_sub_num}sub_${train_trial_num}trials_imu_augment.log"
+    done
+done
 
 
 # pretrain and fine_tuning

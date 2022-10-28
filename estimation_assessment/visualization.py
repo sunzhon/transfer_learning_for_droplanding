@@ -604,7 +604,7 @@ def plot_sensorconfig_modelsize_investigation_results(combination_investigation_
 Parase list of combination_investigation_results
 
 """
-def parase_list_investigation_metrics(list_combination_investigation_results,**filters):
+def parase_list_investigation_metrics(list_combination_investigation_results, calculate_mean_subject_r2=False, **filters):
 
     if(not isinstance(list_combination_investigation_results,list)):
         list_combination_investigation_results = [list_combination_investigation_results]
@@ -616,6 +616,20 @@ def parase_list_investigation_metrics(list_combination_investigation_results,**f
                                              **filters
                                             ))
         metrics=pd.concat(list_metrics,axis=0)
+
+    if(calculate_mean_subject_r2):
+        # calculate mean subject r2
+        metrics['mean_subject_r2']=0
+        mean_subject_r2 = metrics[['subject_num', 'trial_num','test_subject','r2','model_selection']].groupby(['subject_num', 'trial_num','test_subject','model_selection']).mean().round(4)
+        # add mean subject metrics into metrics
+        for subject_num in set(metrics['subject_num']):
+            for trial_num in set(metrics['trial_num']): 
+                for test_subject in set(metrics['test_subject']):
+                    for model_selection in set(metrics['model_selection']):
+                        if(test_subject in mean_subject_r2.loc[subject_num, trial_num].index):
+                            metrics.loc[(metrics['subject_num']==subject_num) & (metrics['trial_num']==trial_num) &             (metrics['test_subject']==test_subject) & (metrics['model_selection']==model_selection), 'mean_subject_r2']=mean_subject_r2.loc[subject_num, trial_num, test_subject, model_selection].values[0]
+
+
 
     return metrics
 
@@ -1284,7 +1298,10 @@ def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, lis
 
 
     if(save_fig):
-        fig_results = save_figure(os.path.dirname(list_training_testing_folders[save_folder_index]),fig_name=title,fig_format=save_format)
+        if('fig_path' in kwargs.keys()):
+            fig_results = save_figure(os.path.dirname(list_training_testing_folders[save_folder_index]),fig_path=kwargs['fig_path'],fig_name=title,fig_format=save_format)
+        else:
+            fig_results = save_figure(os.path.dirname(list_training_testing_folders[save_folder_index]),fig_name=title,fig_format=save_format)
         print(fig_results)
     else:
         fig_results = 0
@@ -1297,8 +1314,6 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
     # load metrics
     metrics = parase_list_investigation_metrics(combination_investigation_metrics,**filters)
 
-    # replace, manual
-    metrics['subject_num'].replace({idx:idx-4 for idx in range(5,11)},inplace=True)
 
     if('replace_columns' in kwargs.keys()):
         replace_columns = kwargs['replace_columns']
@@ -1333,13 +1348,13 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
         'x': x,
         'y': y,
         'hue':hue,
-        #"showfliers": False,
-        #"showmeans": True
     }
 
     if(plot_type=='barplot'):
         g = sns.barplot(**hue_plot_params)
     if(plot_type=='boxplot'):
+        hue_plot_params["showfliers"]= False
+        hue_plot_params["showmeans"] =  True
         g = sns.boxplot(**hue_plot_params)
 
     if('xticks' in kwargs.keys()):
@@ -1362,10 +1377,6 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
         test_method="t-test_ind"
         if('test_pairs' in kwargs.keys()):
             pairs = kwargs['test_pairs']
-        else:
-            pairs = (
-            [('Baseline','IMU augmentation'),('IMU augmentation','Fine-tuning'),('Non-augmentation DANN','Augmentation DANN'), ('Baseline', 'Augmentation DANN')]
-            )
         annotator=Annotator(g, pairs=pairs,**hue_plot_params)
         annotator.configure(test=test_method, text_format='star', loc='inside')
         annotator.apply_and_annotate()
@@ -1374,12 +1385,16 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
     fig=g.get_figure()
     fig.set_figwidth(figsize[0]); fig.set_figheight(figsize[1])
     if(save_fig):
-        results = save_figure(os.path.dirname(combination_investigation_metrics[save_folder_index]),fig_name=title,fig_format=save_format)
-        print(results)
+        if('fig_path' in kwargs.keys()):
+            fig_results = save_figure(os.path.dirname(combination_investigation_metrics[save_folder_index]),fig_path=kwargs['fig_path'],fig_name=title,fig_format=save_format)
+        else:
+            fig_results = save_figure(os.path.dirname(combination_investigation_metrics[save_folder_index]),fig_name=title,fig_format=save_format)
+        print(fig_results)
     else:
-        results = 0
+        fig_results = 0
+
         
-    return results
+    return fig_results
 
 
 if __name__ == '__main__':
@@ -1490,7 +1505,7 @@ if __name__ == '__main__':
 
     pdb.set_trace()
 
-
+    '''------------------------P5  --------------'''
     if False: # calculate metrics
         combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/Four_variable_optimal_imu_config/KEM_single_leg/testing_result_folders.txt"
         metrics = get_list_investigation_metrics(combination_investigation_results)

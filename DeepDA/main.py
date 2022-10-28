@@ -106,7 +106,6 @@ def get_parser():
     parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
     # dataset loading mode, if this is not None, than use this mode, the data domain created in main.py
-    parser.add_argument('--online_select_dataset',type=str, default=None) # patience for early stopping
     parser.add_argument('--train_sub_num',type=int, default=5) # patience for early stopping
     parser.add_argument('--train_trial_num',type=int, default=5) # patience for early stopping
 
@@ -130,25 +129,26 @@ def open_datafile(args):
     columns = args.features_name + args.labels_name
 
     # src_domain, tgt_domain data to load
-    if(args.online_select_dataset==None):
-        domains = [args.src_domain, args.tcl_domain, args.tre_domain, args.tst_domain]
-        domains_name = ['src', 'tcl', 'tre', 'tst']
-        multiple_domain_datasets= {}
-        for domain, domain_name in zip(domains, domains_name):
-            if domain !='None':
-                domain_data_folder = os.path.join(args.data_dir, domain) # source data
-                domain_dataset = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
-                multiple_domain_datasets[domain_name] = domain_dataset
-    else:
-        multiple_domain_datasets= {}
-        domains_name = ['src', 'tcl', 'tre', 'tst']
-        main_data_folder = os.path.join(args.data_dir, args.online_select_dataset) # source data
-        all_dataset = pro_rd.load_subjects_dataset(h5_file_name = main_data_folder, selected_data_fields=columns)
+    domains = [args.src_domain, args.tcl_domain, args.tre_domain, args.tst_domain]
+    domains_name = ['src', 'tcl', 'tre', 'tst']
+    multiple_domain_datasets= {}
+    for domain, domain_name in zip(domains, domains_name):
+        if domain !='None':
+            domain_data_folder = os.path.join(args.data_dir, domain) # source data
+            domain_dataset = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
+            multiple_domain_datasets[domain_name] = domain_dataset
+    
+    '''
+     multiple_domain_datasets= {}
+     domains_name = ['src', 'tcl', 'tre', 'tst']
+     main_data_folder = os.path.join(args.data_dir, args.online_select_dataset) # source data
+     all_dataset = pro_rd.load_subjects_dataset(h5_file_name = main_data_folder, selected_data_fields=columns)
 
-        multiple_domain_datasets['src'] = copy.deepcopy(all_dataset) #source domain, not used
-        multiple_domain_datasets['tcl'] = copy.deepcopy(all_dataset) # target classfication, not used
-        multiple_domain_datasets['tre'] = copy.deepcopy(all_dataset) # target regression, used for basline
-        multiple_domain_datasets['tst'] = copy.deepcopy(all_dataset) # target test, used for basline
+     multiple_domain_datasets['src'] = copy.deepcopy(all_dataset) #source domain, not used
+     multiple_domain_datasets['tcl'] = copy.deepcopy(all_dataset) # target classfication, not used
+     multiple_domain_datasets['tre'] = copy.deepcopy(all_dataset) # target regression, used for basline
+     multiple_domain_datasets['tst'] = copy.deepcopy(all_dataset) # target test, used for basline
+    '''
 
     return multiple_domain_datasets
 
@@ -395,12 +395,11 @@ def k_fold(args, multiple_domain_datasets):
     train_test_list = list(range(len(tst_subject_ids_names))) # all subjects
     train_sub_num = args.train_sub_num # select how many subjects for training, and remaining for test
     train_index = list(itertools.combinations(train_test_list,train_sub_num)) # train_sub_num subjects for training, remaining subjects for test -CV
-    for loop, train_subject_indices in enumerate(train_index): # leave-CV
-        if(loop>15): # to saving time, do not loop too much, 15 is enough
-            break;
-
+    random_selected_train_index = random.sample(train_index, 15) # 随机选出15种训练对象的组合, selected 15 combiantions
+    for loop, train_subject_indices in enumerate(random_selected_train_index): # leave-CV
         test_subject_indices = list(set(train_test_list)-set(train_subject_indices)) # leave-CV
-
+        if(len(test_subject_indices)>3):
+            test_subject_indices = random.sample(test_subject_indices,3) # random select 5 subjects from the all test subjects
 
 
         #i) split target data into train and test target dataset 
