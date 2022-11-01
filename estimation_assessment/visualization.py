@@ -1214,8 +1214,8 @@ def boxplot_models_accuracy(combination_investigation_results, title=None, metri
 
     # statistical test
     if(statannotation_flag):
-        #test_method="Mann-Whitney"
-        test_method="t-test_ind"
+        test_method="Mann-Whitney"
+        #test_method="t-test_ind"
         pairs = (
             [('baseline','DANN')]
         )
