@@ -23,7 +23,7 @@ import itertools
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-added_path = os.path.join(current_dir,"./../estimation_assessment")
+added_path = os.path.join(current_dir,"./../assessments")
 sys.path.append(added_path)
 import scores as es_sc
 added_path = os.path.join(current_dir,"./../vicon_imu_data_process")
@@ -45,7 +45,7 @@ def get_parser():
     )
 
     # description of this config or code modification
-    parser.add("--config_alias_name", type=str, default="dann_1")
+    parser.add("--config_name", type=str, default="dann_1")
     parser.add("--config_comments", type=str, default="dann")
     parser.add("--investigation_results_folder", type=str, default=None)
 
@@ -105,10 +105,12 @@ def get_parser():
     parser.add_argument('--early_stopping_patience',type=int, default=10) # patience for early stopping
     parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
-    # dataset loading mode, if this is not None, than use this mode, the data domain created in main.py
+    # train_sub_num subjects were used to train model 
     parser.add_argument('--train_sub_num',type=int, default=5) # patience for early stopping
-    parser.add_argument('--train_trial_num',type=int, default=5) # patience for early stopping
 
+    # sub_num subjects and trial_num trials of a subject in the loaded dataset
+    parser.add_argument('--sub_num',type=int, default=5) # patience for early stopping
+    parser.add_argument('--trial_num',type=int, default=5) # patience for early stopping
 
     return parser
 

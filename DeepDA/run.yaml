@@ -26,7 +26,7 @@ num_workers: 3
 
 # bottleneck
 use_bottleneck: False
-# plase set the dataset folders
+
 data_dir: '/media/sun/DATA/drop_landing_workspace/data'
 
 src_domain: "None"
@@ -37,5 +37,5 @@ tst_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5"
 labels_name:
   - 'R_KNEE_MOMENT_X'
 
-config_alias_name: basline
+config_name: dann
 config_comments: 'complex output layers and using repeated IMU'
