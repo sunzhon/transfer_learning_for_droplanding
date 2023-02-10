@@ -112,6 +112,10 @@ def get_parser():
     parser.add_argument('--sub_num',type=int, default=15) # patience for early stopping
     parser.add_argument('--trial_num',type=int, default=25) # patience for early stopping
 
+
+    # layer num of features
+    parser.add_argument('--feature_layer_num',type=int, default=1) # patience for early stopping
+
     return parser
 
 def set_random_seed(seed=0):
@@ -185,7 +189,8 @@ def get_model(args):
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
     elif(args.model_selection=='baseline'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn',num_layers=2).to(args.device)
+        num_layers = args.feature_layer_num
+        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn',num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='augmentation'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)

@@ -135,16 +135,17 @@
 
 
 for trial_num in 25 ; do
-    for sub_num in 15; do
+    #for sub_num in 15; do
+    sub_num=15
+    for feature_layer_num in 5; do
+        config_id=v6
         model_name="baseline"
         tre_data_relative_path="selection"
         tst_data_relative_path="selection"
-        result_relative_path="baseline_v5"
+        result_relative_path="baseline_${config_id}_${feature_layer_num}"
         base_name="kem_norm_landing_data.hdf5"
         #train_sub_num=`expr $sub_num - 1`
         train_sub_num=14
-        config_id=v5
-
 
         #model_name="augmentation"
         #tre_data_relative_path="augmentation"
@@ -159,7 +160,7 @@ for trial_num in 25 ; do
 
         echo "train ${model_name} with ${sub_num} subjects and ${trial_num} trials"
 
-        python main.py --config run.yaml --model_selection ${model_name} --tre_domain "${tre_data_relative_path}/${tre_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --tst_domain "${tst_data_relative_path}/${tst_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --config_name "${sub_num}sub_${trial_num}trials_${model_name}_${config_id}" --investigation_results_folder "${result_relative_path}/${trial_num}trials/${sub_num}sub" | tee "./log/${model_name}/${sub_num}sub_${trial_num}trials.log"
+        python main.py --config run.yaml --model_selection ${model_name} --feature_layer_num ${feature_layer_num} --tre_domain "${tre_data_relative_path}/${tre_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --tst_domain "${tst_data_relative_path}/${tst_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --config_name "${sub_num}sub_${trial_num}trials_${model_name}_${config_id}" --investigation_results_folder "${result_relative_path}/${trial_num}trials/${sub_num}sub" | tee "./log/${model_name}/${sub_num}sub_${trial_num}trials.log"
     done
 done
 
