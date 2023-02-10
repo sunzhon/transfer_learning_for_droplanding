@@ -4,7 +4,7 @@
 if [ $# -gt 0 ]; then
     relative_path=$1
 else
-    relative_path='baseline_v6'
+    relative_path='baseline_v6_10'
 fi
 
 if [ $# -gt 1 ]; then

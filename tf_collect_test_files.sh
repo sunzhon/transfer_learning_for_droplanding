@@ -20,7 +20,7 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "model_selection\talias_name\tconfig_name\tsubject_num\ttrial_num\ttrain_sub_num\tlabels_name\tr2\tr_rmse\ttest_subject\tparent_test_id\tchild_test_id\ttraining_testing_folders" > $data_file
+echo "model_selection\talias_name\tconfig_name\tsubject_num\ttrial_num\ttrain_sub_num\tlabels_name\tr2\tr_rmse\ttest_subject\tparent_test_id\tchild_test_id\trelative_result_folder\ttraining_testing_folders" > $data_file
 
 
 echo "START TO COLLECT TEST DATA"
@@ -67,13 +67,14 @@ for hyper_file in ${list_hyper_files}; do
             #alias_name=$(awk -F"[,:]+" '$1~/config_alias_name/{print $2}' $hyper_file)
         fi
         config_name=$(awk -F"[,:]+" '$1~/config_name/{print $2}' $hyper_file)
+        relative_result_folder=$(awk -F"[,:]+" '$1~/relative_result_folder/{print $2}' $hyper_file)
 
         echo "model_selection: ${model_selection}" 
         echo "labels_name: ${labels_name}" 
         echo "r2: ${r2}"
 
 
-        echo "${model_selection}\t${alias_name}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${labels_name}\t${r2}\t${r_rmse}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${folder_path}" >> $data_file
+        echo "${model_selection}\t${alias_name}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${labels_name}\t${r2}\t${r_rmse}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${relative_result_folder}\t${folder_path}" >> $data_file
     fi
 done
 
