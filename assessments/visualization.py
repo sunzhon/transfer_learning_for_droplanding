@@ -15,9 +15,16 @@ import copy
 import re
 from statannotations.Annotator import Annotator
 
-sys.path.append(os.getenv('STPY_WORKSPACE'))
-if os.getenv("STPY_WORKSPACE")!=None:
-    from CRCF.plot_utilities import *
+
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+added_path = os.path.join(current_dir,"./../../../")
+sys.path.append(added_path)
+from CRCF.plot_utilities import *
+
+#sys.path.append(os.getenv('STPY_WORKSPACE'))
+#if os.getenv("STPY_WORKSPACE")!=None:
+#    from CRCF.plot_utilities import *
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1224,7 +1231,7 @@ def boxplot_models_accuracy(combination_investigation_results, title=None, metri
         annotator.configure(test=test_method, text_format='star', loc='outside')
         annotator.apply_and_annotate()
 
-    return save_figure(os.path.dirname(combination_investigation_results[0]),fig_name=title,fig_format='svg'), metrics
+    return save_figure(os.path.dirname(combination_investigation_results[0]),fig_name=title, fig_format='svg'), metrics
 
 
 
@@ -1399,111 +1406,111 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
 
 if __name__ == '__main__':
 
-
+    if False:
         # compare baseline and imu augmentation
-    combination_investigation_results = [
-        os.path.join(RESULTS_PATH, "training_testing","investigation_baseline_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in range(5,11,1) for trial_idx in range(5,16,5)
-                                        ]+ [
-        os.path.join(RESULTS_PATH, "training_testing","investigation_imu_augment_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in range(5,11,1) for trial_idx in range(5,16,5)
-                                        ]
-    
-    #metrics = get_list_investigation_metrics(combination_investigation_results)
-    combination_investigation_metrics = [os.path.join(os.path.dirname(folder),"metrics.csv") for folder in combination_investigation_results]
-    
-    #subs = list(set(metrics['alias_name']))
-    #replace_values = {sub: int(sub.split('v')[1])-1 for sub in subs}
-    replace_values = {}
-    replace_values.update({'baseline': 'Measured dataset', 'imu_augment': 'Augmented dataset'})
-    print(replace_values)
-    replace_columns = {'subject_num': 'Train subject number', 'trial_num': 'Trial number', 'model_selection': 'Dataset'}
-    
-    plot_config={
-        "save_fig": True, "save_format":"svg", "save_folder_index": 0,
-        'figsize':(8, 5),
-        "hue": 'Dataset',
+        combination_investigation_results = [
+            os.path.join(RESULTS_PATH, "training_testing","investigation_baseline_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in range(5,11,1) for trial_idx in range(5,16,5)
+                                            ]+ [
+            os.path.join(RESULTS_PATH, "training_testing","investigation_imu_augment_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in range(5,11,1) for trial_idx in range(5,16,5)
+                                            ]
+        
+        #metrics = get_list_investigation_metrics(combination_investigation_results)
+        combination_investigation_metrics = [os.path.join(os.path.dirname(folder),"metrics.csv") for folder in combination_investigation_results]
+        
+        #subs = list(set(metrics['alias_name']))
+        #replace_values = {sub: int(sub.split('v')[1])-1 for sub in subs}
+        replace_values = {}
+        replace_values.update({'baseline': 'Measured dataset', 'imu_augment': 'Augmented dataset'})
+        print(replace_values)
+        replace_columns = {'subject_num': 'Train subject number', 'trial_num': 'Trial number', 'model_selection': 'Dataset'}
+        
+        plot_config={
+            "save_fig": True, "save_format":"svg", "save_folder_index": 0,
+            'figsize':(8, 5),
+            "hue": 'Dataset',
+            'replace_values': replace_values,
+            'replace_columns': replace_columns,
+            'x': 'Train subject number',
+            'title': 'baseline',
+            'yticks': (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
+            #'plot_title': 'baseline',
+            'font_scale': 1.0,
+            'plot_type': 'barplot',
+            'ttest':True,
+            'test_pairs':(
+                [(1,'Measured dataset'), (1,'Augmented dataset')],
+                [(2,'Measured dataset'), (2,'Augmented dataset')],
+                [(3,'Measured dataset'), (3,'Augmented dataset')],
+                [(4,'Measured dataset'), (4,'Augmented dataset')],
+                [(5,'Measured dataset'), (5,'Augmented dataset')],
+                [(6,'Measured dataset'), (6,'Augmented dataset')],
+                         )
+        }
+
+        filters={'drop_value':0.0,'sort_variable':'r2'}
+        p6plot_model_accuracy(combination_investigation_metrics, **plot_config)
+        plt.show()
+
+
+        exit()
+
+
+
+        combination_investigation_results = [
+            os.path.join(RESULTS_PATH, "training_testing","investigation_imu_augment_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in [5] for trial_idx in [5]
+        ] +[
+            os.path.join(RESULTS_PATH, "training_testing","investigation_imu_augment_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in [10] for trial_idx in [25]
+        ]
+
+
+
+        config = {
+            'xticks':[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+            'yticks':[-1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],
+            'ylim':[-1.0, 3.0],
+            'figsize': (8,3),
+            'ylabels': 5*['Normalized KFM'],
+            'titles': ['A subject with five trials', 'Six subjects with 25 trials'],
+            'font_scale':1.2, 
+            'save_fig': True,
+            'save_format': '.svg'
+        }
+
+
+        figpath, multi_model_results = p6plot_statistic_actual_estimation_curves(combination_investigation_results, col_wrap=2, **config)
+
+        pdb.set_trace
+
+
+        # baseline
+        fliters={'drop_value':0.0,'sort_variable':'r2'}
+        combination_investigation_results = [
+            os.path.join(RESULTS_PATH, "training_testing","investigation_5trials_baseline","5trials_baseline_v"+str(idx),"testing_result_folders.txt") for idx in range(2,7)
+        ]
+        pdb.set_trace()
+
+        #metrics = get_list_investigation_metrics(combination_investigation_results)
+        combination_investigation_metrics = [os.path.join(os.path.dirname(folder),"metrics.csv") for folder in combination_investigation_results]
+        metrics = get_list_investigation_metrics(combination_investigation_metrics)
+
+        subs = list(set(metrics['alias_name']))
+        replace_values = {sub: int(sub.split('v')[1])-1 for sub in subs}
+        print(replace_values)
+
+        plot_config={
+        "save_fig": True, "save_format":"jpg", "save_folder_index": 0,
+        "hue": None,
         'replace_values': replace_values,
-        'replace_columns': replace_columns,
+        'replace_columns': {'alias_name': 'Train subject number'},
         'x': 'Train subject number',
         'title': 'baseline',
-        'yticks': (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
-        #'plot_title': 'baseline',
-        'font_scale': 1.0,
-        'plot_type': 'barplot',
-        'ttest':True,
-        'test_pairs':(
-            [(1,'Measured dataset'), (1,'Augmented dataset')],
-            [(2,'Measured dataset'), (2,'Augmented dataset')],
-            [(3,'Measured dataset'), (3,'Augmented dataset')],
-            [(4,'Measured dataset'), (4,'Augmented dataset')],
-            [(5,'Measured dataset'), (5,'Augmented dataset')],
-            [(6,'Measured dataset'), (6,'Augmented dataset')],
-                     )
-    }
+        'plot_title': 'baseline'
+        }
 
-    filters={'drop_value':0.0,'sort_variable':'r2'}
-    p6plot_model_accuracy(combination_investigation_metrics, **plot_config)
-    plt.show()
+        p6plot_model_accuracy(combination_investigation_metrics,fliters, ttest=False, **plot_config)
+        
 
-
-    exit()
-
-
-
-    combination_investigation_results = [
-        os.path.join(RESULTS_PATH, "training_testing","investigation_imu_augment_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in [5] for trial_idx in [5]
-    ] +[
-        os.path.join(RESULTS_PATH, "training_testing","investigation_imu_augment_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in [10] for trial_idx in [25]
-    ]
-
-
-
-    config = {
-        'xticks':[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-        'yticks':[-1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],
-        'ylim':[-1.0, 3.0],
-        'figsize': (8,3),
-        'ylabels': 5*['Normalized KFM'],
-        'titles': ['A subject with five trials', 'Six subjects with 25 trials'],
-        'font_scale':1.2, 
-        'save_fig': True,
-        'save_format': '.svg'
-    }
-
-
-    figpath, multi_model_results = p6plot_statistic_actual_estimation_curves(combination_investigation_results, col_wrap=2, **config)
-
-    pdb.set_trace
-
-
-    # baseline
-    fliters={'drop_value':0.0,'sort_variable':'r2'}
-    combination_investigation_results = [
-        os.path.join(RESULTS_PATH, "training_testing","investigation_5trials_baseline","5trials_baseline_v"+str(idx),"testing_result_folders.txt") for idx in range(2,7)
-    ]
-    pdb.set_trace()
-
-    #metrics = get_list_investigation_metrics(combination_investigation_results)
-    combination_investigation_metrics = [os.path.join(os.path.dirname(folder),"metrics.csv") for folder in combination_investigation_results]
-    metrics = get_list_investigation_metrics(combination_investigation_metrics)
-
-    subs = list(set(metrics['alias_name']))
-    replace_values = {sub: int(sub.split('v')[1])-1 for sub in subs}
-    print(replace_values)
-
-    plot_config={
-    "save_fig": True, "save_format":"jpg", "save_folder_index": 0,
-    "hue": None,
-    'replace_values': replace_values,
-    'replace_columns': {'alias_name': 'Train subject number'},
-    'x': 'Train subject number',
-    'title': 'baseline',
-    'plot_title': 'baseline'
-    }
-
-    p6plot_model_accuracy(combination_investigation_metrics,fliters, ttest=False, **plot_config)
-    
-
-    pdb.set_trace()
+        pdb.set_trace()
 
     '''------------------------P5  --------------'''
     if False: # calculate metrics
@@ -1611,13 +1618,16 @@ if __name__ == '__main__':
 
     # P6 visualization
     if True:
-        #combination_investigation_results = "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-10/baseline/testing_result_folders.txt"
-        #combination_investigation_results = "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-10/DANN/testing_result_folders.txt"
-        combination_investigation_results = "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-12/testing_result_folders.txt"
+        combination_investigation_results = [
+                #os.path.join(RESULTS_PATH, "training_testing/baseline_v5/25trials/15sub/testing_result_folders.txt"),
+                #os.path.join(RESULTS_PATH, "training_testing/augmentation_v5/25trials/15sub/testing_result_folders.txt")
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6/25trials/15sub/testing_result_folders.txt")
+                ]
         metrics = get_list_investigation_metrics(combination_investigation_results)
-
-        pdb.set_trace()
-        combination_investigation_results = ["/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-10/baseline/metrics.csv",
-                                             "/media/sun/DATA/drop_landing_workspace/results/training_testing/2022-09-10/DANN/metrics.csv"]
-        fig_path, r2 = boxplot_models_accuracy(combination_investigation_results)
+        
+        combination_investigation_results = [
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6/25trials/15sub/metrics.csv"),
+                os.path.join(RESULTS_PATH, "training_testing/augmentation_v5/25trials/15sub/metrics.csv")
+                ]
+        fig_path, r2 = boxplot_models_accuracy(combination_investigation_results,  title= 'test', statannotation_flag=False)
 

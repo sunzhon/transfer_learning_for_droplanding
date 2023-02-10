@@ -106,11 +106,11 @@ def get_parser():
     parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
     # train_sub_num subjects were used to train model 
-    parser.add_argument('--train_sub_num',type=int, default=5) # patience for early stopping
+    parser.add_argument('--train_sub_num',type=int, default=14) # patience for early stopping
 
     # sub_num subjects and trial_num trials of a subject in the loaded dataset
-    parser.add_argument('--sub_num',type=int, default=5) # patience for early stopping
-    parser.add_argument('--trial_num',type=int, default=5) # patience for early stopping
+    parser.add_argument('--sub_num',type=int, default=15) # patience for early stopping
+    parser.add_argument('--trial_num',type=int, default=25) # patience for early stopping
 
     return parser
 
@@ -176,29 +176,32 @@ def get_model(args):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=0).to(args.device)
 
-    if(args.model_selection=='DANN'):
+    elif(args.model_selection=='DANN'):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
-    if(args.model_selection=='Aug_DANN'):
+    elif(args.model_selection=='Aug_DANN'):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
-    if(args.model_selection=='baseline'):
+    elif(args.model_selection=='baseline'):
+        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn',num_layers=2).to(args.device)
+
+    elif(args.model_selection=='augmentation'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)
 
-    if(args.model_selection=='imu_augment'):
+    elif(args.model_selection=='pretrained'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)
 
-    if(args.model_selection=='pretrained'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)
-
-    if(args.model_selection=='finetuning'):
+    elif(args.model_selection=='finetuning'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', finetuning=True).to(args.device)
         model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
 
-    if(args.model_selection=='discriminator'):
+    elif(args.model_selection=='discriminator'):
         model = models.DiscriminatorModel(num_label=args.n_labels, base_net='discriminator').to(args.device)
+
+    else:
+        exit("MODEL is not exist")
 
     print('Model selection: {}'.format(args.model_selection))
 
@@ -319,7 +322,6 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
                 data, label = next(domains_data_iter[name])
                 data, label = data.to(args.device), label.to(args.device)
                 domains_samples[name] = (data,label)
-
             reg_loss, transfer_loss = model(domains_samples)
             reg_loss = args.regression_loss_weight*reg_loss 
             transfer_loss = args.transfer_loss_weight * transfer_loss

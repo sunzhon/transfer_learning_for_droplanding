@@ -13,7 +13,7 @@ resnet_dict = {
     "resnet152": models.resnet152,
 }
 
-def get_backbone(name):
+def get_backbone(name,**kwargs):
     if "resnet" in name.lower():
         return ResNetBackbone(name)
     elif "alexnet" == name.lower():
@@ -21,14 +21,41 @@ def get_backbone(name):
     elif "dann" == name.lower():
         return DaNNBackbone()
     elif "mlnn" == name.lower(): # modular lstm neural network, defined by suntao
-        return MLNNBackbone()
+        if 'num_layers' in kwargs.keys():
+            num_layers = kwargs['num_layers']
+            return MLNNBackbone(num_layers=num_layers)
+        else:
+            return MLNNBackbone()
 
 
 class MLNNBackbone(nn.Module):
-    def __init__(self, n_input=49, seq_len=80, n_output=1, lstm_unit=100):
+    def __init__(self, n_input=49, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
         super(MLNNBackbone, self).__init__()
-        self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = lstm_unit, num_layers=1, bidirectional=True, batch_first=True)
-        self.linear_1 = nn.Linear(2*lstm_unit,60)
+        self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, bidirectional=True, batch_first=True)
+        self.hidden_size = hidden_size
+        self.seq_len = seq_len
+        self._feature_dim = 2*hidden_size
+
+    def forward(self, sequence): # input dim = [batch_size, seq_en, features_len]
+        batch_size = sequence.shape[0]
+        sequence = pack_padded_sequence(sequence, batch_size*[self.seq_len], batch_first=True, enforce_sorted=False)
+        lstm_out, (hidden, c) = self.lstm_layer(sequence) # lstm_out dim  = [batch_size, seq_len, model_dim]
+        lstm_out,_= pad_packed_sequence(lstm_out, batch_first=True)
+        return lstm_out
+
+    def output_num(self):
+        return self._feature_dim
+
+'''
+A backup of MLNN on Feb 10 2023
+
+'''
+
+class MLNNBackbone_BK(nn.Module):
+    def __init__(self, n_input=49, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
+        super(MLNNBackbone, self).__init__()
+        self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, bidirectional=True, batch_first=True)
+        self.linear_1 = nn.Linear(2*hidden_size,60)
         self.relu_1 = nn.ReLU()
         self.dropout_1 = nn.Dropout(p=0.3)
         self.linear_2 = nn.Linear(60,30)
@@ -37,7 +64,7 @@ class MLNNBackbone(nn.Module):
         self.linear_3 = nn.Linear(30,n_output)
         self.relu_3 = nn.ReLU()
 
-        self.lstm_unit = lstm_unit
+        self.hidden_size = hidden_size
         self.seq_len = seq_len
         self._feature_dim = self.linear_3.out_features
 

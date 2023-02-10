@@ -20,7 +20,7 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "model_selection\talias_name\tsubject_num\ttrial_num\tlabels_name\tr2\tr_rmse\ttest_subject\tparent_test_id\tchild_test_id\ttraining_testing_folders" > $data_file
+echo "model_selection\talias_name\tconfig_name\tsubject_num\ttrial_num\ttrain_sub_num\tlabels_name\tr2\tr_rmse\ttest_subject\tparent_test_id\tchild_test_id\ttraining_testing_folders" > $data_file
 
 
 echo "START TO COLLECT TEST DATA"
@@ -54,24 +54,26 @@ for hyper_file in ${list_hyper_files}; do
         test_subject=$(awk -F"[ :-]+" '$1~/test_subject/{print $2}' $hyper_file)
         r2=$(awk -F"[,:]+" '$2~/r2/{print $4}' "${folder_path}/test_metrics.csv")
         r_rmse=$(awk -F"[,:]+" '$2~/r_rmse/{print $4}' "${folder_path}/test_metrics.csv")
-        alias_name=$(awk -F"[,:]+" '$1~/config_alias_name/{print $2}' $hyper_file)
-        sub_num=${"${alias_name}"%%sub*}
-        echo "alsia: ${alias_name}"
-        trial_num=${"${"${alias_name}"#*_}"%%trials*}
-        echo "sub_num: ${sub_num}, trial_num: ${trial_num}"
+        alias_name=$(awk -F"[,:]+" '$1~/^alias_name/{print $2}' $hyper_file)
+        echo "alias: ${alias_name}"
+        sub_num=$(awk -F"[ :-]+" '$1~/^sub_num/{print $2}' $hyper_file)
+        trial_num=$(awk -F"[ :-]+" '$1~/^trial_num/{print $2}' $hyper_file)
+        train_sub_num=$(awk -F"[ :-]+" '$1~/^train_sub_num/{print $2}' $hyper_file)
+        echo "sub_num: ${sub_num}, trial_num: ${trial_num}, train_sub_num: ${train_sub_num}"
         
         if [[ "$alias_name" == "" ]]; then
             alias_name=$model_selection
             #sed -i -e '1a\config_alias_name:imu_augment' $hyper_file
             #alias_name=$(awk -F"[,:]+" '$1~/config_alias_name/{print $2}' $hyper_file)
         fi
+        config_name=$(awk -F"[,:]+" '$1~/config_name/{print $2}' $hyper_file)
 
         echo "model_selection: ${model_selection}" 
         echo "labels_name: ${labels_name}" 
         echo "r2: ${r2}"
 
 
-        echo "${model_selection}\t${alias_name}\t${sub_num}\t${trial_num}\t${labels_name}\t${r2}\t${r_rmse}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${folder_path}" >> $data_file
+        echo "${model_selection}\t${alias_name}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${labels_name}\t${r2}\t${r_rmse}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${folder_path}" >> $data_file
     fi
 done
 

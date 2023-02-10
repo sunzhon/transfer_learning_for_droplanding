@@ -20,7 +20,7 @@ class TransferNetForRegression(nn.Module):
     def __init__(self, num_label=1, base_net='mlnn', transfer_loss='mmd', use_bottleneck=False, bottleneck_width=20, max_iter=1000, src_reg_loss_weight=2.1, tgt_reg_loss_weight=.0, **kwargs):
         super(TransferNetForRegression, self).__init__()
         self.num_label = num_label
-        self.base_network = backbones.get_backbone(base_net)
+        self.base_network = backbones.get_backbone(base_net,**kwargs)
         self.use_bottleneck = use_bottleneck
         self.src_reg_loss_weight = src_reg_loss_weight
         self.tgt_reg_loss_weight = tgt_reg_loss_weight
@@ -144,7 +144,7 @@ class BaselineModel(nn.Module):
     def __init__(self, num_label=1, base_net='mlnn', finetuning=False, **kwargs):
         super(BaselineModel, self).__init__()
         self.num_label = num_label
-        self.base_network = backbones.get_backbone(base_net)
+        self.base_network = backbones.get_backbone(base_net,**kwargs)
         feature_dim = self.base_network.output_num()
 
         #self.output_layer = nn.Linear(feature_dim, num_label)
@@ -201,7 +201,7 @@ class DiscriminatorModel(nn.Module):
     def __init__(self, num_label=1, base_net='discriminator', **kwargs):
         super(DiscriminatorModel, self).__init__()
         self.num_label = num_label
-        self.base_network = backbones.get_backbone(base_net)
+        self.base_network = backbones.get_backbone(base_net,**kwargs)
         feature_dim = self.base_network.output_num()
 
         self.output_layer = nn.Linear(feature_dim, num_label)
