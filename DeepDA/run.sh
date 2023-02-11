@@ -5,24 +5,23 @@
 for trial_num in 25 ; do
     #for sub_num in 15; do
     sub_num=15
-    for feature_layer_num in 10; do
+    for feature_layer_num in 1 3 5 7 9 10; do
         config_id="v6_${feature_layer_num}"
         model_name="baseline"
         tre_data_relative_path="selection"
         tst_data_relative_path="selection"
         relative_result_folder="baseline_${config_id}"
         base_name="kem_norm_landing_data.hdf5"
-        #train_sub_num=`expr $sub_num - 1`
-        train_sub_num=14
+        train_sub_num=$(expr $sub_num - 1 )
+        cv_num=$sub_num
 
+        #config_id="v6_${feature_layer_num}"
         #model_name="augmentation"
         #tre_data_relative_path="augmentation"
         #tst_data_relative_path="selection"
-        #relative_result_folder="augmentation_v5"
+        #relative_result_folder="augmentation_${config_id}"
         #base_name="kem_norm_landing_data.hdf5"
-        ##train_sub_num=`expr $sub_num - 1`
         #train_sub_num=14
-        #config_id=v5
 
 
 

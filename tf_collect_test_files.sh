@@ -54,20 +54,22 @@ for hyper_file in ${list_hyper_files}; do
         test_subject=$(awk -F"[ :-]+" '$1~/test_subject/{print $2}' $hyper_file)
         r2=$(awk -F"[,:]+" '$2~/r2/{print $4}' "${folder_path}/test_metrics.csv")
         r_rmse=$(awk -F"[,:]+" '$2~/r_rmse/{print $4}' "${folder_path}/test_metrics.csv")
-        alias_name=$(awk -F"[,:]+" '$1~/^alias_name/{print $2}' $hyper_file)
         echo "alias: ${alias_name}"
         sub_num=$(awk -F"[ :-]+" '$1~/^sub_num/{print $2}' $hyper_file)
         trial_num=$(awk -F"[ :-]+" '$1~/^trial_num/{print $2}' $hyper_file)
         train_sub_num=$(awk -F"[ :-]+" '$1~/^train_sub_num/{print $2}' $hyper_file)
         echo "sub_num: ${sub_num}, trial_num: ${trial_num}, train_sub_num: ${train_sub_num}"
         
+        config_name=$(awk -F"[,:]+" '$1~/config_name/{print $2}' $hyper_file)
+        relative_result_folder=$(awk -F"[,:]+" '$1~/relative_result_folder/{print $2}' $hyper_file)
+
+        alias_name=$(awk -F"[,:]+" '$1~/^alias_name/{print $2}' $hyper_file)
+        #alias_name=$(model_selection#"trials_")
         if [[ "$alias_name" == "" ]]; then
             alias_name=$model_selection
             #sed -i -e '1a\config_alias_name:imu_augment' $hyper_file
             #alias_name=$(awk -F"[,:]+" '$1~/config_alias_name/{print $2}' $hyper_file)
         fi
-        config_name=$(awk -F"[,:]+" '$1~/config_name/{print $2}' $hyper_file)
-        relative_result_folder=$(awk -F"[,:]+" '$1~/relative_result_folder/{print $2}' $hyper_file)
 
         echo "model_selection: ${model_selection}" 
         echo "labels_name: ${labels_name}" 

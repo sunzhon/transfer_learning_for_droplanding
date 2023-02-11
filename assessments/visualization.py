@@ -38,7 +38,7 @@ from vicon_imu_data_process.const import RESULTS_PATH
 if __name__ == '__main__':
     from scores import *
 else:
-    from estimation_assessment.scores import *
+    from assessment.scores import *
 
 '''
 Plot the estimation results
@@ -1621,13 +1621,21 @@ if __name__ == '__main__':
         combination_investigation_results = [
                 #os.path.join(RESULTS_PATH, "training_testing/baseline_v5/25trials/15sub/testing_result_folders.txt"),
                 #os.path.join(RESULTS_PATH, "training_testing/augmentation_v5/25trials/15sub/testing_result_folders.txt")
-                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_10/25trials/15sub/testing_result_folders.txt")
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_2/25trials/15sub/testing_result_folders.txt"),
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_4/25trials/15sub/testing_result_folders.txt"),
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_6/25trials/15sub/testing_result_folders.txt"),
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_8/25trials/15sub/testing_result_folders.txt"),
+                #os.path.join(RESULTS_PATH, "training_testing/baseline_v6_1_5_10/25trials/15sub/testing_result_folders.txt")
                 ]
         metrics = get_list_investigation_metrics(combination_investigation_results)
         
         combination_investigation_results = [
-                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_10/25trials/15sub/metrics.csv"),
-                os.path.join(RESULTS_PATH, "training_testing/augmentation_v5/25trials/15sub/metrics.csv")
+                #os.path.join(RESULTS_PATH, "training_testing/baseline_v6_10/25trials/15sub/metrics.csv"),
+                #os.path.join(RESULTS_PATH, "training_testing/augmentation_v5/25trials/15sub/metrics.csv")
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_2/25trials/15sub/metrics.csv"),
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_4/25trials/15sub/metrics.csv"),
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_6/25trials/15sub/metrics.csv"),
+                os.path.join(RESULTS_PATH, "training_testing/baseline_v6_8/25trials/15sub/metrics.csv"),
                 ]
-        fig_path, r2 = boxplot_models_accuracy(combination_investigation_results,  title= 'test', statannotation_flag=False)
+        fig_path, r2 = boxplot_models_accuracy(combination_investigation_results, hue="relative_result_folder", title= 'test', statannotation_flag=False)
 

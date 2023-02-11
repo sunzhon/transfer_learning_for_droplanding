@@ -47,7 +47,7 @@ def get_parser():
     # description of this config or code modification
     parser.add("--config_name", type=str, default="dann_1")
     parser.add("--config_comments", type=str, default="dann")
-    parser.add("--investigation_results_folder", type=str, default=None)
+    parser.add("--relative_result_folder", type=str, default=None)
 
     # general configuration
     parser.add("--config", is_config_file=True, help="config file path")
@@ -116,6 +116,9 @@ def get_parser():
     # layer num of features
     parser.add_argument('--feature_layer_num',type=int, default=1) # patience for early stopping
 
+    # the cross-validation num. How many combination of (train sub and test subs) are used 
+    parser.add_argument('--cv_num',type=int, default=10) # patience for early stopping
+
     return parser
 
 def set_random_seed(seed=0):
@@ -176,6 +179,7 @@ def load_data(args, multiple_domain_datasets):
 
 
 def get_model(args):
+    num_layers = args.feature_layer_num
     if(args.model_selection=='Normal_DANN'):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=0).to(args.device)
@@ -189,17 +193,16 @@ def get_model(args):
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
     elif(args.model_selection=='baseline'):
-        num_layers = args.feature_layer_num
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn',num_layers=num_layers).to(args.device)
+        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='augmentation'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)
+        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='pretrained'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn').to(args.device)
+        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='finetuning'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', finetuning=True).to(args.device)
+        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers = num_layers, finetuning=True).to(args.device)
         model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
 
     elif(args.model_selection=='discriminator'):
@@ -359,7 +362,8 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
 
         #iii) log save
         np_log = np.array(log, dtype=float)
-        np.savetxt('train_log.csv', np_log, delimiter=',', fmt='%.6f')
+        train_log_path = os.path.join(training_folder,'train_log.csv')
+        np.savetxt(train_log_path, np_log, delimiter=',', fmt='%.6f')
 
         # early stopping
         early_stop(test_loss, test_acc, model)
@@ -404,7 +408,7 @@ def k_fold(args, multiple_domain_datasets):
     train_test_list = list(range(len(tst_subject_ids_names))) # all subjects
     train_sub_num = args.train_sub_num # select how many subjects for training, and remaining for test
     train_index = list(itertools.combinations(train_test_list,train_sub_num)) # train_sub_num subjects for training, remaining subjects for test -CV
-    random_selected_train_index = random.sample(train_index, 15) # 随机选出15种训练对象的组合, selected 15 combiantions
+    random_selected_train_index = random.sample(train_index, args.cv_num) # 随机选出cv_num (e.g., 15) 种训练对象的组合, selected cv_num combiantions
     for loop, train_subject_indices in enumerate(random_selected_train_index): # leave-CV
         test_subject_indices = list(set(train_test_list)-set(train_subject_indices)) # leave-CV
         if(len(test_subject_indices)>3):
