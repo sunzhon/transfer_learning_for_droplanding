@@ -2,11 +2,13 @@
 #!/bin/pyenv python
 #coding: --utf-8
 
-for trial_num in 25 ; do
-    #for sub_num in 15; do
-    sub_num=15
-    for feature_layer_num in 1 3 5 7 9 10; do
-        config_id="v6_${feature_layer_num}"
+trial_num=25
+feature_layer_num=5 # keep it to use five. it is the best value
+
+for sub_num in $(seq 2 16); do
+
+    if true; then
+        config_id="v7_${feature_layer_num}"
         model_name="baseline"
         tre_data_relative_path="selection"
         tst_data_relative_path="selection"
@@ -14,20 +16,21 @@ for trial_num in 25 ; do
         base_name="kem_norm_landing_data.hdf5"
         train_sub_num=$(expr $sub_num - 1 )
         cv_num=$sub_num
+    else
 
-        #config_id="v6_${feature_layer_num}"
-        #model_name="augmentation"
-        #tre_data_relative_path="augmentation"
-        #tst_data_relative_path="selection"
-        #relative_result_folder="augmentation_${config_id}"
-        #base_name="kem_norm_landing_data.hdf5"
-        #train_sub_num=14
+        config_id="v7_${feature_layer_num}"
+        model_name="augmentation"
+        tre_data_relative_path="augmentation"
+        tst_data_relative_path="selection"
+        relative_result_folder="augmentation_${config_id}"
+        base_name="kem_norm_landing_data.hdf5"
+        train_sub_num=$(expr $sub_num - 1 )
+        cv_num=$sub_num
 
+    fi
 
+    echo "train ${model_name} with ${sub_num} subjects and ${trial_num} trials"
 
-        echo "train ${model_name} with ${sub_num} subjects and ${trial_num} trials"
-
-        python main.py --config run.yaml --model_selection ${model_name} --feature_layer_num ${feature_layer_num} --tre_domain "${tre_data_relative_path}/${tre_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --tst_domain "${tst_data_relative_path}/${tst_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --config_name "${sub_num}sub_${trial_num}trials_${model_name}_${config_id}" --relative_result_folder "${relative_result_folder}/${trial_num}trials/${sub_num}sub" | tee "./log/${model_name}/${sub_num}sub_${trial_num}trials.log"
-    done
+    python main.py --config run.yaml --model_selection ${model_name} --feature_layer_num ${feature_layer_num} --cv_num ${cv_num} --tre_domain "${tre_data_relative_path}/${tre_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --tst_domain "${tst_data_relative_path}/${tst_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --config_name "${sub_num}sub_${trial_num}trials_${model_name}_${config_id}" --relative_result_folder "${relative_result_folder}/${trial_num}trials/${sub_num}sub" | tee "./log/${model_name}/${sub_num}sub_${trial_num}trials.log"
 done
 
