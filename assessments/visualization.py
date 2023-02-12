@@ -38,7 +38,7 @@ from vicon_imu_data_process.const import RESULTS_PATH
 if __name__ == '__main__':
     from scores import *
 else:
-    from assessment.scores import *
+    from assessments.scores import *
 
 '''
 Plot the estimation results
@@ -1632,6 +1632,8 @@ if __name__ == '__main__':
                 os.path.join(RESULTS_PATH, "training_testing/augmentation_v6_9/25trials/15sub/testing_result_folders.txt"),
                 os.path.join(RESULTS_PATH, "training_testing/augmentation_v6_10/25trials/15sub/testing_result_folders.txt")
                 ]
+
+        combination_investigation_results = [os.path.join(RESULTS_PATH, "training_testing/baseline_v8_5/25trials/"+str(sub)+"sub/testing_result_folders.txt") for sub in range(5,16)]
         metrics = get_list_investigation_metrics(combination_investigation_results)
         
         combination_investigation_results = [
@@ -1648,5 +1650,6 @@ if __name__ == '__main__':
                 os.path.join(RESULTS_PATH, "training_testing/augmentation_v6_9/25trials/15sub/metrics.csv"),
                 os.path.join(RESULTS_PATH, "training_testing/augmentation_v6_10/25trials/15sub/metrics.csv")
                 ]
+        combination_investigation_results = [os.path.join(RESULTS_PATH, "training_testing/baseline_v8_5/25trials/"+str(sub)+"sub/metrics.csv") for sub in range(5,16)]
         fig_path, r2 = boxplot_models_accuracy(combination_investigation_results, hue="relative_result_folder", title= 'test', statannotation_flag=False)
 

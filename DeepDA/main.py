@@ -192,11 +192,14 @@ def get_model(args):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
-    elif(args.model_selection=='baseline'):
+    elif(args.model_selection=='baseline_mlnn'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='augmentation'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
+
+    elif(args.model_selection=='baseline_cnn'):
+        model = models.BaselineModel(num_label=args.n_labels, base_net='cnn', num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='pretrained'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
@@ -235,7 +238,7 @@ def test(model, test_data_loader, args, **kwargs):
     criterion = torch.nn.MSELoss()
     len_target_dataset = len(test_data_loader.dataset)
     test_acc = utils.AverageMeter()
-    with torch.no_grad():
+    with torch.no_grad(): # no do calcualte grad
         for idx, (features, labels) in enumerate(test_data_loader):
 
             # load data to device
@@ -407,8 +410,8 @@ def k_fold(args, multiple_domain_datasets):
     '''
     train_test_list = list(range(len(tst_subject_ids_names))) # all subjects
     train_sub_num = args.train_sub_num # select how many subjects for training, and remaining for test
-    train_index = list(itertools.combinations(train_test_list,train_sub_num)) # train_sub_num subjects for training, remaining subjects for test -CV
-    random_selected_train_index = random.sample(train_index, args.cv_num) # 随机选出cv_num (e.g., 15) 种训练对象的组合, selected cv_num combiantions
+    train_indices_list = list(itertools.combinations(train_test_list,train_sub_num)) # train_sub_num subjects for training, remaining subjects for test -CV
+    random_selected_train_index = random.sample(train_indices_list, args.cv_num) # 随机选出cv_num (e.g., 15) 种训练对象的组合, selected cv_num combiantions
     for loop, train_subject_indices in enumerate(random_selected_train_index): # leave-CV
         test_subject_indices = list(set(train_test_list)-set(train_subject_indices)) # leave-CV
         if(len(test_subject_indices)>3):

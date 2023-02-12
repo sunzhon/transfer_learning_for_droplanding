@@ -149,9 +149,14 @@ class BaselineModel(nn.Module):
 
         #self.output_layer = nn.Linear(feature_dim, num_label)
         output_list = [
-                nn.Linear(feature_dim,20),
+                nn.Linear(feature_dim,100),
+                nn.Dropout(p=0.2),
                 nn.ReLU(),
-                nn.Linear(20, 20),
+                nn.Linear(100,50),
+                nn.Dropout(p=0.2),
+                nn.ReLU(),
+                nn.Linear(50, 20),
+                nn.Dropout(p=0.2),
                 nn.ReLU(),
                 nn.Linear(20, num_label)
             ]

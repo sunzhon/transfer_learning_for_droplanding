@@ -3,6 +3,7 @@ import torch
 from torchvision import models
 import pdb
 from torch.nn.utils.rnn import pad_sequence,pack_padded_sequence,pack_sequence,pad_packed_sequence
+from torch.nn import Linear, ReLU, CrossEntropyLoss, Sequential, Conv2d, MaxPool2d, Module, Softmax, BatchNorm2d, Dropout
 
 
 resnet_dict = {
@@ -26,6 +27,12 @@ def get_backbone(name,**kwargs):
             return MLNNBackbone(num_layers=num_layers)
         else:
             return MLNNBackbone()
+    elif "cnn" == name.lower(): # modular lstm neural network, defined by suntao
+        if 'num_layers' in kwargs.keys():
+            num_layers = kwargs['num_layers']
+            return CNNBackbone(num_layers=num_layers)
+        else:
+            return CNNBackbone()
 
 
 class MLNNBackbone(nn.Module):
@@ -50,37 +57,31 @@ class MLNNBackbone(nn.Module):
 A backup of MLNN on Feb 10 2023
 
 '''
+class CNNBackbone(nn.Module):
+    def __init__(self,in_channels=1,n_output=1,num_layers=1):
+        super(CNNBackbone, self).__init__()
+        self.cnn_layers=Sequential(
+                # Defining a 2D convolution layer
+                Conv2d(in_channels=in_channels,out_channels=4, kernel_size=(4,6), stride=1, padding=1),
+                BatchNorm2d(4),
+                ReLU(inplace=True),
+                MaxPool2d(kernel_size=(4,5), stride=1),
+                ## Defining another 2D convolution layer
+                nn.Dropout(p=0.3),
+                Conv2d(4, 4, kernel_size=(4,6), stride=1, padding=1),
+                BatchNorm2d(4),
+                ReLU(inplace=True),
+                MaxPool2d(kernel_size=(4,5), stride=1),
+                )
+        self.in_channels = in_channels
+        self._feature_dim=126
 
-class MLNNBackbone_BK(nn.Module):
-    def __init__(self, n_input=49, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
-        super(MLNNBackbone, self).__init__()
-        self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, bidirectional=True, batch_first=True)
-        self.linear_1 = nn.Linear(2*hidden_size,60)
-        self.relu_1 = nn.ReLU()
-        self.dropout_1 = nn.Dropout(p=0.3)
-        self.linear_2 = nn.Linear(60,30)
-        self.relu_2 = nn.ReLU()
-        self.dropout_2 = nn.Dropout(p=0.3)
-        self.linear_3 = nn.Linear(30,n_output)
-        self.relu_3 = nn.ReLU()
-
-        self.hidden_size = hidden_size
-        self.seq_len = seq_len
-        self._feature_dim = self.linear_3.out_features
-
-    def forward(self, sequence): # input dim = [batch_size, seq_en, features_len]
-        batch_size = sequence.shape[0]
-        sequence = pack_padded_sequence(sequence, batch_size*[self.seq_len], batch_first=True, enforce_sorted=False)
-        lstm_out, (hidden, c) = self.lstm_layer(sequence) # lstm_out dim  = [batch_size, seq_len, model_dim]
-        linear_1_out,_= pad_packed_sequence(lstm_out, batch_first=True, total_length=self.seq_len)
-        x = self.linear_1(linear_1_out) # linear input dim =[batch, -1]
-        x = self.relu_1(x)
-        x = self.dropout_1(x)
-        x = self.linear_2(x)
-        x = self.relu_2(x)
-        x = self.dropout_2(x)
-        x = self.linear_3(x)
-        x = self.relu_3(x)
+        # Defining the forward pass
+    def forward(self, x): #input_dim = [batch_size, seq_len (80), feature_num (49)]
+        (batch_size, seq_len, feature_num) =x.size()
+        x = x.view(batch_size, self.in_channels, seq_len, feature_num)
+        x = self.cnn_layers(x)
+        x = x.view(batch_size, seq_len, -1)
         return x
 
     def output_num(self):
@@ -104,7 +105,7 @@ class DaNNBackbone(nn.Module):
 
     def output_num(self):
         return self._feature_dim
-    
+
 # convnet without the last layer
 class AlexNetBackbone(nn.Module):
     def __init__(self):
@@ -114,8 +115,8 @@ class AlexNetBackbone(nn.Module):
         self.classifier = nn.Sequential()
         for i in range(6):
             self.classifier.add_module(
-                "classifier"+str(i), model_alexnet.classifier[i])
-        self._feature_dim = model_alexnet.classifier[6].in_features
+                    "classifier"+str(i), model_alexnet.classifier[i])
+            self._feature_dim = model_alexnet.classifier[6].in_features
 
     def forward(self, x):
         x = self.features(x)
@@ -141,7 +142,7 @@ class ResNetBackbone(nn.Module):
         self.avgpool = resnet.avgpool
         self._feature_dim = resnet.fc.in_features
         del resnet
-    
+
     def forward(self, x):
         x = self.conv1(x)
         x = self.bn1(x)
@@ -154,13 +155,13 @@ class ResNetBackbone(nn.Module):
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         return x
-    
+
     def output_num(self):
         return self._feature_dim
 
 
 
 if __name__=='__main__':
-    model = MLNNBackbone()
+    model = CNNBackbone()
     print(model)
-    model()
+    #model()

@@ -5,11 +5,12 @@
 trial_num=25
 feature_layer_num=5 # keep it to use five. it is the best value
 
-for sub_num in $(seq 2 16); do
+if false; then
+for sub_num in $(seq 15 15); do
 
     if true; then
-        config_id="v7_${feature_layer_num}"
-        model_name="baseline"
+        config_id="t1_${feature_layer_num}"
+        model_name="baseline_cnn"
         tre_data_relative_path="selection"
         tst_data_relative_path="selection"
         relative_result_folder="baseline_${config_id}"
@@ -33,4 +34,10 @@ for sub_num in $(seq 2 16); do
 
     python main.py --config run.yaml --model_selection ${model_name} --feature_layer_num ${feature_layer_num} --cv_num ${cv_num} --tre_domain "${tre_data_relative_path}/${tre_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --tst_domain "${tst_data_relative_path}/${tst_data_relative_path}_${trial_num}trials_${sub_num}subjects_${base_name}" --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --config_name "${sub_num}sub_${trial_num}trials_${model_name}_${config_id}" --relative_result_folder "${relative_result_folder}/${trial_num}trials/${sub_num}sub" | tee "./log/${model_name}/${sub_num}sub_${trial_num}trials.log"
 done
+
+fi
+
+relative_result_folder="baseline_t1_5"
+./../batch_collect_test_files.sh "${relative_result_folder}"
+
 
