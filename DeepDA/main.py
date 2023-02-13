@@ -105,13 +105,13 @@ def get_parser():
     parser.add_argument('--early_stopping_patience',type=int, default=10) # patience for early stopping
     parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
-    # train_sub_num subjects were used to train model 
-    parser.add_argument('--train_sub_num',type=int, default=14) # patience for early stopping
-
     # sub_num subjects and trial_num trials of a subject in the loaded dataset
     parser.add_argument('--sub_num',type=int, default=15) # patience for early stopping
     parser.add_argument('--trial_num',type=int, default=25) # patience for early stopping
 
+    # train_sub_num subjects were used to train model 
+    parser.add_argument('--train_sub_num',type=int, default=14) # patience for early stopping
+    parser.add_argument('--test_sub_num',type=int, default=1) # patience for early stopping
 
     # layer num of features
     parser.add_argument('--feature_layer_num',type=int, default=1) # patience for early stopping
@@ -308,12 +308,13 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
 
     # crerate train results folder
     training_folder = pro_rd.create_training_files(hyperparams=vars(args))
-    args.save_test = False
+    args.save_test = False 
     args.training_folder = training_folder
 
     # initialize the early_stopping object
     early_stop = EarlyStopping(save_path=training_folder, patience=args.early_stopping_patience, verbose=True)
-
+    
+    # conduct all epochs
     for epoch in range(1, args.n_epoch+1):
         # i) Train processing
         model.train()
@@ -327,6 +328,7 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
             if name!='tst': # do not need to iter tst data
                 domains_data_iter[name] = iter(a_data_loader)
         
+        # conduct all batchs 
         for _ in range(n_batch):
             domains_samples = {}
             for name in domains_data_iter.keys():
@@ -375,9 +377,9 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
             break
         print(info)
 
-    # load the last checkpoint with the best model
+    # load the last checkpoint with the best model for test model 
     model.load_state_dict(torch.load(os.path.join(training_folder,'best_model.pth')))
-    args.save_test=True
+    args.save_test = True
     test_loss, test_acc, testing_folder = test(model, domain_data_loaders['tst'], args)
     print('Best result: {:.4f}'.format(early_stop.best_acc))
     # save trainied model
@@ -399,6 +401,7 @@ def k_fold(args, multiple_domain_datasets):
 
     # NOTE: tre and tst mush have same subjects
     assert(set(multiple_domain_datasets['tre'])==set(multiple_domain_datasets['tst'])) # reg target and test target have same subject list, which using labels
+
     # print loaded data domain name
     for name, data in multiple_domain_datasets.items():
         print("{} domain subjects: {}\n".format(name, list(data.keys())))
@@ -408,15 +411,15 @@ def k_fold(args, multiple_domain_datasets):
     '''
     for train_subject_indices, test_subject_indices in kf.split(tst_subject_ids_names): # typical CV
     '''
-    train_test_list = list(range(len(tst_subject_ids_names))) # all subjects
-    train_sub_num = args.train_sub_num # select how many subjects for training, and remaining for test
+    train_test_list = list(range(len(tst_subject_ids_names))) # all subjects [0,1,2,3,....]
+    train_sub_num = args.train_sub_num # select how many subjects for training
+    test_sub_num = args.test_sub_num # select howm many subjects for testing
     train_indices_list = list(itertools.combinations(train_test_list,train_sub_num)) # train_sub_num subjects for training, remaining subjects for test -CV
     random_selected_train_index = random.sample(train_indices_list, args.cv_num) # 随机选出cv_num (e.g., 15) 种训练对象的组合, selected cv_num combiantions
     for loop, train_subject_indices in enumerate(random_selected_train_index): # leave-CV
-        test_subject_indices = list(set(train_test_list)-set(train_subject_indices)) # leave-CV
-        if(len(test_subject_indices)>3):
-            test_subject_indices = random.sample(test_subject_indices,3) # random select 5 subjects from the all test subjects
-
+        non_train_subject_list =  list(set(train_test_list)-set(train_subject_indices))# not used in training dataset
+        test_indices_list = list(itertools.combinations(non_train_subject_list, test_sub_num)) # list of test indices
+        test_subject_indices =  random.sample(test_indices_list, 1)[0] # output is [(,),(,),...], random select one list, [0] means the one.
 
         #i) split target data into train and test target dataset 
         train_subject_ids_names = [tst_subject_ids_names[subject_idx] for subject_idx in train_subject_indices]
@@ -478,7 +481,7 @@ def model_evaluation(args, multiple_domain_datasets):
     model = models.BaselineModel(num_label=args.n_labels, base_net=args.backbone).to(args.device)
     model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
 
-    #load data
+    # load data
     tst_subjects_trials_data = multiple_domain_datasets['tst'] # additional domain for only test, it is raw target domain
     tst_subject_ids_names = list(tst_subjects_trials_data.keys()) 
     print("test domain subjects: {}".format(tst_subject_ids_names))
@@ -524,9 +527,9 @@ def main():
     #3) cross_validation for training and evaluation model
     setattr(args, 'test_subject_ids_names', [])
 
-    #k_fold(args,src_subjects_trials_data, tgt_subjects_trials_data)
+    # test or cross validation training
     if(args.model_selection=='test_model'):
-        model_evaluation(args, multiple_domain_datasets)
+        model_evaluation(args, multiple_domain_datasets) # args contains model_param path
     else:
         k_fold(args, multiple_domain_datasets)
 

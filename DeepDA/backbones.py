@@ -38,7 +38,7 @@ def get_backbone(name,**kwargs):
 class MLNNBackbone(nn.Module):
     def __init__(self, n_input=49, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
         super(MLNNBackbone, self).__init__()
-        self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, dropout=0.3,bidirectional=True, batch_first=True)
+        self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, dropout=0.2,bidirectional=True, batch_first=True)
         self.hidden_size = hidden_size
         self.seq_len = seq_len
         self._feature_dim = 2*hidden_size

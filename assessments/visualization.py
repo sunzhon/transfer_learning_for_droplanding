@@ -1634,7 +1634,7 @@ if __name__ == '__main__':
                 ]
 
         combination_investigation_results = [os.path.join(RESULTS_PATH, "training_testing/baseline_v8_5/25trials/"+str(sub)+"sub/testing_result_folders.txt") for sub in range(5,16)]
-        metrics = get_list_investigation_metrics(combination_investigation_results)
+        #metrics = get_list_investigation_metrics(combination_investigation_results)
         
         combination_investigation_results = [
                 #os.path.join(RESULTS_PATH, "training_testing/baseline_v6_10/25trials/15sub/metrics.csv"),
