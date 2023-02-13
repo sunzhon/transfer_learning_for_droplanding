@@ -20,9 +20,9 @@ if true; then
             tst_data_relative_path="selection"
             relative_result_folder="${model_name}_${config_id}"
             base_name="kem_norm_landing_data.hdf5"
-            test_sub_num=1
+            test_sub_num=2
             #train_sub_num=$(expr $sub_num - $test_sub_num )
-            cv_num=5  #$train_sub_num
+            cv_num=8  #$train_sub_num
 
             echo "train ${model_name} with ${train_sub_num} subjects and ${trial_num} trials"
 
