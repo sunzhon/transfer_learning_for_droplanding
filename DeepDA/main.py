@@ -418,8 +418,8 @@ def k_fold(args, multiple_domain_datasets):
     random_selected_train_index = random.sample(train_indices_list, args.cv_num) # 随机选出cv_num (e.g., 15) 种训练对象的组合, selected cv_num combiantions
     for loop, train_subject_indices in enumerate(random_selected_train_index): # leave-CV
         non_train_subject_list =  list(set(train_test_list)-set(train_subject_indices))# not used in training dataset
-        test_indices_list = list(itertools.combinations(non_train_subject_list, test_sub_num if len(non_train_subject_list) > test_sub_num else len(non_train_subject_list)) # list of test indices
-        test_subject_indices =  random.sample(test_indices_list, 1)[0] # output is [(,),(,),...], random select one list, [0] means the one.
+        test_indices_list = list(itertools.combinations(non_train_subject_list, test_sub_num if len(non_train_subject_list) > test_sub_num else len(non_train_subject_list))) # list of test indices
+        test_subject_indices = random.sample(test_indices_list, 1)[0] # output is [(,),(,),...], random select one list, [0] means the one.
 
         #i) split target data into train and test target dataset 
         train_subject_ids_names = [tst_subject_ids_names[subject_idx] for subject_idx in train_subject_indices]
