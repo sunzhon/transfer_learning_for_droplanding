@@ -18,11 +18,9 @@ collect_test_file="${tflearning_path}/collect_test_files.sh"
 results_path="${MEDIA_NAME}drop_landing_workspace/results/training_testing"
 for train_sub_num in $(seq 1 15); do
     for trial_num in $(seq 1 25); do
-        for rot_id in 5 10 15 30 50 75; do
             #relative_path="augmentation_v6_${config_id}"
-            file_dir="$results_path/${relative_path}/${rot_id}rotid/${train_sub_num}sub/${trial_num}trials"
+            file_dir="$results_path/${relative_path}/${train_sub_num}sub/${trial_num}tri"
             ${collect_test_file} ${file_dir} ${filter_target}
-        done
     done
 done
 

@@ -12,7 +12,7 @@ sys.path.append(added_path)
 import process_landing_data as pro_rd
 import const
 
-def load_img_data(data_folder, batch_size, train, num_workers=0, **kwargs):
+def load_data(data_folder, batch_size, train, num_workers=0, **kwargs):
     transform = {
         'train': transforms.Compose(
             [transforms.Resize([256, 256]),
@@ -94,8 +94,8 @@ class MotionDataset(Dataset):
         self.features = []
         self.labels = []
         self.subjects_trials = []
-        for subject_id_name, trials in subjects_trials_dataset.items(): # subjects
-            for trial, data in trials.items(): # trials
+        for subject_id_name, trials in subjects_trials_dataset.items():
+            for trial, data in trials.items():
                 self.features.append(torch.tensor(data.loc[:,features_name].values, dtype=torch.float32).to(device))
                 self.labels.append(torch.tensor(data.loc[:,labels_name].values, dtype=torch.float32).to(device))
                 self.subjects_trials.append(subject_id_name+trial)

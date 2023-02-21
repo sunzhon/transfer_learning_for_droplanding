@@ -46,6 +46,7 @@ def get_parser():
 
     # description of this config or code modification
     parser.add("--config_name", type=str, default="dann_1")
+    parser.add("--config_id", type=str, default="1")
     parser.add("--config_comments", type=str, default="dann")
     parser.add("--relative_result_folder", type=str, default=None)
 
@@ -67,7 +68,7 @@ def get_parser():
     parser.add_argument('--labels_name',type=str, nargs='+')
     
     # training related
-    parser.add_argument('--batch_size', type=int, default=40)
+    parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--max_iter', type=int, default=1000)
     parser.add_argument('--n_epoch', type=int, default=100)
     parser.add_argument('--early_stop', type=int, default=0, help="Early stopping")
@@ -169,11 +170,9 @@ def load_data(args, multiple_domain_datasets):
     domain_data_loaders={}
     for domain_name, domain_data in multiple_domain_datasets.items():
         if(domain_name!='tst'):
-            a_data_loader, n_labels = data_loader.load_motiondata(domain_data, args.batch_size, train=True, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
+            domain_data_loaders[domain_name], n_labels = data_loader.load_motiondata(domain_data, args.batch_size, train=True, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
         else:
-            a_data_loader, n_labels = data_loader.load_motiondata(domain_data,1, train=False, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
-
-        domain_data_loaders[domain_name] = a_data_loader
+            domain_data_loaders[domain_name], n_labels = data_loader.load_motiondata(domain_data,1, train=False, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
 
     return domain_data_loaders, n_labels
 
@@ -324,17 +323,17 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
 
         # generate iterater of dataloader
         domains_data_iter={}
-        for name, a_data_loader in domain_data_loaders.items():
+        for name, a_data_loader in domain_data_loaders.items(): # name and dataset of a domain dataloader
             if name!='tst': # do not need to iter tst data
                 domains_data_iter[name] = iter(a_data_loader)
         
         # conduct all batchs 
-        for _ in range(n_batch):
+        for _ in range(n_batch): # batch
             domains_samples = {}
-            for name in domains_data_iter.keys():
+            for name in domains_data_iter.keys(): # domains
                 data, label = next(domains_data_iter[name])
                 data, label = data.to(args.device), label.to(args.device)
-                domains_samples[name] = (data,label)
+                domains_samples[name] = (data,label) # pack batched data and label of each domain
             reg_loss, transfer_loss = model(domains_samples)
             reg_loss = args.regression_loss_weight*reg_loss 
             transfer_loss = args.transfer_loss_weight * transfer_loss
@@ -397,7 +396,8 @@ def k_fold(args, multiple_domain_datasets):
         kf = LeaveOneOut()
 
     # copy dataset
-    load_domain_dataset = copy.deepcopy(multiple_domain_datasets)
+    #load_domain_dataset = copy.deepcopy(multiple_domain_datasets)
+    load_domain_dataset = {}# copy.deepcopy(multiple_domain_datasets)
 
     # NOTE: tre and tst mush have same subjects
     assert(set(multiple_domain_datasets['tre'])==set(multiple_domain_datasets['tst'])) # reg target and test target have same subject list, which using labels
