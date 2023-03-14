@@ -4,7 +4,7 @@
 if [ $# -gt 0 ]; then
     relative_path=$1
 else
-    relative_path='augmentation_v14'
+    relative_path='augmentation_kem_v2/6rotid'
 fi
 
 if [ $# -gt 1 ]; then

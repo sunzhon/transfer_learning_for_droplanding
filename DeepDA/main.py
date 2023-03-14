@@ -66,6 +66,7 @@ def get_parser():
     parser.add_argument('--tre_domain', type=str, required=True)
     parser.add_argument('--tst_domain', type=str, required=True)# Test dataset
     parser.add_argument('--labels_name',type=str, nargs='+')
+    parser.add_argument('--landing_manner',type=str, default='double_legs')
     
     # training related
     parser.add_argument('--batch_size', type=int, default=1)

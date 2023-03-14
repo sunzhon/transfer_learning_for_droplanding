@@ -639,16 +639,15 @@ def parse_list_investigation_metrics(list_combination_investigation_results, cal
     if(calculate_mean_subject_r2):
         # calculate mean subject r2
         metrics['mean_subject_r2']=0
-        mean_subject_r2 = metrics[['subject_num', 'trial_num','test_subject','r2','model_selection']].groupby(['subject_num', 'trial_num','test_subject','model_selection']).mean().round(4)
+        mean_subject_r2 = metrics[['subject_num', 'train_sub_num', 'trial_num','test_subject','r2','model_selection']].groupby(['subject_num', 'train_sub_num', 'trial_num','test_subject','model_selection']).mean().round(4)
         # add mean subject metrics into metrics
         for subject_num in set(metrics['subject_num']):
-            for trial_num in set(metrics['trial_num']): 
-                for test_subject in set(metrics['test_subject']):
-                    for model_selection in set(metrics['model_selection']):
-                        if(test_subject in mean_subject_r2.loc[subject_num, trial_num].index):
-                            metrics.loc[(metrics['subject_num']==subject_num) & (metrics['trial_num']==trial_num) &             (metrics['test_subject']==test_subject) & (metrics['model_selection']==model_selection), 'mean_subject_r2']=mean_subject_r2.loc[subject_num, trial_num, test_subject, model_selection].values[0]
-
-
+            for train_sub_num in set(metrics['train_sub_num']):
+                for trial_num in set(metrics['trial_num']): 
+                    for test_subject in set(metrics['test_subject']):
+                        for model_selection in set(metrics['model_selection']):
+                            if(test_subject in mean_subject_r2.loc[subject_num, trial_num].index):
+                                metrics.loc[(metrics['subject_num']==subject_num) & (metrics['train_sub_num']==train_sub_num) & (metrics['trial_num']==trial_num) & (metrics['test_subject']==test_subject) & (metrics['model_selection']==model_selection), 'mean_subject_r2']=mean_subject_r2.loc[subject_num, trial_num, test_subject, model_selection].values[0]
 
     return metrics
 

@@ -985,7 +985,7 @@ def boxplot_single_imu_estimation_accuracy(combination_investigation_results):
 P6, compare different models
 
 '''
-def plot_models_accuracy(combination_investigation_results, title=None, metric_fields=['r2'], hue=None, statannotation_flag=False, **kwargs):
+def plot_models_accuracy(combination_investigation_results, title='Model accuracy', metric_fields=['r2'], **kwargs):
 
     #1) load assessment metrics
     if(not isinstance(combination_investigation_results,list)):
@@ -1009,13 +1009,8 @@ def plot_models_accuracy(combination_investigation_results, title=None, metric_f
     axs.append(fig.add_subplot(gs1[0:2, 0:2]))
 
     #ii) plot colors
-    if hue != None:
-        palette =  sns.color_palette("Paired")
-    else:
-        palette = None
-
     sns.set(font_scale=1.15,style='whitegrid')
-    states_palette = sns.color_palette("YlGnBu", n_colors=8)
+    states_palette = sns.color_palette("YlGnBu")
     colors = sns.color_palette("YlGnBu") 
 
     #iii) sensor configurations
@@ -1026,41 +1021,39 @@ def plot_models_accuracy(combination_investigation_results, title=None, metric_f
         'data': metrics,
         'x': x,
         'y': y,
-        'hue': hue,
+        'hue': None,
         "showfliers": False,
         "showmeans": True,
         "color": colors[idx],
         "palette": states_palette
         }
+    
     if('plot_params' in kwargs.keys()):
         for key, value in kwargs['plot_params'].items():
             plot_params[key] = value
-    pdb.set_trace()
+            
     g = sns.boxplot(ax=axs[idx], **plot_params)
     g.set_xlabel('Models')
     g.set_ylabel('$R^2$')
     g.set_ylim(0.4,1.0)
     g.set_yticks([0.6, 0.7, 0.8, 0.85, 0.9, 0.95, 1.0])
     g.grid(visible=True, axis='both',which='major')
-    if hue!=None:
-        g.legend(ncol=3,title='Event-based alignment',loc='lower right')
+    if 'hue' in kwargs.keys():
+        g.legend(ncol=3, title='Event-based alignment', loc='lower right')
         #g.get_legend().remove()
     #fig.suptitle(re.search('[A-Z]+',estimated_variable).group(0)+title)
 
 
-    # statistical test
-    if(statannotation_flag):
-        test_method="Mann-Whitney"
-        #test_method="t-test_ind"
-        pairs = (
-            [('baseline','DANN')]
-        )
-        pairs=kwargs['test_paris']
+    #3) statistical test
+    test_method="Mann-Whitney"
+    #test_method="t-test_ind"
+    if('test_pairs' in kwargs.keys()):
+        pairs = kwargs['test_pairs']
 
         annotator=Annotator(g,pairs=pairs,**plot_params)
         annotator.configure(test=test_method, text_format='star', loc='outside')
         annotator.apply_and_annotate()
-
+    
     return save_figure(os.path.dirname(combination_investigation_results[0]),fig_name=title, fig_format='svg'), metrics
 
 
@@ -1491,6 +1484,17 @@ if __name__ == '__main__':
         ]
 
         combination_investigation_metrics = [os.path.join(os.path.dirname(folder), "metrics.csv") for folder in combination_investigation_results]
-        fig_path, r2 = plot_models_accuracy(combination_investigation_results,plot_params={'x':'config_name','y':'r2'})
+        
+        
+        #fig_path, r2 = plot_models_accuracy(combination_investigation_results,plot_params={'x':'config_name','y':'r2'})
         #fig_path, r2 = plot_models_accuracy(combination_investigation_results, hue="relative_result_folder", title= 'test', statannotation_flag=False)
+        
+        
+        combination_investigation_results =  combination_investigation_results +[
+            os.path.join(RESULTS_PATH, "training_testing", "augmentation_kem_v2",str(rot_id)+'rotid', str(sub_num)+"sub", str(trial_num)+"tri",  
+                         "testing_result_folders.txt") for sub_num in range(14,15,1) for trial_num in range(25, 26,5) for rot_id in [6, 7, 8,9,10,11]
+        ]
+        #metrics = get_list_investigation_metrics(combination_investigation_results)
+        combination_investigation_metrics = [os.path.join(os.path.dirname(folder), "metrics.csv") for folder in combination_investigation_results]
+        fig_path, r2 = plot_models_accuracy(combination_investigation_results,plot_params={'x':'config_name','y':'r2','hue':'model_selection'},test_pairs=['baseline_mlnn','augmentation'])
 

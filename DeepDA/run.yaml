@@ -8,7 +8,7 @@ transfer_loss: adv
 
 # Optimizer related
 weight_decay: 0.001
-lr: 0.05
+lr: 0.04
 
 lr_scheduler: True
 lr_gamma: 0.001 # 1/n_epoch*10
@@ -27,15 +27,13 @@ num_workers: 3
 # bottleneck
 use_bottleneck: False
 
-data_dir: '/media/sun/DATA/drop_landing_workspace/data'
+#ata_dir: '/media/sun/DATA/drop_landing_workspace/data'
+data_dir: "${DATA_PATH}"
 
 src_domain: "None"
 tcl_domain: "None" 
 tre_domain: "None" 
 tst_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5" 
-
-labels_name:
-  - 'R_KNEE_MOMENT_X'
 
 config_name: dann
 config_comments: 'complex output layers and using repeated IMU'
