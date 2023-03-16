@@ -5,6 +5,7 @@ import data_loader
 import os
 import sys
 import torch
+import torchmetrics
 import models
 import utils
 from utils import str2bool
@@ -66,6 +67,7 @@ def get_parser():
     parser.add_argument('--tre_domain', type=str, required=True)
     parser.add_argument('--tst_domain', type=str, required=True)# Test dataset
     parser.add_argument('--labels_name',type=str, nargs='+')
+    parser.add_argument('--features_name',type=str, nargs='+')
     parser.add_argument('--landing_manner',type=str, default='double_legs')
     
     # training related
@@ -193,7 +195,7 @@ def get_model(args):
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
     elif(args.model_selection=='baseline_mlnn'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
+        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='augmentation'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
@@ -238,6 +240,7 @@ def test(model, test_data_loader, args, **kwargs):
     criterion = torch.nn.MSELoss()
     len_target_dataset = len(test_data_loader.dataset)
     test_acc = utils.AverageMeter()
+    r2score = torchmetrics.R2Score(2)#num_outputs=2,multioutput='raw_values'
     with torch.no_grad(): # no do calcualte grad
         for idx, (features, labels) in enumerate(test_data_loader):
 
@@ -250,16 +253,8 @@ def test(model, test_data_loader, args, **kwargs):
             test_loss.update(loss.item())
             
             # metrics: accuracy
-            '''
-            r2=[]
-            for idx in range(labels.shape[0]):
-                a_label = labels[idx,:,:].cpu().numpy()
-                a_prediction = predictions[idx,:,:].cpu().numpy()
-                r2.append(es_sc.calculate_scores(a_label, a_prediction)[0])
-            mean_r2 =  sum(r2)/len(r2)
-            '''
-
-            mean_r2 = torch.mean(f1_score(labels, predictions))
+            #mean_r2 = torch.mean(f1_score(labels, predictions))
+            mean_r2 = r2score(predictions.squeeze(0), labels.squeeze(0))
             test_acc.update(mean_r2)
 
             if(args.save_test):
@@ -382,6 +377,7 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
     args.save_test = True
     test_loss, test_acc, testing_folder = test(model, domain_data_loaders['tst'], args)
     print('Best result: {:.4f}'.format(early_stop.best_acc))
+    print('Its training folder: {}'.format(training_folder))
     # save trainied model
     torch.save(model.state_dict(),os.path.join(training_folder,'trained_model.pth'))
 
@@ -511,8 +507,9 @@ def main():
     args.data_dir = const.DATA_PATH
     
     # features
-    features_name = ['TIME'] + const.extract_imu_fields(const.IMU_SENSOR_LIST, const.ACC_GYRO_FIELDS)
-    setattr(args, "features_name", features_name)
+    #features_name = ['TIME'] + const.extract_imu_fields(const.IMU_SENSOR_LIST, const.ACC_GYRO_FIELDS)
+    #features_name = const.extract_imu_fields(const.IMU_SENSOR_LIST, const.ACC_GYRO_FIELDS)
+    #setattr(args, "features_name", features_name)
     setattr(args, "n_labels", 1)
 
 
@@ -542,7 +539,7 @@ def f1_score(y_true:torch.Tensor, y_pred:torch.Tensor, is_training=False) -> tor
     
     '''
     assert(y_true.shape==y_pred.shape)
-    r2 = torch.mean(1-torch.sum((y_true-y_pred)**2,(1,2))/torch.sum((y_true-torch.mean(y_true,1).unsqueeze(2))**2,(1,2)))
+    r2 = torch.mean(1-torch.sum((y_true-y_pred)**2,dim=1)/torch.sum((y_true-torch.mean(y_true,dim=1).unsqueeze(2))**2,(1,2)))
     
     return r2
 

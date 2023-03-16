@@ -24,9 +24,9 @@ def get_backbone(name,**kwargs):
     elif "mlnn" == name.lower(): # modular lstm neural network, defined by suntao
         if 'num_layers' in kwargs.keys():
             num_layers = kwargs['num_layers']
-            return MLNNBackbone(num_layers=num_layers)
+            return MLNNBackbone(num_layers=num_layers,n_input=kwargs['features_num'])
         else:
-            return MLNNBackbone()
+            return MLNNBackbone(n_input=kwargs['features_num'])
     elif "cnn" == name.lower(): # modular lstm neural network, defined by suntao
         if 'num_layers' in kwargs.keys():
             num_layers = kwargs['num_layers']
@@ -36,9 +36,12 @@ def get_backbone(name,**kwargs):
 
 
 class MLNNBackbone(nn.Module):
-    def __init__(self, n_input=49, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
+    def __init__(self, n_input=48, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
         super(MLNNBackbone, self).__init__()
-        self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, dropout=0.2,bidirectional=True, batch_first=True)
+        if num_layers>1:
+            self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, dropout=0.2,bidirectional=True, batch_first=True)
+        else:
+            self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, bidirectional=True, batch_first=True)
         self.hidden_size = hidden_size
         self.seq_len = seq_len
         self._feature_dim = 2*hidden_size

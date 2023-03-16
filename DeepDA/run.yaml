@@ -37,3 +37,4 @@ tst_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5"
 
 config_name: dann
 config_comments: 'complex output layers and using repeated IMU'
+

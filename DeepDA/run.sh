@@ -5,10 +5,10 @@
 feature_layer_num=5 # keep it to use five. it is the best value
 sub_num=15
 if true; then
-    for train_sub_num in $(seq 1 14); do
-        for trial_num in $(seq 5 5); do
+    for train_sub_num in $(seq 14 14); do
+        for trial_num in $(seq 25 ); do
 
-            if false; then
+            if true; then
                 model_name="baseline_mlnn"
                 tre_data_relative_path="selection"
             else
