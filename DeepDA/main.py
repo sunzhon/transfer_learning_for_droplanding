@@ -21,6 +21,7 @@ from sklearn.model_selection import LeaveOneOut
 from sklearn.model_selection import KFold
 import time as localtimepkg
 import itertools
+import pickle
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -66,12 +67,13 @@ def get_parser():
     parser.add_argument('--tcl_domain', type=str, required=True)
     parser.add_argument('--tre_domain', type=str, required=True)
     parser.add_argument('--tst_domain', type=str, required=True)# Test dataset
+    parser.add_argument('--scaler_file', type=str, required=True) # patience for early stopping
     parser.add_argument('--labels_name',type=str, nargs='+')
     parser.add_argument('--features_name',type=str, nargs='+')
     parser.add_argument('--landing_manner',type=str, default='double_legs')
     
     # training related
-    parser.add_argument('--batch_size', type=int, default=1)
+    parser.add_argument('--batch_size', type=int, default=20)
     parser.add_argument('--max_iter', type=int, default=1000)
     parser.add_argument('--n_epoch', type=int, default=100)
     parser.add_argument('--early_stop', type=int, default=0, help="Early stopping")
@@ -198,7 +200,7 @@ def get_model(args):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='augmentation'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
+        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),  num_layers=num_layers).to(args.device)
 
     elif(args.model_selection=='baseline_cnn'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='cnn', num_layers=num_layers).to(args.device)
@@ -240,7 +242,7 @@ def test(model, test_data_loader, args, **kwargs):
     criterion = torch.nn.MSELoss()
     len_target_dataset = len(test_data_loader.dataset)
     test_acc = utils.AverageMeter()
-    r2score = torchmetrics.R2Score(2)#num_outputs=2,multioutput='raw_values'
+    r2score = torchmetrics.R2Score(2).to(args.device)#num_outputs=2,multioutput='raw_values'
     with torch.no_grad(): # no do calcualte grad
         for idx, (features, labels) in enumerate(test_data_loader):
 
@@ -252,19 +254,31 @@ def test(model, test_data_loader, args, **kwargs):
             loss = criterion(predictions, labels)
             test_loss.update(loss.item())
             
+            predictions = predictions.squeeze(0)
+            labels = labels.squeeze(0)
+
             # metrics: accuracy
-            #mean_r2 = torch.mean(f1_score(labels, predictions))
-            mean_r2 = r2score(predictions.squeeze(0), labels.squeeze(0))
+            mean_r2 = r2score(predictions, labels)
             test_acc.update(mean_r2)
 
             if(args.save_test):
-                # transfer testing results' form into pandas Dataframe 
-                a_label = labels[0,:,:].cpu().numpy()
-                a_prediction = predictions[0,:,:].cpu().numpy()
+                # transfer tensors to numpy array
+                a_label = labels.cpu().numpy()
+                a_prediction = predictions.cpu().numpy()
+                features = features.squeeze(0).cpu().numpy()
 
-                pd_features = pd.DataFrame(data=torch.squeeze(features,dim=0).cpu().numpy(), columns=args.features_name)
-                pd_labels = pd.DataFrame(data=a_label, columns=args.labels_name)
-                pd_predictions = pd.DataFrame(a_prediction, columns=args.labels_name)
+                # inverse transform data
+                unscaled_feature_labels = args.scaler.inverse_transform(np.concatenate([features,a_label],axis=1))
+                unscaled_feature_predictions = args. scaler.inverse_transform(np.concatenate([features,a_prediction],axis=1))
+
+                unscaled_features = unscaled_feature_labels[:,:-a_label.shape[1]]
+                unscaled_labels = unscaled_feature_labels[:,-a_label.shape[1]:]
+                unscaled_predictions = unscaled_feature_predictions[:,-a_label.shape[1]:]
+
+                # transfer testing results' form into pandas Dataframe 
+                pd_features = pd.DataFrame(data=unscaled_features, columns=args.features_name)
+                pd_labels = pd.DataFrame(data=unscaled_labels, columns=args.labels_name)
+                pd_predictions = pd.DataFrame(data=unscaled_predictions, columns=args.labels_name)
 
                 # create test results folder
                 testing_folder = pro_rd.create_testing_files(args.training_folder)
@@ -279,7 +293,6 @@ def test(model, test_data_loader, args, **kwargs):
                     sum_trial_number+=trial_number
                     if(idx < sum_trial_number):
                         args.test_subject = subject
-                        #print('test_subject',subject)
                         break;
 
                 # save hyper parameters
@@ -352,10 +365,6 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
                         epoch, args.n_epoch, train_loss_reg.val, train_loss_transfer.val, train_loss_total.val)
 
         # Train processing Acc
-        #_, train_src_acc, _ =test(model, source_loader, args, train_acc_check_times=1)
-        #_, train_tgt_acc, _ =test(model, target_reg_train_loader, args, train_acc_check_times=1)
-        #info += 'train_src_acc {:.4f}, train_tgt_acc: {:.4f}\n'.format(train_src_acc, train_tgt_acc)
-
         #ii) Test processing Acc,
         test_loss, test_acc, _ = test(model, domain_data_loaders['tst'], args)
         info += 'test_loss {:.4f}, test_acc: {:.4f}\n'.format(test_loss, test_acc)
@@ -521,6 +530,8 @@ def main():
 
     #2) open datafile and load data
     multiple_domain_datasets = open_datafile(args)
+    scaler = pickle.load(open(os.path.join(const.DATA_PATH, args.scaler_file),'rb'))
+    setattr(args, "scaler", scaler)
 
     #3) cross_validation for training and evaluation model
     setattr(args, 'test_subject_ids_names', [])
@@ -532,17 +543,6 @@ def main():
         k_fold(args, multiple_domain_datasets)
 
     
-
-
-def f1_score(y_true:torch.Tensor, y_pred:torch.Tensor, is_training=False) -> torch.Tensor:
-    '''Calculate F1 score. Can work with gpu tensors
-    
-    '''
-    assert(y_true.shape==y_pred.shape)
-    r2 = torch.mean(1-torch.sum((y_true-y_pred)**2,dim=1)/torch.sum((y_true-torch.mean(y_true,dim=1).unsqueeze(2))**2,(1,2)))
-    
-    return r2
-
 
 
 if __name__ == "__main__":

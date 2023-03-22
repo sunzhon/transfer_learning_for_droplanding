@@ -4,7 +4,8 @@
 if [ $# -gt 0 ]; then
     testing_folders=$1
 else
-    testing_folders='.'
+    testing_folders="/media/suntao/DATA/drop_landing_workspace/results/training_testing/augmentation_dkem_v8/6rotid/14sub/25tri"
+    testing_folders="/media/suntao/DATA/drop_landing_workspace/results/training_testing/augmentation_skem_v8/6rotid/9sub/10tri"
 fi
 
 if [ $# -gt 1 ]; then
@@ -54,6 +55,7 @@ for hyper_file in ${list_hyper_files}; do
         test_subject=$(awk -F"[ :-]+" '$1~/test_subject/{print $2}' $hyper_file)
         r2=$(awk -F"[,:]+" '$2~/r2/{print $4}' "${folder_path}/test_metrics.csv")
         r_rmse=$(awk -F"[,:]+" '$2~/r_rmse/{print $4}' "${folder_path}/test_metrics.csv")
+
         echo "alias: ${alias_name}"
         sub_num=$(awk -F"[ :-]+" '$1~/^sub_num/{print $2}' $hyper_file)
         trial_num=$(awk -F"[ :-]+" '$1~/^trial_num/{print $2}' $hyper_file)

@@ -17,7 +17,7 @@ if __name__=='__main__':
 from vicon_imu_data_process import process_landing_data as pro_rd
 
 from sklearn.metrics import r2_score, mean_squared_error as mse
-from vicon_imu_data_process.const import SAMPLE_FREQUENCY
+from vicon_imu_data_process.const import SAMPLE_FREQUENCY, RESULTS_PATH
 
 def calculate_scores(y_true, y_pred):
     '''
@@ -49,8 +49,14 @@ def get_evaluation_metrics(pd_labels, pd_predictions,verbose=0):
         if(verbose==1):
             print("{}: scores (r2, rmse, mae, r_rmse):".format(label), scores[label][0], scores[label][1], scores[label][2], scores[label][3])
 
+    mean_scores=np.zeros(4)
+    for key, data in scores.items():
+        mean_scores += np.array(data)
+    mean_scores=mean_scores*1.0/len(scores)
+        
     #ii) shape metrics
-    metrics = pd.DataFrame(data=scores, index=['r2','rmse','mae','r_rmse'])
+    #metrics = pd.DataFrame(data=scores, index=['r2','rmse','mae','r_rmse'])
+    metrics = pd.DataFrame(data={'label':list(mean_scores)}, index=['r2','rmse','mae','r_rmse']).round(3)
     metrics = metrics.reset_index().rename(columns={'index':'metrics'})
     metrics = metrics.melt(id_vars='metrics',var_name='fields',value_name='scores') 
 
@@ -344,12 +350,14 @@ def get_a_model_test_results(training_testing_folders, selection={'unused':None}
         # select the necessary testing results using "selection" dictory
         needed_config_training_testing_folders = parase_training_testing_folders(config_training_testing_folders, **selection, **kwargs)
         # get testing results: prediction values in numpy array
-        testing_results={'labels': [], 'predictions': []}
-        for testing_folder in needed_config_training_testing_folders['testing_folders']:
+        testing_results={'labels': [], 'predictions': [], 'trial_index':[], 'test_subject':[]}
+        for idx, testing_folder in enumerate(needed_config_training_testing_folders['testing_folders']):
             #print(testing_folder)
             [pd_labels, pd_predictions] = get_testing_results(testing_folder)
             testing_results['labels'].append(pd_labels)
             testing_results['predictions'].append(pd_predictions)
+            testing_results['trial_index'].append(pd.DataFrame(data={"trial_index": [idx]*pd_labels.shape[0]}))
+            testing_results['test_subject'].append(pd.DataFrame(data={"test_subject": [needed_config_training_testing_folders.loc[idx,'test_subject']]*pd_labels.shape[0]}))
     else:
         print('training_testing_folders name:{} are wrong, please check that first'.format(training_testing_folders))
         sys.exit()
@@ -365,9 +373,12 @@ def get_a_model_test_results(training_testing_folders, selection={'unused':None}
     old_columns = pd_prediction_values.columns
     new_columns = ['Estimated ' + x for x in old_columns]
     pd_prediction_values.rename(columns=dict(zip(old_columns,new_columns)), inplace=True)
+
+    pd_trial_index = pd.concat(testing_results['trial_index'],axis=0)
+    pd_test_subject = pd.concat(testing_results['test_subject'],axis=0)
  
     #iii) combine actual and estimation values
-    pd_actual_prediction_values = pd.concat([pd_actual_values,pd_prediction_values],axis=1)
+    pd_actual_prediction_values = pd.concat([pd_actual_values, pd_prediction_values, pd_trial_index, pd_test_subject],axis=1)
     pd_actual_prediction_values.index = pd_actual_prediction_values.index/SAMPLE_FREQUENCY
 
     #iv) save the values
@@ -873,13 +884,21 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
 
 if __name__=='__main__':
 
+    combination_investigation_results =  [#combination_investigation_results +[
+            os.path.join(RESULTS_PATH, "training_testing", "augmentation_dkem_v7",str(rot_id)+'rotid', str(sub_num)+"sub", str(trial_num)+"tri","testing_result_folders.txt") for sub_num in range(14,15,1) for trial_num in range(25, 26,5) for rot_id in [6]]
+
+    multi_test_results = get_multi_models_test_results(combination_investigation_results)
+    pdb.set_trace()
+
+    exit()
+
+
     # plot curves
     combination_investigation_results = ["/media/sun/DATA/drop_landing_workspace/results/training_testing/baseline/testing_result_folders.txt",
                                  "/media/sun/DATA/drop_landing_workspace/results/training_testing/dann/testing_result_folders.txt"
                                 ]
     selection={'child_test_id': ['test_1']}
-    test_results = get_multi_models_test_results([combination_investigation_results[0]], **selection)
-    pdb.set_trace()
+    #test_results = get_multi_models_test_results([combination_investigation_results[0]], **selection)
 
     #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/investigation/2022-05-13/094012/double_KFM_R_syn_5sensor_35testing_result_folders.txt"
     #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/2022-05-13/001/testing_result_folders.txt"
@@ -899,9 +918,7 @@ if __name__=='__main__':
     #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/1_collected_data/study_lstm_units_GRF/3_imu_all_units/testing_result_folders.txt"
     #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/2_collected_full_cv/2_imu_full_cv_all_trials/testing_result_folders.txt"
     combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/4_collected_sensor_lstm/3_imu/3_imu_25_lstm_units/testing_result_folders.txt"
-    pd_assessment = evaluate_models_on_unseen_subjects(combination_investigation_results)
-    pdb.set_trace()
-
+    #pd_assessment = evaluate_models_on_unseen_subjects(combination_investigation_results)
 
 
 
@@ -914,10 +931,9 @@ if __name__=='__main__':
     combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/001/testing_result_folders.txt"
     #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/001/metrics.csv"
     combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/4_collected_sensor_lstm/testing_result_folders.txt"
-    r2_metrics = get_investigation_metrics(combination_investigation_results)
-
-
-    pdb.set_trace()
+    combination_investigation_results =  [os.path.join(RESULTS_PATH, "training_testing", "augmentation_dkem_v5",str(rot_id)+'rotid', str(sub_num)+"sub", str(trial_num)+"tri", "testing_result_folders.txt") for sub_num in range(14,15,1) for trial_num in range(25, 26,5) for rot_id in [6]]
+    print(combination_investigation_results)
+    r2_metrics = get_list_investigation_metrics(combination_investigation_results)
 
     #pd_assessment = evaluate_models_on_unseen_subjects(combination_investigation_results)
 
