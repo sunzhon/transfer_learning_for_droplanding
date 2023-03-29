@@ -342,7 +342,7 @@ def plot_model_evaluation_on_unseen_subject(combination_investigation_results, i
     elif(isinstance(combination_investigation_results,pd.DataFrame)):
         pd_assessment = combination_investigation_results
     else:
-        pd_assessment = get_investigation_assessment(combination_investigation_results)
+        pd_assessment = survey_investigation_assessment(combination_investigation_results)
         
     overall_metrics_folder = os.path.dirname(combination_investigation_results)
     # save r2 scores
@@ -1494,7 +1494,18 @@ if __name__ == '__main__':
             os.path.join(RESULTS_PATH, "training_testing", "augmentation_kem_v2",str(rot_id)+'rotid', str(sub_num)+"sub", str(trial_num)+"tri",  
                          "testing_result_folders.txt") for sub_num in range(14,15,1) for trial_num in range(25, 26,5) for rot_id in [6, 7, 8,9,10,11]
         ]
-        #metrics = get_list_investigation_metrics(combination_investigation_results)
+
+
+
+        combination_investigation_results = [
+            os.path.join(RESULTS_PATH, "training_testing", "augmentation_dskem_v8",str(rot_id)+'rotid', str(sub_num)+"sub", str(trial_num)+"tri", "testing_result_folders.txt") for sub_num in range(14,15,1) for trial_num in range(25, 26,5) for rot_id in [6, 7, 8,9,10,11]
+        ]
+
+        combination_investigation_results = [
+            os.path.join(RESULTS_PATH, "training_testing", "augmentation_dskem_v8","testing_result_folders.txt") ]
+
+
+        metrics = get_list_investigation_metrics(combination_investigation_results)
         combination_investigation_metrics = [os.path.join(os.path.dirname(folder), "metrics.csv") for folder in combination_investigation_results]
         fig_path, r2 = plot_models_accuracy(combination_investigation_results,plot_params={'x':'config_name','y':'r2','hue':'model_selection'})
 

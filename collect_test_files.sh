@@ -4,8 +4,7 @@
 if [ $# -gt 0 ]; then
     testing_folders=$1
 else
-    testing_folders="/media/suntao/DATA/drop_landing_workspace/results/training_testing/augmentation_dkem_v8/6rotid/14sub/25tri"
-    testing_folders="/media/suntao/DATA/drop_landing_workspace/results/training_testing/augmentation_skem_v8/6rotid/9sub/10tri"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_v9"
 fi
 
 if [ $# -gt 1 ]; then
@@ -21,7 +20,7 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "model_selection\talias_name\tconfig_name\tconfig_id\tsubject_num\ttrial_num\ttrain_sub_num\tlabels_name\tr2\tr_rmse\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\trelative_result_folder\ttraining_testing_folders" > $data_file
+echo "model_selection\talias_name\tconfig_name\tconfig_id\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\tr_rmse\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\trelative_result_folder\ttraining_testing_folders" > $data_file
 
 
 echo "START TO COLLECT TEST DATA"
@@ -49,9 +48,26 @@ for hyper_file in ${list_hyper_files}; do
         #sed -i -e 's/imu_augment_5degree/complex_baseline/' $hyper_file
         #sed -i -e 's/dann_6/augment_dann/' $hyper_file
         #sed -i -e 's/dann_5/repeated_dann/' $hyper_file
-
         model_selection=$(awk -F"[ :-]+" '$1~/model_selection/{print $2}' $hyper_file)
-        labels_name=$(awk -F"[ :-]+" '$2~/R_KNEE_MOMENT_X|R_GRF_Z/{print $2}' $hyper_file)
+        #model_selection=$(awk -F"[ :-]+" '$1~/model_selection/{print $2}' $hyper_file)
+        #
+        #
+        #
+        sss=$(awk -F"[: -]+" '{if(NF==1) vname[NR] = $1}END{
+        for (i in vname) {if (vname[i] == "features_name"){sflag=i}; if (vname[i] == "labels_name"){eflag=i}}
+            for (i in vname){ if ((i > sflag) && (i < eflag)) {print vname[i]}}
+        }' $hyper_file)
+        echo "sss: ${sss}"
+
+        feature_name=$(awk -F"[ :-]+" 'BEGIN{flag=0} {if( $1 == "features_name") {next; flag=1}; if($1 == "labels_name") {flag=0}; if(flag == 1) array[$2]=$2} END{for (ii in array) print ii}' $hyper_file)
+        echo "features_names:  ${features_name}"
+        features_name=" "
+
+        labels_name=$(awk -F"[ :-]+" '$2~/R_KNEE_MOMENT_X|R_GRF_Z/{print $2}' $hyper_file) 
+        labels_name=$(awk -F"[ :-]+" 'BEGIN{flag=0}{{if (flag == 1) print $2; flag=0} {if( $1 == "labels_name" ) flag=1} }' $hyper_file) 
+        labels_name=$(echo $labels_name | tr -d '\n')
+        echo "labels_name: ${labels_name}"
+
         test_subject=$(awk -F"[ :-]+" '$1~/test_subject/{print $2}' $hyper_file)
         r2=$(awk -F"[,:]+" '$2~/r2/{print $4}' "${folder_path}/test_metrics.csv")
         r_rmse=$(awk -F"[,:]+" '$2~/r_rmse/{print $4}' "${folder_path}/test_metrics.csv")
@@ -77,11 +93,10 @@ for hyper_file in ${list_hyper_files}; do
         fi
 
         echo "model_selection: ${model_selection}" 
-        echo "labels_name: ${labels_name}" 
         echo "r2: ${r2}"
 
 
-        echo "${model_selection}\t${alias_name}\t${config_id}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${labels_name}\t${r2}\t${r_rmse}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${relative_result_folder}\t${folder_path}" >> $data_file
+        echo "${model_selection}\t${alias_name}\t${config_id}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${r_rmse}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${relative_result_folder}\t${folder_path}" >> $data_file
     fi
 done
 

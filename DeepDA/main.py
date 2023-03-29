@@ -111,7 +111,7 @@ def get_parser():
     parser.add_argument('--early_stopping_patience',type=int, default=10) # patience for early stopping
     parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
-    # sub_num subjects and trial_num trials of a subject in the loaded dataset
+    # sub_num subjects and trial_num trials of a subject will be used
     parser.add_argument('--sub_num',type=int, default=15) # patience for early stopping
     parser.add_argument('--trial_num',type=int, default=25) # patience for early stopping
 
@@ -150,22 +150,10 @@ def open_datafile(args):
     for domain, domain_name in zip(domains, domains_name):
         if domain !='None':
             domain_data_folder = os.path.join(args.data_dir, domain) # source data
-            domain_dataset = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
+            domain_dataset, dataset_columns = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
             multiple_domain_datasets[domain_name] = domain_dataset
     
-    '''
-     multiple_domain_datasets= {}
-     domains_name = ['src', 'tcl', 'tre', 'tst']
-     main_data_folder = os.path.join(args.data_dir, args.online_select_dataset) # source data
-     all_dataset = pro_rd.load_subjects_dataset(h5_file_name = main_data_folder, selected_data_fields=columns)
-
-     multiple_domain_datasets['src'] = copy.deepcopy(all_dataset) #source domain, not used
-     multiple_domain_datasets['tcl'] = copy.deepcopy(all_dataset) # target classfication, not used
-     multiple_domain_datasets['tre'] = copy.deepcopy(all_dataset) # target regression, used for basline
-     multiple_domain_datasets['tst'] = copy.deepcopy(all_dataset) # target test, used for basline
-    '''
-
-    return multiple_domain_datasets
+    return multiple_domain_datasets, dataset_columns
 
 
 
@@ -266,10 +254,19 @@ def test(model, test_data_loader, args, **kwargs):
                 a_label = labels.cpu().numpy()
                 a_prediction = predictions.cpu().numpy()
                 features = features.squeeze(0).cpu().numpy()
+                # load scaler
+                scaler = pickle.load(open(os.path.join(const.DATA_PATH, args.scaler_file),'rb'))
 
                 # inverse transform data
-                unscaled_feature_labels = args.scaler.inverse_transform(np.concatenate([features,a_label],axis=1))
-                unscaled_feature_predictions = args. scaler.inverse_transform(np.concatenate([features,a_prediction],axis=1))
+                feature_label_index = [args.dataset_columns.index(fl) for fl in (args.features_name + args.labels_name)]
+
+                tmp_dataset = np.zeros((features.shape[0],len(args.dataset_columns)))
+
+                tmp_dataset[:,feature_label_index] = np.concatenate([features,a_label],axis=1)
+                unscaled_feature_labels = scaler.inverse_transform(tmp_dataset)[:,feature_label_index]
+
+                tmp_dataset[:,feature_label_index] = np.concatenate([features,a_prediction],axis=1)
+                unscaled_feature_predictions = scaler.inverse_transform(tmp_dataset)[:,feature_label_index]
 
                 unscaled_features = unscaled_feature_labels[:,:-a_label.shape[1]]
                 unscaled_labels = unscaled_feature_labels[:,-a_label.shape[1]:]
@@ -436,8 +433,8 @@ def k_fold(args, multiple_domain_datasets):
 
         # specifiy test and train subjects
         #i-1) choose data for regssion training (using label) and testing
-        tre_train_dataset = {subject_id_name: multiple_domain_datasets['tre'][subject_id_name] for subject_id_name in train_subject_ids_names}
-        tst_test_dataset = {subject_id_name: multiple_domain_datasets['tst'][subject_id_name] for subject_id_name in test_subject_ids_names}
+        tre_train_dataset = {subject_id_name: { key: value for idx, (key, value) in enumerate(multiple_domain_datasets['tre'][subject_id_name].items()) if idx < args.trial_num} for subject_id_name in train_subject_ids_names}
+        tst_test_dataset = {subject_id_name: {key: value for idx, (key, value) in enumerate(multiple_domain_datasets['tst'][subject_id_name].items()) if idx < args.trial_num} for subject_id_name in test_subject_ids_names}
         load_domain_dataset['tre'] = tre_train_dataset
         load_domain_dataset['tst'] = tst_test_dataset
 
@@ -529,9 +526,8 @@ def main():
     set_random_seed(args.seed)
 
     #2) open datafile and load data
-    multiple_domain_datasets = open_datafile(args)
-    scaler = pickle.load(open(os.path.join(const.DATA_PATH, args.scaler_file),'rb'))
-    setattr(args, "scaler", scaler)
+    multiple_domain_datasets, dataset_columns = open_datafile(args)
+    setattr(args, "dataset_columns", list(dataset_columns))
 
     #3) cross_validation for training and evaluation model
     setattr(args, 'test_subject_ids_names', [])

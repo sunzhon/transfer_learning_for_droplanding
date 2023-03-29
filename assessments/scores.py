@@ -418,7 +418,7 @@ The outputs is assessment dataframe which has r2, mae,rmse, and r_rmse
 
 '''
 
-def get_investigation_assessment(combination_investigation_results):
+def survey_investigation_assessment(combination_investigation_results):
     
     # open testing folder
     assessment=[]
@@ -457,7 +457,6 @@ def get_investigation_assessment(combination_investigation_results):
             metrics['Test ID'] = test_id # get test id
             # identify the metrics from which trials
             metrics['Metrics ID'] = test_id+'_'+str(re.search("[0-9]+",os.path.basename(testing_folder)).group(0))# get test id
-
 
             # read hyperparams 
             hyperparams_file = os.path.join(testing_folder,"hyperparams.yaml")
@@ -517,6 +516,8 @@ def get_investigation_assessment(combination_investigation_results):
         pd_assessment['syn_features_labels'] = pd_assessment['syn_features_labels'].astype(str).apply(lambda x: True if x=='true' else False)
     if('use_frame_index' in list(pd_assessment.columns)):
         pd_assessment['use_frame_index'] = pd_assessment['use_frame_index'].astype(str).apply(lambda x: True if x=='true' else False)
+    if('r2' in list(pd_assessment.columns)):
+        pd_assessment['r2'] = pd_assessment['r2'].astype(float)
 
     #3) save pandas DataFrame
     combination_investigation_folder = os.path.dirname(combination_investigation_results)
@@ -543,7 +544,7 @@ def get_investigation_metrics(combination_investigation_results, metric_fields=[
     elif(re.search('metrics', os.path.basename(combination_investigation_results))):
         pd_assessment = pd.read_csv(combination_investigation_results, header=0)
     else:
-        pd_assessment = get_investigation_assessment(combination_investigation_results)
+        pd_assessment = survey_investigation_assessment(combination_investigation_results)
 
     #1) get metrics
     if('metrics' in pd_assessment.columns):
