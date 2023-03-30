@@ -4,7 +4,8 @@
 if [ $# -gt 0 ]; then
     testing_folders=$1
 else
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_v9"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_v10"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_v10"
 fi
 
 if [ $# -gt 1 ]; then
@@ -52,20 +53,15 @@ for hyper_file in ${list_hyper_files}; do
         #model_selection=$(awk -F"[ :-]+" '$1~/model_selection/{print $2}' $hyper_file)
         #
         #
-        #
-        sss=$(awk -F"[: -]+" '{if(NF==1) vname[NR] = $1}END{
-        for (i in vname) {if (vname[i] == "features_name"){sflag=i}; if (vname[i] == "labels_name"){eflag=i}}
-            for (i in vname){ if ((i > sflag) && (i < eflag)) {print vname[i]}}
-        }' $hyper_file)
-        echo "sss: ${sss}"
 
-        feature_name=$(awk -F"[ :-]+" 'BEGIN{flag=0} {if( $1 == "features_name") {next; flag=1}; if($1 == "labels_name") {flag=0}; if(flag == 1) array[$2]=$2} END{for (ii in array) print ii}' $hyper_file)
+        features_name=$(awk -F"[ :-]+" 'BEGIN{flag=0} {if ($1 == "features_name") {flag=1; next}; if ($1 == "labels_name") {flag=0; next}; if(flag == 1) {array[$2]=$2}}END{for (ii in array) print ii}' $hyper_file)
+        features_name=$(echo $features_name | tr  '\n' ' ')
+
         echo "features_names:  ${features_name}"
-        features_name=" "
 
-        labels_name=$(awk -F"[ :-]+" '$2~/R_KNEE_MOMENT_X|R_GRF_Z/{print $2}' $hyper_file) 
+
         labels_name=$(awk -F"[ :-]+" 'BEGIN{flag=0}{{if (flag == 1) print $2; flag=0} {if( $1 == "labels_name" ) flag=1} }' $hyper_file) 
-        labels_name=$(echo $labels_name | tr -d '\n')
+        labels_name=$(echo $labels_name | tr '\n' ' ')
         echo "labels_name: ${labels_name}"
 
         test_subject=$(awk -F"[ :-]+" '$1~/test_subject/{print $2}' $hyper_file)

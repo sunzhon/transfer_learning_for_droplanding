@@ -457,6 +457,19 @@ def survey_investigation_assessment(combination_investigation_results):
             metrics['Test ID'] = test_id # get test id
             # identify the metrics from which trials
             metrics['Metrics ID'] = test_id+'_'+str(re.search("[0-9]+",os.path.basename(testing_folder)).group(0))# get test id
+            # get imu sensors 
+            features_name = metrics['features_name']
+            pattern = re.compile(r"L_FOOT|R_FOOT|L_SHANK|R_SHANK|L_THIGH|R_THIGH|WAIST|CHEST")
+            imus = " ".join(list(set(pattern.findall("".join(features_name)))))
+            imus = re.sub("R_SHANK", 'rS', imus)
+            imus = re.sub("L_SHANK", 'lS', imus)
+            imus = re.sub("R_THIGH", 'rT', imus)
+            imus = re.sub("L_THIGH", 'lT', imus)
+            imus = re.sub("R_FOOT", 'rF', imus)
+            imus = re.sub("L_FOOT", 'lF', imus)
+            imus = re.sub("CHEST", 'C', imus)
+            imus = re.sub("WAIST", 'W', imus)
+            metrics['IMUs'] = imus
 
             # read hyperparams 
             hyperparams_file = os.path.join(testing_folder,"hyperparams.yaml")

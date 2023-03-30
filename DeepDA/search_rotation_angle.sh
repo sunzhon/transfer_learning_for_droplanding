@@ -2,18 +2,20 @@
 #!/bin/pyenv python
 #coding: --utf-8
 DATA_PATH=`python -c 'import main; print(main.const.DATA_PATH)'`
-feature_layer_num=1 # keep it to use five. it is the best value
-features_name=`python -c 'import main; array=main.const.SELECTED_FEATURES_NAME; print(" ".join(array))'`
+#features_name=`python -c 'import main; array=main.const.SELECTED_FEATURES_NAME; print(" ".join(array))'`
+features_name=`python -c 'import main; array=main.const.extract_imu_fields(["R_SHANK", "R_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
+echo "features_name: $features_name"
+feature_layer_num=5 # keep it to use five for offline mode. it is the best value
 sub_num=15
 rot_id=0
 for rot_angle in 6 ; do
-    for train_sub_num in 3 6 9; do
-        for trial_num in 10; do #10 15 20 25; do
+    for train_sub_num in 5; do
+        for trial_num in 25; do #10 15 20 25; do
             for labels_name in "R_KNEE_MOMENT_X" "R_KNEE_ANGLE_X" ; do
-                for model_name in  "augmentation"; do # "augmentation"; do # "augmentation"; do
+                for model_name in  "baseline_mlnn"  "augmentation"; do # "augmentation"; do
 
                     landing_manner="double_leg"
-                    relative_result_folder="${model_name}_v9"
+                    relative_result_folder="${model_name}_v11"
                     echo $labels_name
 
                     #rot_id=`expr $rot_id + $rot_angle`
@@ -73,7 +75,7 @@ for rot_angle in 6 ; do
         done
     done
     # collect training and test results
-    ./../batch_collect_test_files.sh "${relative_result_folder}/${rot_id}rotid"
+    ./../batch_collect_test_files.sh "${relative_result_folder}"
 done
 
 
