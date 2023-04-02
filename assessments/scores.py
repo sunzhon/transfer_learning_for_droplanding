@@ -35,7 +35,7 @@ def calculate_scores(y_true, y_pred):
 
     return round(r2*1000.0)/1000.0, round(rmse*1000.0)/1000.0, round(mae*1000.0)/1000.0, round(r_rmse*1000.0)/1000.0
  
-def get_evaluation_metrics(pd_labels, pd_predictions,verbose=0):
+def get_evaluation_metrics(pd_labels, pd_predictions, verbose=0):
     '''
     labels and predictions are pandas dataframe
     return metrics, it is pandas dataframe
@@ -50,7 +50,7 @@ def get_evaluation_metrics(pd_labels, pd_predictions,verbose=0):
             print("{}: scores (r2, rmse, mae, r_rmse):".format(label), scores[label][0], scores[label][1], scores[label][2], scores[label][3])
 
     mean_scores=np.zeros(4)
-    for key, data in scores.items():
+    for key, data in scores.items(): # calcualte mean scores of multiple labels
         mean_scores += np.array(data)
     mean_scores=mean_scores*1.0/len(scores)
         
@@ -306,10 +306,10 @@ Get estimation and its actual value in a test. The testing results are stored at
 The output are pd_labels, and pd_predictions.
 
 '''
-def get_testing_results(testing_folder):
+def get_a_test_result(testing_folder):
 
-        testing_results = os.path.join(testing_folder, 'test_results.h5')
         try:
+            testing_results = os.path.join(testing_folder, 'test_results.h5')
             with h5py.File(testing_results,'r') as fd:
                 features=fd['features'][:,:]
                 predictions=fd['predictions'][:,:]
@@ -318,7 +318,6 @@ def get_testing_results(testing_folder):
         except Exception as e:
             print(e)
             print(testing_results)
-            pdb.set_trace()
 
         #2) estimation results
         #i) plot curves
@@ -337,27 +336,28 @@ Return: a pandas dataframe, which containing the actual and estimated values of 
 '''
     
 def get_a_model_test_results(training_testing_folders, selection={'unused':None}, **kwargs):
-     
+    
+    # get training and testing folders into a pandas dataframe
+    config_training_testing_folders =  get_investigation_training_testing_folders(training_testing_folders)
+    needed_config_training_testing_folders = parase_training_testing_folders(config_training_testing_folders, **selection, **kwargs)
+
     # get test results by re-test trials based this trained model in the training folder: training_***
-    if(re.search(r'training_[0-9]{6}', os.path.basename(training_testing_folders))): # training_folder
-        training_folder = training_testing_folders
+    if(re.search(r'training_[0-9]{6}', needed_config_training_testing_folders['training_testing_folders'].iloc[0])!=None): # training_folder
         # testing model in training folder 
-        testing_results, testing_ingredients = test_model_on_unseen_subject(training_folder)
+        for idx, training_folder in enumerate(needed_config_training_testing_folders['training_testing_folders']):
+            testing_results, testing_ingredients = test_model_on_unseen_subject(training_folder)
 
      # get test results by searh an exist test folder: testing_result_folders.txt, which contain multiple tests of a trained model
-    elif(re.search(r'testing_result_folders', os.path.basename(training_testing_folders))): # testing folders
-        config_training_testing_folders =  get_investigation_training_testing_folders(training_testing_folders)
+    elif(re.search(r'test_[0-9]{6}', needed_config_training_testing_folders['training_testing_folders'].iloc[0])!=None): # testing_folder
         # select the necessary testing results using "selection" dictory
-        needed_config_training_testing_folders = parase_training_testing_folders(config_training_testing_folders, **selection, **kwargs)
         # get testing results: prediction values in numpy array
         testing_results={'labels': [], 'predictions': [], 'trial_index':[], 'test_subject':[]}
         for idx, testing_folder in enumerate(needed_config_training_testing_folders['testing_folders']):
-            #print(testing_folder)
-            [pd_labels, pd_predictions] = get_testing_results(testing_folder)
+            [pd_labels, pd_predictions] = get_a_test_result(testing_folder)
             testing_results['labels'].append(pd_labels)
             testing_results['predictions'].append(pd_predictions)
             testing_results['trial_index'].append(pd.DataFrame(data={"trial_index": [idx]*pd_labels.shape[0]}))
-            testing_results['test_subject'].append(pd.DataFrame(data={"test_subject": [needed_config_training_testing_folders.loc[idx,'test_subject']]*pd_labels.shape[0]}))
+            testing_results['test_subject'].append(pd.DataFrame(data={"test_subject": [needed_config_training_testing_folders['test_subject'].iloc[idx]]*pd_labels.shape[0]}))
     else:
         print('training_testing_folders name:{} are wrong, please check that first'.format(training_testing_folders))
         sys.exit()
@@ -395,16 +395,20 @@ Returns:
 
 '''
 
-def get_multi_models_test_results(list_training_testing_folders, list_selection_map=None, **kwargs):
-    multi_models_test_results = []
+def get_list_investigation_results(list_training_testing_folders, list_selection_map=None, **kwargs):
+    list_test_results = []
     if list_selection_map!=None:
         for training_testing_folders, selection in zip(list_training_testing_folders, list_selection_map):
-            multi_models_test_results.append(get_a_model_test_results(training_testing_folders, selection, **kwargs))
+            list_test_results.append(get_a_model_test_results(training_testing_folders, selection, **kwargs))
     else:
         for training_testing_folders in list_training_testing_folders:
-            multi_models_test_results.append(get_a_model_test_results(training_testing_folders, **kwargs))
+            list_test_results.append(get_a_model_test_results(training_testing_folders, **kwargs))
 
-    return multi_models_test_results
+    # transform to dataframe
+    for idx in range(len(list_test_results)):
+        list_test_results[idx]['test_folder_index'] = idx
+    
+    return pd.concat(list_test_results,axis=0)
 
 
 
@@ -443,9 +447,11 @@ def survey_investigation_assessment(combination_investigation_results):
             pdb.set_trace()
 
         #1) load testing results
+        pdb.set_trace()
         try:
+            # if there is no r2 in "training_testing_folders.txt file"
             if('r2' not in columns):
-                [pd_labels, pd_predictions] = get_testing_results(testing_folder)
+                [pd_labels, pd_predictions] = get_a_test_result(testing_folder)
                 metrics = get_evaluation_metrics(pd_labels, pd_predictions) # get scores
             else:
                 metrics={}
@@ -531,6 +537,12 @@ def survey_investigation_assessment(combination_investigation_results):
         pd_assessment['use_frame_index'] = pd_assessment['use_frame_index'].astype(str).apply(lambda x: True if x=='true' else False)
     if('r2' in list(pd_assessment.columns)):
         pd_assessment['r2'] = pd_assessment['r2'].astype(float)
+    if('r_rmse' in list(pd_assessment.columns)):
+        pd_assessment['r_rmse'] = pd_assessment['r_rmse'].astype(float)
+    if('rmse' in list(pd_assessment.columns)):
+        pd_assessment['rmse'] = pd_assessment['rmse'].astype(float)
+    if('mae' in list(pd_assessment.columns)):
+        pd_assessment['mae'] = pd_assessment['mae'].astype(float)
 
     #3) save pandas DataFrame
     combination_investigation_folder = os.path.dirname(combination_investigation_results)
@@ -552,11 +564,12 @@ The metrics are get from all the tests in the integrative investigation
 def get_investigation_metrics(combination_investigation_results, metric_fields=['r2']):
     
     #0) calculate assessment metrics
+    # 0-i) read metrics file if exists
     if(re.search('r2_metrics', os.path.basename(combination_investigation_results))):
         pd_assessment = pd.read_csv(combination_investigation_results, header=0)
     elif(re.search('metrics', os.path.basename(combination_investigation_results))):
         pd_assessment = pd.read_csv(combination_investigation_results, header=0)
-    else:
+    else: #0-iii) survey metrics from testing folders
         pd_assessment = survey_investigation_assessment(combination_investigation_results)
 
     #1) get metrics
@@ -885,7 +898,7 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
                 elif(value=='all'):
                     print('All {} are used'.format(key))
                 else:
-                    print('{} is not right, it should be a list include one of some of these {}'.format(key, set(investigation_config_results[key])))
+                    print('{} and {} is not right, it should be a list include one of some of these {}'.format(key, value, set(investigation_config_results[key])))
                     sys.exit()
 
     return investigation_config_results
@@ -898,10 +911,21 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
 
 if __name__=='__main__':
 
-    combination_investigation_results =  [#combination_investigation_results +[
-            os.path.join(RESULTS_PATH, "training_testing", "augmentation_dkem_v7",str(rot_id)+'rotid', str(sub_num)+"sub", str(trial_num)+"tri","testing_result_folders.txt") for sub_num in range(14,15,1) for trial_num in range(25, 26,5) for rot_id in [6]]
+    combination_investigation_results = [
+            os.path.join(RESULTS_PATH, "training_testing", "baseline_mlnn_t2","testing_result_folders.txt"),
+            #os.path.join(RESULTS_PATH, "training_testing", "baseline_mlnn_v12","testing_result_folders.txt"),
+            #os.path.join(RESULTS_PATH, "training_testing", "augmentation_v12","testing_result_folders.txt"),
+            ]
 
-    multi_test_results = get_multi_models_test_results(combination_investigation_results)
+
+    #1) get testing results: estimation and ground truth
+    list_selections = [{'train_index': 0, 
+        'test_subject':['P_10_dongxuan']
+        }
+    ]
+
+
+    test_results = get_list_investigation_results(combination_investigation_results, list_selections)
     pdb.set_trace()
 
     exit()
@@ -912,7 +936,7 @@ if __name__=='__main__':
                                  "/media/sun/DATA/drop_landing_workspace/results/training_testing/dann/testing_result_folders.txt"
                                 ]
     selection={'child_test_id': ['test_1']}
-    #test_results = get_multi_models_test_results([combination_investigation_results[0]], **selection)
+    #test_results = get_list_investigation_results([combination_investigation_results[0]], **selection)
 
     #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/investigation/2022-05-13/094012/double_KFM_R_syn_5sensor_35testing_result_folders.txt"
     #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/2022-05-13/001/testing_result_folders.txt"

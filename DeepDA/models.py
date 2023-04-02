@@ -158,6 +158,13 @@ class BaselineModel(nn.Module):
                 nn.Linear(50, 20),
                 nn.Dropout(p=0.2),
                 nn.ReLU(),
+                nn.Linear(50, 20),
+                nn.Dropout(p=0.2),
+                nn.ReLU(),
+                nn.Linear(50, 20),
+                nn.Dropout(p=0.2),
+                nn.ReLU(),
+
                 nn.Linear(20, num_label)
             ]
         self.output_layer = nn.Sequential(*output_list)

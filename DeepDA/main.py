@@ -105,6 +105,7 @@ def get_parser():
     # a trial from a subject in a test
     parser.add_argument('--test_subject',type=str,default='None')
     parser.add_argument('--tst_test_subjects_trials_len',type=dict,default={})
+    parser.add_argument('--tre_train_subjects_trials_len',type=dict,default={})
 
     # cross-validation
     parser.add_argument('--n_splits',type=int,default=0) # n_splits kfold or leaveone cross validation n_splits=0
@@ -382,7 +383,7 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
     model.load_state_dict(torch.load(os.path.join(training_folder,'best_model.pth')))
     args.save_test = True
     test_loss, test_acc, testing_folder = test(model, domain_data_loaders['tst'], args)
-    print('Best result: {:.4f}'.format(early_stop.best_acc))
+    print('Best result: r2: {:.4f}, loss: {:.4f}'.format(early_stop.best_acc,early_stop.best_score))
     print('Its training folder: {}'.format(training_folder))
     # save trainied model
     torch.save(model.state_dict(),os.path.join(training_folder,'trained_model.pth'))
@@ -440,8 +441,12 @@ def k_fold(args, multiple_domain_datasets):
 
         # test subjects and trials, {subject_id_name:len(['01','02',...]), ...}
         tst_test_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tst_test_dataset.items()} 
-        args.tst_test_subjects_trials_len=tst_test_subjects_trials_len
+        tre_train_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tre_train_dataset.items()} 
+        args.tst_test_subjects_trials_len = tst_test_subjects_trials_len
+        args.tre_train_subjects_trials_len = tre_train_subjects_trials_len
 
+        print('trial number of train dataset: {}'.format(args.tre_train_subjects_trials_len))
+        print('trial number of test dataset: {}\n'.format(args.tst_test_subjects_trials_len))
         #ii) load dataloader accodring to source and target subjects_trials_dataset
         domain_data_loaders, n_labels = load_data(args, load_domain_dataset)
         args.n_labels = n_labels
@@ -513,11 +518,7 @@ def main():
     args.data_dir = const.DATA_PATH
     
     # features
-    #features_name = ['TIME'] + const.extract_imu_fields(const.IMU_SENSOR_LIST, const.ACC_GYRO_FIELDS)
-    #features_name = const.extract_imu_fields(const.IMU_SENSOR_LIST, const.ACC_GYRO_FIELDS)
-    #setattr(args, "features_name", features_name)
     setattr(args, "n_labels", 1)
-
 
     # train , this max_iter iss important for DANN train
     # for SGD

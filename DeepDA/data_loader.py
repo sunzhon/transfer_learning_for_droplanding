@@ -123,7 +123,7 @@ class MotionDataset(Dataset):
 
 def load_motiondata(dataset_dict, batch_size, train, num_workers,features_name,labels_name=['R_KNEE_MOMENT_X'],device='cpu',**kwargs):
     n_labels = len(labels_name)
-    dataset = MotionDataset(dataset_dict,features_name, labels_name,device=device)
+    dataset = MotionDataset(dataset_dict, features_name, labels_name, device=device)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, drop_last=False, **kwargs)
 
     return dataloader, n_labels

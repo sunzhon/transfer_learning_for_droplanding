@@ -51,7 +51,9 @@ class MLNNBackbone(nn.Module):
         sequence = pack_padded_sequence(sequence, batch_size*[self.seq_len], batch_first=True, enforce_sorted=False)
         lstm_out, (hidden, c) = self.lstm_layer(sequence) # lstm_out dim  = [batch_size, seq_len, model_dim]
         lstm_out,_= pad_packed_sequence(lstm_out, batch_first=True)
+        
         return lstm_out
+        #return lstm_out[:,-1, :]
 
     def output_num(self):
         return self._feature_dim
@@ -165,6 +167,8 @@ class ResNetBackbone(nn.Module):
 
 
 if __name__=='__main__':
-    model = CNNBackbone()
+    model = MLNNBackbone(n_input=48, seq_len=80, n_output=1, hidden_size=100, num_layers=1)
+    #model = CNNBackbone()
     print(model)
     #model()
+

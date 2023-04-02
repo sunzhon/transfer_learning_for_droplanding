@@ -746,7 +746,7 @@ plot ensemble curves of the actual and estimattion
 def plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections, **kwargs):
 
     # 1) loading test data 
-    multi_test_results = get_multi_models_test_results(list_training_testing_folders, list_selections)
+    test_results = get_list_investigation_results(list_training_testing_folders, list_selections)
 
     # i) plot configurations
     figsize=(7,7)
@@ -767,46 +767,52 @@ def plot_statistic_actual_estimation_curves(list_training_testing_folders, list_
         palette = None
     colors = sns.color_palette("YlGnBu")
 
-    for idx, estimation_values in enumerate(multi_test_results):
-        x=None; y = None
-        hue_plot_params = {
+    x=None; y = None
+    if('x' in kwargs.keys()):
+        x = kwargs['x'];
+    if('y' in kwargs.keys()):
+        y = kwargs['y'];
+    hue_plot_params = {
             'data': estimation_values,
             'x': x,
             'y': y,
             'hue': None,
             "palette": palette,
-            "color": colors[idx]
+            "color": colors[idx],
+            'kind':'line'
             }
-        g = sns.lineplot(ax=axs[idx], **hue_plot_params)
-        g.set_xlabel('Time [s]')
-        g.set_xlim(0, 0.8)
-        g.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
-        if idx == 0:
-            g.set_ylim(-0.1, 2)
-            g.set_yticks([0, 1, 2])
-        elif idx==1:
-            g.set_ylim(-0.21, 4)
-            g.set_yticks([0, 1, 2, 3, 4])
-        elif idx ==2:
-            g.set_ylim(-0.2, 4)
-            g.set_yticks([0, 1, 2, 3, 4])
-        else:
-            g.set_ylim(-0.25, 5)
-            g.set_yticks([0, 1, 2, 3, 4, 5])
-            
-        '''
-        if('legends' in display_configs):
-            g.legend(ncol=1,title=None,loc='upper right',labels=display_configs['legends'][idx])
-        if('ylabel' in display_configs):
-            g.set_ylabel(display_configs['ylabel'][idx])
-        if('subplot_titles' in display_configs):
-            g.set_title(label=display_configs['subplot_titles'][idx])
-        '''
-        g.grid(visible=True, axis='both',which='major')
+    g = sns.catplot(ax=axs[idx], **hue_plot_params)
+    g.set_xlabel('Time [s]')
+    '''
+    g.set_xlim(0, 0.8)
+    g.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
+    if idx == 0:
+        g.set_ylim(-0.1, 2)
+        g.set_yticks([0, 1, 2])
+    elif idx==1:
+        g.set_ylim(-0.21, 4)
+        g.set_yticks([0, 1, 2, 3, 4])
+    elif idx ==2:
+        g.set_ylim(-0.2, 4)
+        g.set_yticks([0, 1, 2, 3, 4])
+    else:
+        g.set_ylim(-0.25, 5)
+        g.set_yticks([0, 1, 2, 3, 4, 5])
+    '''
+        
+    '''
+    if('legends' in display_configs):
+        g.legend(ncol=1,title=None,loc='upper right',labels=display_configs['legends'][idx])
+    if('ylabel' in display_configs):
+        g.set_ylabel(display_configs['ylabel'][idx])
+    if('subplot_titles' in display_configs):
+        g.set_title(label=display_configs['subplot_titles'][idx])
+    '''
+    g.grid(visible=True, axis='both',which='major')
         
     
     
-    return save_figure(os.path.dirname(list_training_testing_folders[0]),fig_format='svg'), multi_test_results
+    return save_figure(os.path.dirname(list_training_testing_folders[0]),fig_format='svg'), test_results
 
 
 '''
@@ -1066,8 +1072,9 @@ P6 plot ensemble curves of the actual and estimattion
 def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, list_selections=None, figsize=(15,12), col_wrap=3,  save_fig=False, save_folder_index=0, save_format='.png', title='curves', font_scale=1, **kwargs):
     
     #1) get testing results: estimation and ground truth
-    multi_test_results = get_multi_models_test_results(list_training_testing_folders, list_selections)
+    test_results = get_list_investigation_results(list_training_testing_folders, list_selections)
     
+    pdb.set_trace()
     #2) set figures
     row_num = math.ceil(len(list_training_testing_folders)/col_wrap)
     fig = plt.figure(figsize=figsize,constrained_layout=False)
@@ -1092,7 +1099,7 @@ def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, lis
     else:
         titles = kwargs['titles']
 
-    for idx, (ylabel, estimation_values) in enumerate(zip(ylabels, multi_test_results)):
+    for idx, (ylabel, estimation_values) in enumerate(zip(ylabels, test_results)):
         estimation_values.rename(columns={'Actual R_KNEE_MOMENT_X': 'Ground truth', 'Estimated R_KNEE_MOMENT_X': 'Estimation'}, inplace=True)
         x=None; y = None
         hue_plot_params = {
@@ -1136,7 +1143,7 @@ def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, lis
     else:
         fig_results = 0
         
-    return fig_results, multi_test_results
+    return fig_results, test_results
 
 
 def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=False, save_fig=False, figsize=(14,7), save_format='.svg', font_scale=1, save_folder_index=0, title='model comparison', plot_type='barplot',**kwargs):

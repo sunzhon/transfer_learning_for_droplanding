@@ -4,8 +4,8 @@
 if [ $# -gt 0 ]; then
     testing_folders=$1
 else
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_v10"
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_v10"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_t3"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_t5"
 fi
 
 if [ $# -gt 1 ]; then
@@ -21,7 +21,7 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "model_selection\talias_name\tconfig_name\tconfig_id\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\tr_rmse\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\trelative_result_folder\ttraining_testing_folders" > $data_file
+echo "model_selection\talias_name\tconfig_name\tconfig_id\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\trelative_result_folder\ttraining_testing_folders" > $data_file
 
 
 echo "START TO COLLECT TEST DATA"
@@ -66,7 +66,9 @@ for hyper_file in ${list_hyper_files}; do
 
         test_subject=$(awk -F"[ :-]+" '$1~/test_subject/{print $2}' $hyper_file)
         r2=$(awk -F"[,:]+" '$2~/r2/{print $4}' "${folder_path}/test_metrics.csv")
-        r_rmse=$(awk -F"[,:]+" '$2~/r_rmse/{print $4}' "${folder_path}/test_metrics.csv")
+        r_rmse=$(awk -F"[,:]+" '{if( $2 == "r_rmse") {print $4}}' "${folder_path}/test_metrics.csv")
+        rmse=$(awk -F"[,:]+" '{if( $2 == "rmse") {print $4}}' "${folder_path}/test_metrics.csv")
+        mae=$(awk -F"[,:]+" '$2~/mae/{print $4}' "${folder_path}/test_metrics.csv")
 
         echo "alias: ${alias_name}"
         sub_num=$(awk -F"[ :-]+" '$1~/^sub_num/{print $2}' $hyper_file)
@@ -89,10 +91,10 @@ for hyper_file in ${list_hyper_files}; do
         fi
 
         echo "model_selection: ${model_selection}" 
-        echo "r2: ${r2}"
+        echo "r2: ${r2}, rmse: ${rmse}, r_rmse: ${r_rmse}, mae: ${mae}"
 
 
-        echo "${model_selection}\t${alias_name}\t${config_id}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${r_rmse}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${relative_result_folder}\t${folder_path}" >> $data_file
+        echo "${model_selection}\t${alias_name}\t${config_id}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${relative_result_folder}\t${folder_path}" >> $data_file
     fi
 done
 

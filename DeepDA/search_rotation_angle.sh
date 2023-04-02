@@ -3,19 +3,18 @@
 #coding: --utf-8
 DATA_PATH=`python -c 'import main; print(main.const.DATA_PATH)'`
 #features_name=`python -c 'import main; array=main.const.SELECTED_FEATURES_NAME; print(" ".join(array))'`
-features_name=`python -c 'import main; array=main.const.extract_imu_fields(["R_SHANK", "R_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
+features_name=`python -c 'import main; array=main.const.extract_imu_fields(["R_SHANK", "R_THIGH", "R_FOOT", "WAIST", "CHEST", "L_FOOT", "L_SHANK", "L_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
 echo "features_name: $features_name"
 feature_layer_num=5 # keep it to use five for offline mode. it is the best value
 sub_num=15
-rot_id=0
 for rot_angle in 6 ; do
-    for train_sub_num in 5; do
-        for trial_num in 25; do #10 15 20 25; do
-            for labels_name in "R_KNEE_MOMENT_X" "R_KNEE_ANGLE_X" ; do
-                for model_name in  "baseline_mlnn"  "augmentation"; do # "augmentation"; do
+    for train_sub_num in 12; do
+        for trial_num in 200; do #10 15 20 25; do
+            for labels_name in "R_KNEE_MOMENT_X"; do # "R_KNEE_ANGLE_X" ; do
+                for model_name in  "augmentation"; do # "augmentation"; do
 
                     landing_manner="double_leg"
-                    relative_result_folder="${model_name}_v11"
+                    relative_result_folder="${model_name}_t5"
                     echo $labels_name
 
                     #rot_id=`expr $rot_id + $rot_angle`
@@ -64,7 +63,7 @@ for rot_angle in 6 ; do
                         augmented_filename="${DATA_PATH}/${tre_data_relative_path}/${tre_data_prefix_name}_${datafile_basename}"
                         if [ ! -f  ${augmented_filename} ]; then
                             echo "augment data...."
-                            python ./../vicon_imu_data_process/augmentation_data.py --xrot_angle 1 --yrot_angle 1 --zrot_angle $rot_angle --rot_id ${rot_id}  --base_name "${landing_manner}_${datafile_basename}"  --noise_level 0.1 --scale_level 1.2
+                            python ./../vicon_imu_data_process/augmentation_data.py --xrot_angle 1 --yrot_angle 1 --zrot_angle $rot_angle --base_name "${landing_manner}_${datafile_basename}"  --noise_level 0.1 --scale_level 1.2
                         fi
                     fi
 
@@ -75,7 +74,7 @@ for rot_angle in 6 ; do
         done
     done
     # collect training and test results
-    ./../batch_collect_test_files.sh "${relative_result_folder}"
+    #./../batch_collect_test_files.sh "${relative_result_folder}"
 done
 
 
