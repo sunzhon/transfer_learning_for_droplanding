@@ -4,8 +4,8 @@
 if [ $# -gt 0 ]; then
     testing_folders=$1
 else
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_t3"
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_t5"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_t9"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_t9"
 fi
 
 if [ $# -gt 1 ]; then

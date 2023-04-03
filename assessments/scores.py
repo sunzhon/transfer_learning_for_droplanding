@@ -447,7 +447,6 @@ def survey_investigation_assessment(combination_investigation_results):
             pdb.set_trace()
 
         #1) load testing results
-        pdb.set_trace()
         try:
             # if there is no r2 in "training_testing_folders.txt file"
             if('r2' not in columns):

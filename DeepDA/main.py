@@ -285,10 +285,10 @@ def test(model, test_data_loader, args, **kwargs):
                 es_sc.save_test_result(pd_features, pd_labels, pd_predictions, testing_folder)
                 
                 # find the trail from which subject
-                sum_trial_number=0
-                for subject, trial_number in args.tst_test_subjects_trials_len.items():
-                    #print("idx: {} and trial number: {}".format(idx, trial_number))
-                    sum_trial_number+=trial_number
+                sum_trial_number=0 # all trial num of all test subjects
+                for subject, trial_num in args.tst_test_subjects_trials_len.items():
+                    print("idx: {}, subject: {} and trial number: {}".format(idx, subject, trial_num))
+                    sum_trial_number += trial_num
                     if(idx < sum_trial_number):
                         args.test_subject = subject
                         break;
@@ -419,7 +419,7 @@ def k_fold(args, multiple_domain_datasets):
     train_sub_num = args.train_sub_num # select how many subjects for training
     test_sub_num = args.test_sub_num # select howm many subjects for testing
     train_indices_list = list(itertools.combinations(train_test_list,train_sub_num)) # train_sub_num subjects for training, remaining subjects for test -CV
-    random_selected_train_index = random.sample(train_indices_list, args.cv_num) # 随机选出cv_num (e.g., 15) 种训练对象的组合, selected cv_num combiantions
+    random_selected_train_index = random.sample(train_indices_list, args.cv_num if len(train_indices_list) > args.cv_num else len(train_indices_list)) # 随机选出cv_num (e.g., 15) 种训练对象的组合, selected cv_num combiantions
     for loop, train_subject_indices in enumerate(random_selected_train_index): # leave-CV
         non_train_subject_list =  list(set(train_test_list)-set(train_subject_indices))# not used in training dataset
         test_indices_list = list(itertools.combinations(non_train_subject_list, test_sub_num if len(non_train_subject_list) > test_sub_num else len(non_train_subject_list))) # list of test indices
@@ -440,8 +440,8 @@ def k_fold(args, multiple_domain_datasets):
         load_domain_dataset['tst'] = tst_test_dataset
 
         # test subjects and trials, {subject_id_name:len(['01','02',...]), ...}
-        tst_test_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tst_test_dataset.items()} 
-        tre_train_subjects_trials_len = {subject_id_name: len(list(trials.keys())) for subject_id_name, trials in tre_train_dataset.items()} 
+        tst_test_subjects_trials_len = {subject_id_name: len(trials.keys()) for subject_id_name, trials in tst_test_dataset.items()} 
+        tre_train_subjects_trials_len = {subject_id_name: len(trials.keys()) for subject_id_name, trials in tre_train_dataset.items()} 
         args.tst_test_subjects_trials_len = tst_test_subjects_trials_len
         args.tre_train_subjects_trials_len = tre_train_subjects_trials_len
 
