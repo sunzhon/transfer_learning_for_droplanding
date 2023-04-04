@@ -800,13 +800,19 @@ def parse_metrics(combination_investigation_results, landing_manner='all', estim
     if kwargs!=None:
         for key, value in kwargs.items():
             if(key in metrics.columns):
-                if set(value) <= set(metrics[key]): # a value of the test id
-                    metrics = metrics.loc[metrics[key].isin(value)]
-                elif(value=='all'):
-                    print('All {} are used'.format(key))
-                else:
-                    print('{} is not right, it should be {}'.format(key, set(metrics[key])))
-                    sys.exit()
+                try:
+                    if(not isinstance(value, list)):
+                        value=[value]
+                    if set(value) <= set(metrics[key]): # a value of the test id
+                        metrics = metrics.loc[metrics[key].isin(value)]
+                    elif(value=='all'):
+                        print('All {} are used'.format(key))
+                    else:
+                        print('{} is not right, it should be {}'.format(key, set(metrics[key])))
+                        sys.exit()
+                except Exception as e:
+                    print(e)
+                    pdb.set_trace()
     
 
     return metrics

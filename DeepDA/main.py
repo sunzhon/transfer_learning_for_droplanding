@@ -49,7 +49,7 @@ def get_parser():
     # description of this config or code modification
     parser.add("--config_name", type=str, default="dann_1")
     parser.add("--config_comments", type=str, default="dann")
-    parser.add("--relative_result_folder", type=str, default=None)
+    parser.add("--result_folder", type=str, default=None)
 
     # general configuration
     parser.add("--config", is_config_file=True, help="config file path")
@@ -150,14 +150,20 @@ def open_datafile(args):
     for domain, domain_name in zip(domains, domains_name):
         if domain !='None':
             domain_data_folder = os.path.join(args.data_dir, domain) # source data
-            domain_dataset, dataset_columns = pro_rd.load_subjects_dataset(h5_file_name = domain_data_folder, selected_data_fields=columns)
+            domain_dataset, dataset_columns = pro_rd.load_subjects_dataset(data_file_name = domain_data_folder, selected_data_fields=columns)
             multiple_domain_datasets[domain_name] = domain_dataset
     
     return multiple_domain_datasets, dataset_columns
 
 
 
-def load_data(args, multiple_domain_datasets):
+def get_dataloader(args, multiple_domain_datasets):
+    '''
+    get dataloader and put the datasets {subject: {trial:,[], trial_1: []}}...
+    the element of a dataloader is a table represent a batch of trial. ([batch_size, seq_len, features], [batch_size, seq_len, label].
+    where, a trial of data is  (seq, [features, labels])
+
+    '''
 
     # data loader
     domain_data_loaders={}
@@ -254,7 +260,7 @@ def test(model, test_data_loader, args, **kwargs):
                 a_label = labels.cpu().numpy()
                 a_prediction = predictions.cpu().numpy()
                 features = features.squeeze(0).cpu().numpy()
-                # load scaler
+                # load scaler, only for testing 
                 scaler = pickle.load(open(os.path.join(const.DATA_PATH, args.scaler_file),'rb'))
 
                 # inverse transform data
@@ -284,14 +290,6 @@ def test(model, test_data_loader, args, **kwargs):
                 es_sc.save_test_result(pd_features, pd_labels, pd_predictions, testing_folder)
                 
                 # find the trail from which subject, stop the test early
-                sum_trial_number=0 # all trial num of all test subjects
-                for subject, trial_num in args.tst_test_subjects_trials_len.items():
-                    print("idx: {}, subject: {} and trial number: {}".format(idx, subject, trial_num))
-                    sum_trial_number += trial_num
-                    if(idx < sum_trial_number):
-                        args.test_subject = subject
-                        break;
-
                 # save hyper parameters
                 hyperparams_file = os.path.join(testing_folder,"hyperparams.yaml")
                 with open(hyperparams_file,'w') as fd:
@@ -299,9 +297,10 @@ def test(model, test_data_loader, args, **kwargs):
             else:
                 testing_folder = None
 
-            if('train_acc_check_times' in kwargs.keys()): # just for checing the acc of train dataset during train progress
-                if(idx>kwargs['train_acc_check_times']): # just test few times, e.g., 4
+            if('test_times' in kwargs.keys()): # just for checing the acc of train dataset during train progress
+                if(idx>kwargs['test_times']): # just test few times, e.g., 4
                     break
+        print("test tests:{}".format(idx))
 
     return test_loss.avg, test_acc.avg, testing_folder
 
@@ -399,7 +398,6 @@ def k_fold(args, multiple_domain_datasets):
         kf = LeaveOneOut()
 
     # copy dataset
-    #load_domain_dataset = copy.deepcopy(multiple_domain_datasets)
     load_domain_dataset = {}# copy.deepcopy(multiple_domain_datasets)
 
     # NOTE: tre and tst mush have same subjects
@@ -432,9 +430,10 @@ def k_fold(args, multiple_domain_datasets):
         print('test subjects id names: {}\n'.format(test_subject_ids_names))
 
         # specifiy test and train subjects
-        #i-1) choose data for regssion training (using label) and testing
-        tre_train_dataset = {subject_id_name: { key: value for idx, (key, value) in enumerate(multiple_domain_datasets['tre'][subject_id_name].items()) if idx < args.trial_num} for subject_id_name in train_subject_ids_names}
-        tst_test_dataset = {subject_id_name: {key: value for idx, (key, value) in enumerate(multiple_domain_datasets['tst'][subject_id_name].items()) if idx < args.trial_num} for subject_id_name in test_subject_ids_names}
+        #i-1) choose data for regssion training (using label) and testing base on train and test subject indices
+        tre_train_dataset = {subject_id_name: { key: value for key, value in multiple_domain_datasets['tre'][subject_id_name].items()} for subject_id_name in train_subject_ids_names}
+        tst_test_dataset = {subject_id_name: {key: value for key, value in multiple_domain_datasets['tst'][subject_id_name].items()} for subject_id_name in test_subject_ids_names}
+
         load_domain_dataset['tre'] = tre_train_dataset
         load_domain_dataset['tst'] = tst_test_dataset
 
@@ -446,8 +445,9 @@ def k_fold(args, multiple_domain_datasets):
 
         print('trial number of train dataset: {}'.format(args.tre_train_subjects_trials_len))
         print('trial number of test dataset: {}\n'.format(args.tst_test_subjects_trials_len))
+
         #ii) load dataloader accodring to source and target subjects_trials_dataset
-        domain_data_loaders, n_labels = load_data(args, load_domain_dataset)
+        domain_data_loaders, n_labels = get_dataloader(args, load_domain_dataset)
         args.n_labels = n_labels
 
         #iii) load model

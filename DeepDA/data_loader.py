@@ -84,8 +84,8 @@ class InfiniteDataLoader:
 class MotionDataset(Dataset):
     def __init__(self, data_file, features_name, labels_name, transform=None,label_transform=None, device='cuda'):
         if(isinstance(data_file,str)):
-            subjects_trials_dataset = pro_rd.load_subjects_dataset(h5_file_name = data_file, selected_data_fields=features_name+labels_name)
-        elif(isinstance(data_file,dict)):
+            subjects_trials_dataset, _ = pro_rd.load_subjects_dataset(data_file_name = data_file, selected_data_fields=features_name+labels_name)
+        elif(isinstance(data_file,dict)): # using this option.
             subjects_trials_dataset = data_file
         else:
             print('data_file is wrong: ', data_file)
@@ -130,10 +130,10 @@ def load_motiondata(dataset_dict, batch_size, train, num_workers,features_name,l
 
 
 if __name__=='__main__':
-    data_file = os.path.join(const.DATA_PATH,'kam_norm_landing_data.hdf5')
-    features_name = ['TIME'] + const.extract_imu_fields(const.IMU_SENSOR_LIST,const.ACC_GYRO_FIELDS)
+    data_file = os.path.join(const.DATA_PATH,'selection/double_leg_norm_landing_data.hdf5')
+    features_name = const.extract_imu_fields(const.IMU_SENSOR_LIST,const.ACC_GYRO_FIELDS)
     labels_name = ['R_KNEE_MOMENT_X']
-    dataset = MotionDataset(data_file,features_name, labels_name)
+    dataset = MotionDataset(data_file, features_name, labels_name)
     dataloader = DataLoader(dataset, batch_size=20, shuffle=True)
     xx=next(iter(dataloader))
 

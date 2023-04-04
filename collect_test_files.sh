@@ -4,8 +4,8 @@
 if [ $# -gt 0 ]; then
     testing_folders=$1
 else
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_t11"
-    #testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_t10"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_t13"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_double_leg_R_KNEE_MOMENT_X_6_14_25_t1"
 fi
 
 if [ $# -gt 1 ]; then
@@ -21,7 +21,7 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "model_selection\talias_name\tconfig_name\tconfig_id\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\trelative_result_folder\ttraining_testing_folders" > $data_file
+echo "model_selection\talias_name\tconfig_name\tconfig_id\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\tresult_folder\ttraining_testing_folders" > $data_file
 
 
 echo "START TO COLLECT TEST DATA"
@@ -78,7 +78,7 @@ for hyper_file in ${list_hyper_files}; do
         
         config_name=$(awk -F"[,:]+" '$1~/config_name/{print $2}' $hyper_file)
         config_id=$(awk -F"[,:]+" '$1~/config_id/{print $2}' $hyper_file)
-        relative_result_folder=$(awk -F"[,:]+" '$1~/relative_result_folder/{print $2}' $hyper_file)
+        result_folder=$(awk -F"[,:]+" '$1~/result_folder/{print $2}' $hyper_file)
 
         landing_manner=$(awk -F"[,:]+" '$1~/^landing_manner/{print $2}' $hyper_file)
 
@@ -93,8 +93,7 @@ for hyper_file in ${list_hyper_files}; do
         echo "model_selection: ${model_selection}" 
         echo "r2: ${r2}, rmse: ${rmse}, r_rmse: ${r_rmse}, mae: ${mae}"
 
-
-        echo "${model_selection}\t${alias_name}\t${config_id}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${relative_result_folder}\t${folder_path}" >> $data_file
+        echo "${model_selection}\t${alias_name}\t${config_id}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${result_folder}\t${folder_path}" >> $data_file
     fi
 done
 
