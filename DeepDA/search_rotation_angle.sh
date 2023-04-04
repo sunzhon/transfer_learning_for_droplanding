@@ -27,8 +27,9 @@ for rot_angle in 6 ; do
 
                     config_name="${rot_angle}_${train_sub_num}_${trial_num}_${label_name}_${model_name}_${landing_manner}"
                     datafile_basename="${landing_manner}_norm_landing_data.hdf5"
-                    scaler_basename="${landing_manner}_landing_scaler_file.pkl"
-                    echo $datafile_basename
+                    scaler_basename="augmentation/${landing_manner}_landing_scaler_file.pkl"
+                    echo "datafile_basename: ${datafile_basename}"
+                    echo "scaler file: ${scaler_basename}"
 
 
                     test_sub_num=`expr ${sub_num} - ${train_sub_num}`# if have
@@ -60,7 +61,7 @@ for rot_angle in 6 ; do
                     fi
 
                     # model training and evluation
-                    python main.py --config run.yaml --model_selection ${model_name} --feature_layer_num ${feature_layer_num} --cv_num ${cv_num} --tre_domain "${tre_data_relative_path}/${datafile_basename}" --tst_domain "${tst_data_relative_path}/${datafile_basename}"  --scaler_file "${tst_data_relative_path}/${scaler_basename}"  --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --test_sub_num ${test_sub_num} --config_name "${config_name}" --relative_result_folder "${relative_result_folder}/${result_category_folder}" --features_name ${features_name} --labels_name ${labels_name} --landing_manner ${landing_manner} | tee "${log_folder}/${config_name}.log"
+                    python main.py --config run.yaml --model_selection ${model_name} --feature_layer_num ${feature_layer_num} --cv_num ${cv_num} --tre_domain "${tre_data_relative_path}/${datafile_basename}" --tst_domain "${tst_data_relative_path}/${datafile_basename}"  --scaler_file "${scaler_basename}"  --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --test_sub_num ${test_sub_num} --config_name "${config_name}" --relative_result_folder "${relative_result_folder}/${result_category_folder}" --features_name ${features_name} --labels_name ${labels_name} --landing_manner ${landing_manner} | tee "${log_folder}/${config_name}.log"
                 done
             done
         done
