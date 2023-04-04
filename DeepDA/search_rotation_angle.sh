@@ -8,11 +8,11 @@ feature_layer_num=5 # keep it to use five for offline mode. it is the best value
 sub_num=15
 for rot_angle in 6 ; do
     for train_sub_num in 12; do
-        for trial_num in 400; do #10 15 20 25; do
+        for trial_num in 25; do #10 15 20 25; do # NOTE: trial_num is only work for base_trail idx, 01, 02,.., not work on 01_0, 01_1,...
             for labels_name in "R_KNEE_MOMENT_X"; do # "R_KNEE_ANGLE_X" ; do
                 for model_name in  "baseline_mlnn" "augmentation"; do
                     landing_manner="double_leg"
-                    relative_result_folder="${model_name}_t9"
+                    relative_result_folder="${model_name}_t12"
                     result_category_folder="${train_sub_num}sub/${trial_num}tri"
                     echo "features_name: ${features_name}"
                     echo "labels_name: ${labels_name}"
@@ -25,7 +25,7 @@ for rot_angle in 6 ; do
                     fi
                     tst_data_relative_path="selection"
 
-                    config_id=${rot_angle}
+                    config_name="${rot_angle}_${train_sub_num}_${trial_num}_${label_name}_${model_name}_${landing_manner}"
                     datafile_basename="${landing_manner}_norm_landing_data.hdf5"
                     scaler_basename="${landing_manner}_landing_scaler_file.pkl"
                     echo $datafile_basename
@@ -60,7 +60,7 @@ for rot_angle in 6 ; do
                     fi
 
                     # model training and evluation
-                    python main.py --config run.yaml --model_selection ${model_name} --feature_layer_num ${feature_layer_num} --cv_num ${cv_num} --tre_domain "${tre_data_relative_path}/${datafile_basename}" --tst_domain "${tst_data_relative_path}/${datafile_basename}"  --scaler_file "${tst_data_relative_path}/${scaler_basename}"  --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --test_sub_num ${test_sub_num} --config_name "${config_id}" --config_id ${config_id} --relative_result_folder "${relative_result_folder}/${result_category_folder}" --features_name ${features_name} --labels_name ${labels_name} --landing_manner ${landing_manner} | tee "${log_folder}/${tre_dat_prefix_name}.log"
+                    python main.py --config run.yaml --model_selection ${model_name} --feature_layer_num ${feature_layer_num} --cv_num ${cv_num} --tre_domain "${tre_data_relative_path}/${datafile_basename}" --tst_domain "${tst_data_relative_path}/${datafile_basename}"  --scaler_file "${tst_data_relative_path}/${scaler_basename}"  --sub_num ${sub_num} --trial_num ${trial_num}  --train_sub_num "${train_sub_num}" --test_sub_num ${test_sub_num} --config_name "${config_name}" --relative_result_folder "${relative_result_folder}/${result_category_folder}" --features_name ${features_name} --labels_name ${labels_name} --landing_manner ${landing_manner} | tee "${log_folder}/${config_name}.log"
                 done
             done
         done

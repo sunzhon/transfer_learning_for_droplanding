@@ -48,7 +48,6 @@ def get_parser():
 
     # description of this config or code modification
     parser.add("--config_name", type=str, default="dann_1")
-    parser.add("--config_id", type=str, default="1")
     parser.add("--config_comments", type=str, default="dann")
     parser.add("--relative_result_folder", type=str, default=None)
 
@@ -284,7 +283,7 @@ def test(model, test_data_loader, args, **kwargs):
                 # save test results
                 es_sc.save_test_result(pd_features, pd_labels, pd_predictions, testing_folder)
                 
-                # find the trail from which subject
+                # find the trail from which subject, stop the test early
                 sum_trial_number=0 # all trial num of all test subjects
                 for subject, trial_num in args.tst_test_subjects_trials_len.items():
                     print("idx: {}, subject: {} and trial number: {}".format(idx, subject, trial_num))
