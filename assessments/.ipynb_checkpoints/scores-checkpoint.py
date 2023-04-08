@@ -910,37 +910,11 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
 
 
 
-def sum_metrics(result_folders):
-    assert(isinstance(result_folders,list))
 
-    combination_investigation_results=[os.path.join(RESULTS_PATH, "training_testing", result_folder,"testing_result_folders.txt")
-                                               for result_folder in result_folders]
-
-    combination_investigation_results = [os.path.join(os.path.dirname(folder), "metrics.csv") if(os.path.exists(os.path.join(os.path.dirname(folder), "metrics.csv"))) else folder for folder in combination_investigation_results]
-
-    # 2) get testing metrics
-    metrics = get_list_investigation_metrics(combination_investigation_results)
-    # clacuelte sum of metrics
-    tmp = metrics.groupby(['config_name']).mean().round(2)[['r2','rmse','mae']]
-    tmp = tmp.reset_index()
-    #tmp['idx']=range(tmp.shape[0])
-    # file for saving the sum results 
-    result_file = "./../DeepDA/sum_metrics.csv"
-    if(not os.path.exists(result_file)):
-        tmp.to_csv(result_file)
-    else:
-        tmp.to_csv(result_file, mode='a', header=None)
 
 
 
 if __name__=='__main__':
-    if True:
-        if(len(sys.argv)>=2):
-            print("sys.argv: ", sys.argv)
-        sum_metrics(sys.argv[1:])
-        
-
-    exit()
 
     combination_investigation_results = [
             os.path.join(RESULTS_PATH, "training_testing", "baseline_mlnn_t2","testing_result_folders.txt"),

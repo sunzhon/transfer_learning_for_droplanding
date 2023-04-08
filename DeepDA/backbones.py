@@ -7,12 +7,12 @@ from torch.nn import Linear, ReLU, CrossEntropyLoss, Sequential, Conv2d, MaxPool
 
 
 resnet_dict = {
-    "resnet18": models.resnet18,
-    "resnet34": models.resnet34,
-    "resnet50": models.resnet50,
-    "resnet101": models.resnet101,
-    "resnet152": models.resnet152,
-}
+        "resnet18": models.resnet18,
+        "resnet34": models.resnet34,
+        "resnet50": models.resnet50,
+        "resnet101": models.resnet101,
+        "resnet152": models.resnet152,
+        }
 
 def get_backbone(name,**kwargs):
     if "resnet" in name.lower():
@@ -51,9 +51,9 @@ class MLNNBackbone(nn.Module):
         sequence = pack_padded_sequence(sequence, batch_size*[self.seq_len], batch_first=True, enforce_sorted=False)
         lstm_out, (hidden, c) = self.lstm_layer(sequence) # lstm_out dim  = [batch_size, seq_len, model_dim]
         lstm_out,_= pad_packed_sequence(lstm_out, batch_first=True)
-        
+
         return lstm_out
-        #return lstm_out[:,-1, :]
+    #return lstm_out[:,-1, :]
 
     def output_num(self):
         return self._feature_dim

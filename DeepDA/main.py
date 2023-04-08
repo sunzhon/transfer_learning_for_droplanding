@@ -61,6 +61,7 @@ def get_parser():
     parser.add_argument('--use_bottleneck', type=str2bool, default=False)
 
     # data loading related
+    parser.add_argument('--dataset_name', type=str, default='original')
     parser.add_argument('--data_dir', type=str, required=True)
     parser.add_argument('--src_domain', type=str, required=True)
     parser.add_argument('--tcl_domain', type=str, required=True)
@@ -98,7 +99,7 @@ def get_parser():
     parser.add_argument('--training_folder', type=str, default=None)
 
     # model selections
-    parser.add_argument('--model_selection', type=str, default='DANN')
+    parser.add_argument('--model_name', type=str, default='DANN')
     parser.add_argument('--trained_model_state_path', type=str, default='None')
 
     # a trial from a subject in a test
@@ -178,41 +179,41 @@ def get_dataloader(args, multiple_domain_datasets):
 
 def get_model(args):
     num_layers = args.feature_layer_num
-    if(args.model_selection=='Normal_DANN'):
+    if(args.model_name=='Normal_DANN'):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=0).to(args.device)
 
-    elif(args.model_selection=='DANN'):
+    elif(args.model_name=='DANN'):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
-    elif(args.model_selection=='Aug_DANN'):
+    elif(args.model_name=='Aug_DANN'):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
-    elif(args.model_selection=='baseline_mlnn'):
+    elif(args.model_name=='baseline'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),num_layers=num_layers).to(args.device)
 
-    elif(args.model_selection=='augmentation'):
+    elif(args.model_name=='augmentation'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),  num_layers=num_layers).to(args.device)
 
-    elif(args.model_selection=='baseline_cnn'):
+    elif(args.model_name=='baseline_cnn'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='cnn', num_layers=num_layers).to(args.device)
 
-    elif(args.model_selection=='pretrained'):
+    elif(args.model_name=='pretrained'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
 
-    elif(args.model_selection=='finetuning'):
+    elif(args.model_name=='finetuning'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers = num_layers, finetuning=True).to(args.device)
         model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
 
-    elif(args.model_selection=='discriminator'):
+    elif(args.model_name=='discriminator'):
         model = models.DiscriminatorModel(num_label=args.n_labels, base_net='discriminator').to(args.device)
 
     else:
         exit("MODEL is not exist")
 
-    print('Model selection: {}'.format(args.model_selection))
+    print('Model selection: {}'.format(args.model_name))
 
     return model
 
@@ -533,7 +534,7 @@ def main():
     setattr(args, 'test_subject_ids_names', [])
 
     # test or cross validation training
-    if(args.model_selection=='test_model'):
+    if(args.model_name=='test_model'):
         model_evaluation(args, multiple_domain_datasets) # args contains model_param path
     else:
         k_fold(args, multiple_domain_datasets)

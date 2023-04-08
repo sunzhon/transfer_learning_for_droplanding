@@ -6,7 +6,7 @@ if [ $# -gt 0 ]; then
 else
     testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_t13"
     testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_double_leg_R_KNEE_MOMENT_X_6_14_25_t3"
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_rdouble_leg_rotation_R_KNEE_MOMENT_X_6_16_30_a2"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/augmentation_double_leg_R_KNEE_MOMENT_X_6_14_25_t3"
 fi
 
 if [ $# -gt 1 ]; then
@@ -22,10 +22,10 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "model_name\tdataset_name\talias_name\tconfig_name\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\tresult_folder\ttraining_testing_folders" > $data_file
+echo "model_selection\talias_name\tconfig_name\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\tresult_folder\ttraining_testing_folders" > $data_file
 
 
-echo "Start to collect test data ...."
+echo "START TO COLLECT TEST DATA"
 
 
 for hyper_file in ${list_hyper_files}; do 
@@ -50,9 +50,8 @@ for hyper_file in ${list_hyper_files}; do
         #sed -i -e 's/imu_augment_5degree/complex_baseline/' $hyper_file
         #sed -i -e 's/dann_6/augment_dann/' $hyper_file
         #sed -i -e 's/dann_5/repeated_dann/' $hyper_file
-        model_name=$(awk -F"[ :-]+" '$1~/model_name/{print $2}' $hyper_file)
-        dataset_name=$(awk -F"[ :-]+" '$1~/dataset_name/{print $2}' $hyper_file)
-        #model_name=$(awk -F"[ :-]+" '$1~/model_name/{print $2}' $hyper_file)
+        model_selection=$(awk -F"[ :-]+" '$1~/model_selection/{print $2}' $hyper_file)
+        #model_selection=$(awk -F"[ :-]+" '$1~/model_selection/{print $2}' $hyper_file)
         #
         #
 
@@ -84,17 +83,17 @@ for hyper_file in ${list_hyper_files}; do
         landing_manner=$(awk -F"[,:]+" '$1~/^landing_manner/{print $2}' $hyper_file)
 
         alias_name=$(awk -F"[,:]+" '$1~/^alias_name/{print $2}' $hyper_file)
-        #alias_name=$(model_name#"trials_")
+        #alias_name=$(model_selection#"trials_")
         if [[ "$alias_name" == "" ]]; then
-            alias_name=$model_name
+            alias_name=$model_selection
             #sed -i -e '1a\config_alias_name:imu_augment' $hyper_file
             #alias_name=$(awk -F"[,:]+" '$1~/config_alias_name/{print $2}' $hyper_file)
         fi
 
-        echo "model_name: ${model_name}" 
+        echo "model_selection: ${model_selection}" 
         echo "r2: ${r2}, rmse: ${rmse}, r_rmse: ${r_rmse}, mae: ${mae}"
 
-        echo "${model_name}\t${dataset_name}\t${alias_name}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${result_folder}\t${folder_path}" >> $data_file
+        echo "${model_selection}\t${alias_name}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${result_folder}\t${folder_path}" >> $data_file
     fi
 done
 
@@ -103,5 +102,5 @@ done
 sed -i -e "/^\t/d" ${data_file}
 
 
-echo "End to collect test data ....."
+echo "END TO COLLECT TEST DATA"
 
