@@ -916,6 +916,7 @@ def sum_metrics(result_folders):
     combination_investigation_results=[os.path.join(RESULTS_PATH, "training_testing", result_folder,"testing_result_folders.txt")
                                                for result_folder in result_folders]
 
+    # if metrics.csv exist then use metrics.csv else using testing_result_folders.txt
     combination_investigation_results = [os.path.join(os.path.dirname(folder), "metrics.csv") if(os.path.exists(os.path.join(os.path.dirname(folder), "metrics.csv"))) else folder for folder in combination_investigation_results]
 
     # 2) get testing metrics
@@ -936,86 +937,85 @@ def sum_metrics(result_folders):
 if __name__=='__main__':
     if True:
         if(len(sys.argv)>=2):
-            print("sys.argv: ", sys.argv)
+            print("args: ", sys.argv)
         sum_metrics(sys.argv[1:])
         
 
-    exit()
-
-    combination_investigation_results = [
-            os.path.join(RESULTS_PATH, "training_testing", "baseline_mlnn_t2","testing_result_folders.txt"),
-            #os.path.join(RESULTS_PATH, "training_testing", "baseline_mlnn_v12","testing_result_folders.txt"),
-            #os.path.join(RESULTS_PATH, "training_testing", "augmentation_v12","testing_result_folders.txt"),
-            ]
-
-
-    #1) get testing results: estimation and ground truth
-    list_selections = [{'train_index': 0, 
-        'test_subject':['P_10_dongxuan']
-        }
-    ]
+    if False:
+        combination_investigation_results = [
+                os.path.join(RESULTS_PATH, "training_testing", "baseline_mlnn_t2","testing_result_folders.txt"),
+                #os.path.join(RESULTS_PATH, "training_testing", "baseline_mlnn_v12","testing_result_folders.txt"),
+                #os.path.join(RESULTS_PATH, "training_testing", "augmentation_v12","testing_result_folders.txt"),
+                ]
 
 
-    test_results = get_list_investigation_results(combination_investigation_results, list_selections)
-    pdb.set_trace()
-
-    exit()
-
-
-    # plot curves
-    combination_investigation_results = ["/media/sun/DATA/drop_landing_workspace/results/training_testing/baseline/testing_result_folders.txt",
-                                 "/media/sun/DATA/drop_landing_workspace/results/training_testing/dann/testing_result_folders.txt"
-                                ]
-    selection={'child_test_id': ['test_1']}
-    #test_results = get_list_investigation_results([combination_investigation_results[0]], **selection)
-
-    #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/investigation/2022-05-13/094012/double_KFM_R_syn_5sensor_35testing_result_folders.txt"
-    #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/2022-05-13/001/testing_result_folders.txt"
-
-    #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/testing_result_folders.txt"
-
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/testing_result_folders.txt"
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/10_14/testing_result_folders.txt"
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/investigation/2022-05-24/205937/GRFtesting_result_folders.txt"
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train_bk/08_30/testing_result_folders.txt"
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/new_alignment/testing_result_folders.txt"
+        #1) get testing results: estimation and ground truth
+        list_selections = [{'train_index': 0, 
+            'test_subject':['P_10_dongxuan']
+            }
+        ]
 
 
-    #combination_investigation_metrics = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/investigation/valid_results/metrics.csv"
+        test_results = get_list_investigation_results(combination_investigation_results, list_selections)
+        pdb.set_trace()
 
-    #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/1_collected_data/study_lstm_units_GRF/3_imu_all_units/testing_result_folders.txt"
-    #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/1_collected_data/study_lstm_units_GRF/3_imu_all_units/testing_result_folders.txt"
-    #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/2_collected_full_cv/2_imu_full_cv_all_trials/testing_result_folders.txt"
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/4_collected_sensor_lstm/3_imu/3_imu_25_lstm_units/testing_result_folders.txt"
-    #pd_assessment = evaluate_models_on_unseen_subjects(combination_investigation_results)
+        exit()
 
+
+        # plot curves
+        combination_investigation_results = ["/media/sun/DATA/drop_landing_workspace/results/training_testing/baseline/testing_result_folders.txt",
+                                     "/media/sun/DATA/drop_landing_workspace/results/training_testing/dann/testing_result_folders.txt"
+                                    ]
+        selection={'child_test_id': ['test_1']}
+        #test_results = get_list_investigation_results([combination_investigation_results[0]], **selection)
+
+        #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/investigation/2022-05-13/094012/double_KFM_R_syn_5sensor_35testing_result_folders.txt"
+        #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/2022-05-13/001/testing_result_folders.txt"
+
+        #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/testing_result_folders.txt"
+
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/testing_result_folders.txt"
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/10_14/testing_result_folders.txt"
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/investigation/2022-05-24/205937/GRFtesting_result_folders.txt"
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train_bk/08_30/testing_result_folders.txt"
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/new_alignment/testing_result_folders.txt"
+
+
+        #combination_investigation_metrics = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/investigation/valid_results/metrics.csv"
+
+        #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/1_collected_data/study_lstm_units_GRF/3_imu_all_units/testing_result_folders.txt"
+        #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/1_collected_data/study_lstm_units_GRF/3_imu_all_units/testing_result_folders.txt"
+        #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/2_collected_full_cv/2_imu_full_cv_all_trials/testing_result_folders.txt"
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/4_collected_sensor_lstm/3_imu/3_imu_25_lstm_units/testing_result_folders.txt"
+        #pd_assessment = evaluate_models_on_unseen_subjects(combination_investigation_results)
 
 
 
-    ##get_investigation_training_testing_folders(combination_investigation_results)
-    #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/r2_metrics.csv"
-    #r2_metrics = get_investigation_metrics(combination_investigation_results)
+
+        ##get_investigation_training_testing_folders(combination_investigation_results)
+        #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/r2_metrics.csv"
+        #r2_metrics = get_investigation_metrics(combination_investigation_results)
 
 
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/001/testing_result_folders.txt"
-    #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/001/metrics.csv"
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/4_collected_sensor_lstm/testing_result_folders.txt"
-    combination_investigation_results =  [os.path.join(RESULTS_PATH, "training_testing", "augmentation_dkem_v5",str(rot_id)+'rotid', str(sub_num)+"sub", str(trial_num)+"tri", "testing_result_folders.txt") for sub_num in range(14,15,1) for trial_num in range(25, 26,5) for rot_id in [6]]
-    print(combination_investigation_results)
-    r2_metrics = get_list_investigation_metrics(combination_investigation_results)
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/001/testing_result_folders.txt"
+        #combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/001/metrics.csv"
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/4_collected_sensor_lstm/testing_result_folders.txt"
+        combination_investigation_results =  [os.path.join(RESULTS_PATH, "training_testing", "augmentation_dkem_v5",str(rot_id)+'rotid', str(sub_num)+"sub", str(trial_num)+"tri", "testing_result_folders.txt") for sub_num in range(14,15,1) for trial_num in range(25, 26,5) for rot_id in [6]]
+        print(combination_investigation_results)
+        r2_metrics = get_list_investigation_metrics(combination_investigation_results)
 
-    #pd_assessment = evaluate_models_on_unseen_subjects(combination_investigation_results)
-
-
-    combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/testing_result_folders.txt"
-    investigation_config_results =  get_investigation_training_testing_folders(combination_investigation_results,'training_123113')
-    print(investigation_config_results)
+        #pd_assessment = evaluate_models_on_unseen_subjects(combination_investigation_results)
 
 
-    training_folder =  get_investigation_training_testing_folders(combination_investigation_results,'training_123113')
-    print(training_folder)
-    subject_id_name='P_10_zhangboyuan'
-    trial = '01'
-    pd_predictions, pd_labels, testing_folder, metrics = test_model_on_unseen_trial(training_folder, 
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/latest_train/testing_result_folders.txt"
+        investigation_config_results =  get_investigation_training_testing_folders(combination_investigation_results,'training_123113')
+        print(investigation_config_results)
+
+
+        training_folder =  get_investigation_training_testing_folders(combination_investigation_results,'training_123113')
+        print(training_folder)
+        subject_id_name='P_10_zhangboyuan'
+        trial = '01'
+        pd_predictions, pd_labels, testing_folder, metrics = test_model_on_unseen_trial(training_folder, 
                                                                                 subject_id_name=subject_id_name,
                                                                                 trial=trial)
