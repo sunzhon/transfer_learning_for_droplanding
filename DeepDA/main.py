@@ -113,7 +113,7 @@ def get_parser():
     parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
     # sub_num subjects and trial_num trials of a subject will be used
-    parser.add_argument('--sub_num',type=int, default=15) # patience for early stopping
+    parser.add_argument('--sub_num',type=int, default=17) # patience for early stopping
     parser.add_argument('--trial_num',type=int, default=25) # patience for early stopping
 
     # train_sub_num subjects were used to train model 
@@ -140,7 +140,10 @@ def set_random_seed(seed=0):
 
 
 def open_datafile(args):
+    '''
+    Load dataset for tst and tre
 
+    '''
     # dataset fields
     columns = args.features_name + args.labels_name
 
@@ -151,7 +154,7 @@ def open_datafile(args):
     for domain, domain_name in zip(domains, domains_name):
         if domain !='None':
             domain_data_folder = os.path.join(args.data_dir, domain) # source data
-            domain_dataset, dataset_columns = pro_rd.load_subjects_dataset(data_file_name = domain_data_folder, selected_data_fields=columns)
+            domain_dataset, dataset_columns = pro_rd.load_subjects_dataset(data_file_name=domain_data_folder, selected_data_fields=columns)
             multiple_domain_datasets[domain_name] = domain_dataset
     
     return multiple_domain_datasets, dataset_columns
@@ -433,7 +436,8 @@ def k_fold(args, multiple_domain_datasets):
         # specifiy test and train subjects
         #i-1) choose data for regssion training (using label) and testing base on train and test subject indices
         tre_train_dataset = {subject_id_name: { key: value for key, value in multiple_domain_datasets['tre'][subject_id_name].items()} for subject_id_name in train_subject_ids_names}
-        tst_test_dataset = {subject_id_name: {key: value for key, value in multiple_domain_datasets['tst'][subject_id_name].items()} for subject_id_name in test_subject_ids_names}
+        #tst_test_dataset = {subject_id_name: {key: value for key, value in multiple_domain_datasets['tst'][subject_id_name].items()} for subject_id_name in test_subject_ids_names}
+        tst_test_dataset = {subject_id_name: {key: value for idx, (key, value) in enumerate(multiple_domain_datasets['tst'][subject_id_name].items()) if idx < args.trial_num} for subject_id_name in test_subject_ids_names}
 
         load_domain_dataset['tre'] = tre_train_dataset
         load_domain_dataset['tst'] = tst_test_dataset
@@ -444,8 +448,8 @@ def k_fold(args, multiple_domain_datasets):
         args.tst_test_subjects_trials_len = tst_test_subjects_trials_len
         args.tre_train_subjects_trials_len = tre_train_subjects_trials_len
 
-        print('trial number of train dataset: {}'.format(args.tre_train_subjects_trials_len))
-        print('trial number of test dataset: {}\n'.format(args.tst_test_subjects_trials_len))
+        print('trial number of tre train dataset: {}'.format(args.tre_train_subjects_trials_len))
+        print('trial number of tst test dataset: {}\n'.format(args.tst_test_subjects_trials_len))
 
         #ii) load dataloader accodring to source and target subjects_trials_dataset
         domain_data_loaders, n_labels = get_dataloader(args, load_domain_dataset)
@@ -544,7 +548,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
 '''

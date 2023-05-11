@@ -22,7 +22,7 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "model_name\tdataset_name\talias_name\tconfig_name\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subject\tparent_test_id\tchild_test_id\tlanding_manner\tresult_folder\ttraining_testing_folders" > $data_file
+echo "landing_manner\tmodel_name\tfeature_layer_num\tdataset_name\talias_name\tconfig_name\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subject\tparent_test_id\tchild_test_id\tresult_folder\ttraining_testing_folders" > $data_file
 
 
 echo "Start to collect test data ...."
@@ -51,6 +51,7 @@ for hyper_file in ${list_hyper_files}; do
         #sed -i -e 's/dann_6/augment_dann/' $hyper_file
         #sed -i -e 's/dann_5/repeated_dann/' $hyper_file
         model_name=$(awk -F"[ :-]+" '$1~/model_name/{print $2}' $hyper_file)
+        feature_layer_num=$(awk -F"[ :-]+" '$1~/feature_layer_num/{print $2}' $hyper_file)
         dataset_name=$(awk -F"[ :-]+" '$1~/dataset_name/{print $2}' $hyper_file)
         #model_name=$(awk -F"[ :-]+" '$1~/model_name/{print $2}' $hyper_file)
         #
@@ -94,7 +95,7 @@ for hyper_file in ${list_hyper_files}; do
         echo "model_name: ${model_name}" 
         echo "r2: ${r2}, rmse: ${rmse}, r_rmse: ${r_rmse}, mae: ${mae}"
 
-        echo "${model_name}\t${dataset_name}\t${alias_name}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${landing_manner}\t${result_folder}\t${folder_path}" >> $data_file
+        echo "${landing_manner}\t${model_name}\t${feature_layer_num}\t${dataset_name}\t${alias_name}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${result_folder}\t${folder_path}" >> $data_file
     fi
 done
 

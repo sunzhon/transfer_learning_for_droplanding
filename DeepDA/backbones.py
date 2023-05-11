@@ -5,7 +5,6 @@ import pdb
 from torch.nn.utils.rnn import pad_sequence,pack_padded_sequence,pack_sequence,pad_packed_sequence
 from torch.nn import Linear, ReLU, CrossEntropyLoss, Sequential, Conv2d, MaxPool2d, Module, Softmax, BatchNorm2d, Dropout
 
-
 resnet_dict = {
         "resnet18": models.resnet18,
         "resnet34": models.resnet34,
@@ -171,4 +170,10 @@ if __name__=='__main__':
     #model = CNNBackbone()
     print(model)
     #model()
+    from ptflops import get_model_complexity_info
+
+    flops, params = get_model_complexity_info(model, (80,48), as_strings=True, print_per_layer_stat=True)
+
+    print('FLOPs:', flops)
+    print('Parameters:', params)
 
