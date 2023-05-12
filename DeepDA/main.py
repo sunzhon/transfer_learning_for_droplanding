@@ -112,9 +112,10 @@ def get_parser():
     parser.add_argument('--early_stopping_patience',type=int, default=10) # patience for early stopping
     parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
-    # sub_num subjects and trial_num trials of a subject will be used
+    # sub_num subjects and tst_trial_num and tre_trial_num trials of the subjects will be used
     parser.add_argument('--sub_num',type=int, default=17) # patience for early stopping
-    parser.add_argument('--trial_num',type=int, default=25) # patience for early stopping
+    parser.add_argument('--tst_trial_num',type=int, default=10) # patience for early stopping
+    parser.add_argument('--tre_trial_num',type=int, default=25) # patience for early stopping
 
     # train_sub_num subjects were used to train model 
     parser.add_argument('--train_sub_num',type=int, default=14) # patience for early stopping
@@ -435,18 +436,18 @@ def k_fold(args, multiple_domain_datasets):
 
         # specifiy test and train subjects
         #i-1) choose data for regssion training (using label) and testing base on train and test subject indices
-        tre_train_dataset = {subject_id_name: { key: value for key, value in multiple_domain_datasets['tre'][subject_id_name].items()} for subject_id_name in train_subject_ids_names}
-        #tst_test_dataset = {subject_id_name: {key: value for key, value in multiple_domain_datasets['tst'][subject_id_name].items()} for subject_id_name in test_subject_ids_names}
-        tst_test_dataset = {subject_id_name: {key: value for idx, (key, value) in enumerate(multiple_domain_datasets['tst'][subject_id_name].items()) if idx < args.trial_num} for subject_id_name in test_subject_ids_names}
+        tre_train_dataset = {subject_id_name: {key: value for idx, (key, value) in enumerate(multiple_domain_datasets['tre'][subject_id_name].items()) if idx < args.tre_trial_num} for subject_id_name in train_subject_ids_names}
+        tst_test_dataset = {subject_id_name: {key: value for idx, (key, value) in enumerate(multiple_domain_datasets['tst'][subject_id_name].items()) if idx < args.tst_trial_num} for subject_id_name in test_subject_ids_names}
 
         load_domain_dataset['tre'] = tre_train_dataset
         load_domain_dataset['tst'] = tst_test_dataset
 
-        # test subjects and trials, {subject_id_name:len(['01','02',...]), ...}
-        tst_test_subjects_trials_len = {subject_id_name: len(trials.keys()) for subject_id_name, trials in tst_test_dataset.items()} 
+        # the length of test subjects and trials, {subject_id_name:len(['01','02',...]), ...}
         tre_train_subjects_trials_len = {subject_id_name: len(trials.keys()) for subject_id_name, trials in tre_train_dataset.items()} 
-        args.tst_test_subjects_trials_len = tst_test_subjects_trials_len
+        tst_test_subjects_trials_len = {subject_id_name: len(trials.keys()) for subject_id_name, trials in tst_test_dataset.items()} 
+
         args.tre_train_subjects_trials_len = tre_train_subjects_trials_len
+        args.tst_test_subjects_trials_len = tst_test_subjects_trials_len
 
         print('trial number of tre train dataset: {}'.format(args.tre_train_subjects_trials_len))
         print('trial number of tst test dataset: {}\n'.format(args.tst_test_subjects_trials_len))
