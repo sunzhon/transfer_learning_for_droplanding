@@ -488,21 +488,8 @@ def survey_investigation_assessment(combination_investigation_results):
                 print("Not Found hyper params file at {}".format(hyperparams_file))
                 sys.exit()
 
-            if(isinstance(hyperparams['test_subject_ids_names'],list)):
-                metrics['subjects'] = hyperparams['test_subject_ids_names'][0] # few subjects in a list
-            else:
-                metrics['subjects'] = hyperparams['test_subject_ids_names'] # only a subject 
-
-            if 'test_subject' in hyperparams.keys():
-                metrics['test_subject'] = hyperparams['test_subject']
-
-            if 'test_trial' in hyperparams.keys():
-                if(isinstance(hyperparams['test_trial'],list)):
-                    metrics['trials'] = hyperparams['test_trial'][0]
-                else:
-                    metrics['trials'] = hyperparams['test_trial']
-            else:
-                metrics['trials'] = 0 # not sure which trials, so set it to 0
+            if 'test_subjects' in hyperparams.keys():
+                metrics['test_subjects'] = hyperparams['test_subjects'][0]
 
             # running time calculation
             if('execution_time' in hyperparams.keys()):
@@ -516,7 +503,7 @@ def survey_investigation_assessment(combination_investigation_results):
             else:
                 metrics['additional_imus'] = None # Did not define the execution time
         except Exception as e:
-            print(e)
+            print("exception:", e)
             pdb.set_trace()
 
         assessment.append(metrics)
@@ -695,16 +682,16 @@ def parse_list_investigation_metrics(list_combination_investigation_results, cal
     if(calculate_mean_subject_r2):
         # calculate mean subject r2
         metrics['mean_subject_r2']=0
-        mean_subject_r2 = metrics[['subject_num', 'train_sub_num', 'trial_num','test_subject','r2','model_name','dataset_name']].groupby(['subject_num', 'train_sub_num', 'trial_num','test_subject','model_name', 'dataset_name']).mean().round(4)
+        mean_subject_r2 = metrics[['subject_num', 'train_sub_num', 'tre_trial_num', 'tst_trial_num','test_subjects','r2','model_name','dataset_name']].groupby(['subject_num', 'train_sub_num','tre_trial_num', 'tst_trial_num','test_subjects','model_name', 'dataset_name']).mean().round(4)
         # add mean subject metrics into metrics
         for subject_num in set(metrics['subject_num']):
             for train_sub_num in set(metrics['train_sub_num']):
-                for trial_num in set(metrics['trial_num']): 
-                    for test_subject in set(metrics['test_subject']):
+                for tre_trial_num in set(metrics['tre_trial_num']): 
+                    for test_subjects in set(metrics['test_subjects']):
                         for model_name in set(metrics['model_name']):
                             for dataset_name in set(metrics['dataset_name']):
-                                if(test_subject in mean_subject_r2.loc[subject_num, trial_num].index):
-                                    metrics.loc[(metrics['subject_num']==subject_num) & (metrics['train_sub_num']==train_sub_num) & (metrics['trial_num']==trial_num) & (metrics['test_subject']==test_subject) & (metrics['model_name']==model_name) & (metrics['dataset_name']==dataset_name) , 'mean_subject_r2']=mean_subject_r2.loc[subject_num, trial_num, test_subject, model_name, dataset_name].values[0]
+                                if(test_subjects in mean_subject_r2.loc[subject_num, tre_trial_num].index):
+                                    metrics.loc[(metrics['subject_num']==subject_num) & (metrics['train_sub_num']==train_sub_num) & (metrics['tre_trial_num']==tre_trial_num) & (metrics['test_subjects']==test_subjects) & (metrics['model_name']==model_name) & (metrics['dataset_name']==dataset_name) , 'mean_subject_r2']=mean_subject_r2.loc[subject_num, tre_trial_num, test_subjects, model_name, dataset_name].values[0]
 
     return metrics
 
@@ -959,18 +946,16 @@ def sum_metrics(result_folders):
 if __name__=='__main__':
     if True:
 
-        result_folders = read_result_folder_file("original_layer_subject_num.txt")
+        result_folders = read_result_folder_file("tmp_result_folders.txt")
         combination_investigation_results=[os.path.join(RESULTS_PATH, "training_testing", result_folder,"testing_result_folders.txt")
                                                    for result_folder in result_folders]
-        combination_investigation_results = [os.path.join(os.path.dirname(folder), "metrics.csv") if(os.path.exists(os.path.join(os.path.dirname(folder), "metrics.csv"))) else folder for folder in combination_investigation_results]
-
-
+        #combination_investigation_results = [os.path.join(os.path.dirname(folder), "metrics.csv") if(os.path.exists(os.path.join(os.path.dirname(folder), "metrics.csv"))) else folder for folder in combination_investigation_results]
+        metrics = get_list_investigation_metrics(combination_investigation_results)
 
         filters={'drop_value':0.2}
         metrics = parse_list_investigation_metrics(combination_investigation_results,**filters)
+        pdb.set_trace()
 
-
-        
 
     if False:
         combination_investigation_results = [
@@ -982,7 +967,7 @@ if __name__=='__main__':
 
         #1) get testing results: estimation and ground truth
         list_selections = [{'train_index': 0, 
-            'test_subject':['P_10_dongxuan']
+            'test_subjects':['P_10_dongxuan']
             }
         ]
 

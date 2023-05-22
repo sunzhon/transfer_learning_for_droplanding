@@ -6,7 +6,7 @@ if [ $# -gt 0 ]; then
 else
     testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_t13"
     testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_double_leg_R_KNEE_MOMENT_X_6_14_25_t3"
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_rdouble_leg_rotation_R_KNEE_MOMENT_X_6_16_30_a2"
+    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/rdouble_leg_baseline_5_original_14_25_15_R_KNEE_MOMENT_X_t_stand"
 fi
 
 if [ $# -gt 1 ]; then
@@ -22,8 +22,7 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "landing_manner\tmodel_name\tfeature_layer_num\tdataset_name\talias_name\tconfig_name\tsubject_num\ttrial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subject\tparent_test_id\tchild_test_id\tresult_folder\ttraining_testing_folders" > $data_file
-
+echo "landing_manner\tmodel_name\tfeature_layer_num\tdataset_name\talias_name\tconfig_name\tsubject_num\ttre_trial_num\ttst_trial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subjects\tparent_test_id\tchild_test_id\tresult_folder\ttraining_testing_folders" > $data_file
 
 echo "Start to collect test data ...."
 
@@ -67,7 +66,8 @@ for hyper_file in ${list_hyper_files}; do
         labels_name=$(echo $labels_name | tr '\n' ' ')
         echo "labels_name: ${labels_name}"
 
-        test_subject=$(awk -F"[ :-]+" '$1~/test_subject/{print $2}' $hyper_file)
+        test_subjects=$(awk -F"[ :-]+" 'BEGIN{flag=0}{{if (flag == 1) print $2; flag=0} {if( $1 == "test_subjects" ) flag=1} }' $hyper_file) 
+        test_subjects=$(echo $test_subjects| tr '\n' ' ')
         r2=$(awk -F"[,:]+" '$2~/r2/{print $4}' "${folder_path}/test_metrics.csv")
         r_rmse=$(awk -F"[,:]+" '{if( $2 == "r_rmse") {print $4}}' "${folder_path}/test_metrics.csv")
         rmse=$(awk -F"[,:]+" '{if( $2 == "rmse") {print $4}}' "${folder_path}/test_metrics.csv")
@@ -75,7 +75,8 @@ for hyper_file in ${list_hyper_files}; do
 
         echo "alias: ${alias_name}"
         sub_num=$(awk -F"[ :-]+" '$1~/^sub_num/{print $2}' $hyper_file)
-        trial_num=$(awk -F"[ :-]+" '$1~/^trial_num/{print $2}' $hyper_file)
+        tst_trial_num=$(awk -F"[ :-]+" '$1~/^tst_trial_num/{print $2}' $hyper_file)
+        tre_trial_num=$(awk -F"[ :-]+" '$1~/^tre_trial_num/{print $2}' $hyper_file)
         train_sub_num=$(awk -F"[ :-]+" '$1~/^train_sub_num/{print $2}' $hyper_file)
         echo "sub_num: ${sub_num}, trial_num: ${trial_num}, train_sub_num: ${train_sub_num}"
         
@@ -95,14 +96,11 @@ for hyper_file in ${list_hyper_files}; do
         echo "model_name: ${model_name}" 
         echo "r2: ${r2}, rmse: ${rmse}, r_rmse: ${r_rmse}, mae: ${mae}"
 
-        echo "${landing_manner}\t${model_name}\t${feature_layer_num}\t${dataset_name}\t${alias_name}\t${config_name}\t${sub_num}\t${trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subject}\t${parent_test_id}\t${child_test_id}\t${result_folder}\t${folder_path}" >> $data_file
+        echo "${landing_manner}\t${model_name}\t${feature_layer_num}\t${dataset_name}\t${alias_name}\t${config_name}\t${sub_num}\t${tre_trial_num}\t${tst_trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subjects}\t${parent_test_id}\t${child_test_id}\t${result_folder}\t${folder_path}" >> $data_file
     fi
 done
 
-
 # delete line with \t as begining, since there lines may be wrong
 sed -i -e "/^\t/d" ${data_file}
-
-
 echo "End to collect test data ....."
 

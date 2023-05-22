@@ -7,20 +7,19 @@ sub_num=15
 cv_num=15  # cross validation num
 result_folder_array=()
 result_folder_file="./result_folders.txt"
+tmp_result_folder_file="./tmp_result_folders.txt"
 for landing_manner in "rdouble_leg"; do
     for model_name in "baseline"; do # "augmentation"; do
         for feature_layer_num in 5; do # keep it to use five for offline mode. it is the best value
-            #for dataset_name in "original"; do #"rotation" "timewarp"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
-               #for dataset_name in "original"; do #"e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation
-                for dataset_name in "original"; do #"da_scale da_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
+            for dataset_name in "original"; do #"da_scale da_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
                 for train_sub_num in 14; do # 8 9 10 11 12 13 14 15; do
                     test_sub_num=`expr ${sub_num} - ${train_sub_num}` 
                     for tst_trial_num in 15; do #10 15 20 25; do # NOTE: tst_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
-                        tre_trial_num=20  # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
+                        tre_trial_num=5  # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
                         for labels_name in "R_KNEE_MOMENT_X"; do # "R_KNEE_ANGLE_X" ; do
                             features_name=`python -c 'import main; array=["Weight","Height"] + main.const.extract_imu_fields(["R_SHANK", "R_THIGH", "R_FOOT", "WAIST", "CHEST", "L_FOOT", "L_SHANK", "L_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
                             scale_method="standard"
-                            data_id="t_stand" # test_sub_num=14, mean r2 =  0.83 (rotation), 0.77 (original)
+                            data_id="t_ori1" # test_sub_num=14, mean r2 =  0.83 (rotation), 0.77 (original)
                             dataset_folder=`echo ${dataset_name} | sed -e "s/ /_/g"`
                             config_name="${landing_manner}_${model_name}_${feature_layer_num}_${dataset_folder}_${train_sub_num}_${tre_trial_num}_${tst_trial_num}_${labels_name}_${data_id}"
                             echo "Start to train and test a model ......"
@@ -31,7 +30,8 @@ for landing_manner in "rdouble_leg"; do
                             echo "labels_name: ${labels_name}"
                             echo "dataset_folder: ${dataset_folder}"
                             sleep 3
-
+                            
+                            # determine datasets' name from the generated data
                             tre_datafile_basename="tre_${data_id}_${landing_manner}_norm_landing_data.hdf5"
                             tst_datafile_basename="tst_${data_id}_${landing_manner}_norm_landing_data.hdf5"
                             scaler_filename="${data_id}_${landing_manner}_landing_scaler_file.pkl"
@@ -61,6 +61,7 @@ for landing_manner in "rdouble_leg"; do
                             # collect training and test results
                             result_folder_array+=(${result_folder})
                             echo ${result_folder} >> ${result_folder_file}
+                            echo ${result_folder} > ${tmp_result_folder_file}
                             ./../batch_collect_test_files.sh ${result_folder}
                         done
                     done
@@ -71,9 +72,10 @@ for landing_manner in "rdouble_leg"; do
 done
 
 ### store resulst folder
+cp tmp_result_folders.txt $MEDIA_NAME/drop_landing_workspace/results/training_testing
 echo "This is the result folders: ..."
 #python ./../assessments/scores.py  "${result_folder_array[@]}"
-python sum_metrics.py  "${result_folder_array[@]}"
+python calculate_metrics.py  "${result_folder_array[@]}"
 
 
 

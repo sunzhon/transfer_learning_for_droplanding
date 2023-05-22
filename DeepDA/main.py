@@ -103,7 +103,7 @@ def get_parser():
     parser.add_argument('--trained_model_state_path', type=str, default='None')
 
     # a trial from a subject in a test
-    parser.add_argument('--test_subject',type=str,default='None')
+    parser.add_argument('--test_subjects',type=str,default='None')
     parser.add_argument('--tst_test_subjects_trials_len',type=dict,default={})
     parser.add_argument('--tre_train_subjects_trials_len',type=dict,default={})
 
@@ -386,8 +386,8 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
     model.load_state_dict(torch.load(os.path.join(training_folder,'best_model.pth')))
     args.save_test = True
     test_loss, test_acc, testing_folder = test(model, domain_data_loaders['tst'], args)
-    print('Best result: r2: {:.4f}, loss: {:.4f}'.format(early_stop.best_acc,early_stop.best_score))
-    print('Its training folder: {}'.format(training_folder))
+    print('BEST RESULT: r2: {:.4f}, loss: {:.4f}'.format(early_stop.best_acc,early_stop.best_score))
+    print('Its training folder: {}\n\n'.format(training_folder))
     # save trainied model
     torch.save(model.state_dict(),os.path.join(training_folder,'trained_model.pth'))
 
@@ -430,7 +430,8 @@ def k_fold(args, multiple_domain_datasets):
         #i) split target data into train and test target dataset 
         train_subject_ids_names = [tst_subject_ids_names[subject_idx] for subject_idx in train_subject_indices]
         test_subject_ids_names = [tst_subject_ids_names[subject_idx] for subject_idx in test_subject_indices]
-        args.test_subject_ids_names = test_subject_ids_names
+        args.test_subjects = test_subject_ids_names
+        print("A kfold loop....")
         print('train subjects id names: {}'.format(train_subject_ids_names))
         print('test subjects id names: {}\n'.format(test_subject_ids_names))
 
@@ -536,7 +537,7 @@ def main():
     setattr(args, "dataset_columns", list(dataset_columns))
 
     #3) cross_validation for training and evaluation model
-    setattr(args, 'test_subject_ids_names', [])
+    setattr(args, 'test_subjects', [])
 
     # test or cross validation training
     if(args.model_name=='test_model'):
