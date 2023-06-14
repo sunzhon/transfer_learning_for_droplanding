@@ -22,6 +22,7 @@ from sklearn.model_selection import KFold
 import time as localtimepkg
 import itertools
 import pickle
+from thop import profile
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -104,6 +105,7 @@ def get_parser():
 
     # a trial from a subject in a test
     parser.add_argument('--test_subjects',type=str,default='None')
+    parser.add_argument('--trial_idx',type=int,default=0)
     parser.add_argument('--tst_test_subjects_trials_len',type=dict,default={})
     parser.add_argument('--tre_train_subjects_trials_len',type=dict,default={})
 
@@ -126,6 +128,11 @@ def get_parser():
 
     # the cross-validation num. How many combination of (train sub and test subs) are used 
     parser.add_argument('--cv_num',type=int, default=10) # patience for early stopping
+
+    # time complexity and model complexity
+    parser.add_argument('--FLOPs',type=float, default=.0) # computational cost of the model
+    parser.add_argument('--Params',type=float, default=.0) # model complexity of the model
+
 
     return parser
 
@@ -243,7 +250,7 @@ def test(model, test_data_loader, args, **kwargs):
     test_acc = utils.AverageMeter()
     r2score = torchmetrics.R2Score(2).to(args.device)#num_outputs=2,multioutput='raw_values'
     with torch.no_grad(): # no do calcualte grad
-        for idx, (features, labels) in enumerate(test_data_loader):
+        for trial_idx, (features, labels) in enumerate(test_data_loader):
 
             # load data to device
             features, labels = features.to(args.device), labels.to(args.device)
@@ -265,6 +272,7 @@ def test(model, test_data_loader, args, **kwargs):
                 a_label = labels.cpu().numpy()
                 a_prediction = predictions.cpu().numpy()
                 features = features.squeeze(0).cpu().numpy()
+
                 # load scaler, only for testing 
                 scaler = pickle.load(open(os.path.join(const.DATA_PATH, args.scaler_file),'rb'))
 
@@ -293,6 +301,8 @@ def test(model, test_data_loader, args, **kwargs):
 
                 # save test results
                 es_sc.save_test_result(pd_features, pd_labels, pd_predictions, testing_folder)
+                # trial idx
+                args.trial_idx = trial_idx
                 
                 # find the trail from which subject, stop the test early
                 # save hyper parameters
@@ -302,10 +312,10 @@ def test(model, test_data_loader, args, **kwargs):
             else:
                 testing_folder = None
 
+            print("test trial:{}".format(trial_idx))
             if('test_times' in kwargs.keys()): # just for checing the acc of train dataset during train progress
-                if(idx>kwargs['test_times']): # just test few times, e.g., 4
+                if(trial_idx > kwargs['test_times']): # just test few times, e.g., 4
                     break
-        print("test tests:{}".format(idx))
 
     return test_loss.avg, test_acc.avg, testing_folder
 
@@ -460,6 +470,9 @@ def k_fold(args, multiple_domain_datasets):
         #iii) load model
         set_random_seed(args.seed)
         model = get_model(args)
+
+        # get model time complexity and memory complexisty
+        args.FLOPs, args.Params = np.array(profile(model.base_network, inputs=(torch.randn(1,model.base_network.seq_len,len(args.features_name)).to(args.device),))) + np.array(profile(model.output_layer, inputs=(torch.randn(100,200).to(args.device),)))
 
         #iv) get optimizer
         optimizer = get_optimizer(model, args)

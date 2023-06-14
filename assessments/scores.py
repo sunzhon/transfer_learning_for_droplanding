@@ -610,7 +610,6 @@ def get_list_investigation_metrics(list_combination_investigation_results, metri
 
     list_metrics=[]
     for combination_investigation_result in list_combination_investigation_results:
-        print(combination_investigation_result)
         list_metrics.append(get_investigation_metrics(combination_investigation_result,metric_fields))
         metrics=pd.concat(list_metrics,axis=0)
 
@@ -666,18 +665,21 @@ def get_investigation_training_testing_folders(combination_investigation_results
 Parase list of combination_investigation_results
 
 """
-def parse_list_investigation_metrics(list_combination_investigation_results, calculate_mean_subject_r2=False, **filters):
+def parse_list_investigation_metrics(list_combination_investigation_results, metric_fields=['r2'], calculate_mean_subject_r2=False, **filters):
 
     if(not isinstance(list_combination_investigation_results,list)):
         list_combination_investigation_results = [list_combination_investigation_results]
 
     list_metrics=[]
     for combination_investigation_result in list_combination_investigation_results:
-        print(combination_investigation_result)
-        list_metrics.append(parse_metrics(combination_investigation_result, 
+        list_metrics.append(parse_investigation_metrics(combination_investigation_result, metric_fields,
                                              **filters
                                             ))
-        metrics=pd.concat(list_metrics,axis=0)
+        try:
+            metrics=pd.concat(list_metrics,axis=0)
+        except Exception as e:
+            print(e)
+            pdb.set_trace()
 
     if(calculate_mean_subject_r2):
         # calculate mean subject r2
@@ -702,10 +704,14 @@ def parse_list_investigation_metrics(list_combination_investigation_results, cal
 '''
 
 
-def parse_metrics(combination_investigation_results, landing_manner='all', estimated_variable='all', syn_features_label='both', use_frame_index='both', LSTM_unit='all', sensor_config='all',IMU_number='all', drop_value=None, metric_fields=['r2'],sort_variable=None, **kwargs):
+def parse_investigation_metrics(combination_investigation_results, metric_fields=['r2'], **kwargs):
 
     #1) load assessment metrics
     metrics = get_investigation_metrics(combination_investigation_results,metric_fields=metric_fields)
+    return filter_metrics(metrics, **kwargs)
+    
+def filter_metrics(metrics, landing_manner='all', estimated_variable='all', syn_features_label='both', use_frame_index='both', LSTM_unit='all', sensor_config='all',IMU_number='all', drop_value=None,sort_variable=None, **kwargs):
+    # set data type 
     if('scores'in metrics.columns):
         metrics['scores'] = metrics['scores'].astype(float)
     elif('r2' in metrics.columns):
@@ -947,10 +953,11 @@ if __name__=='__main__':
     if True:
 
         result_folders = read_result_folder_file("tmp_result_folders.txt")
+        result_folders = ['rdouble_leg_v1_baseline_5_original_5_5_25_R_KNEE_MOMENT_X_ori_v2']
         combination_investigation_results=[os.path.join(RESULTS_PATH, "training_testing", result_folder,"testing_result_folders.txt")
                                                    for result_folder in result_folders]
         #combination_investigation_results = [os.path.join(os.path.dirname(folder), "metrics.csv") if(os.path.exists(os.path.join(os.path.dirname(folder), "metrics.csv"))) else folder for folder in combination_investigation_results]
-        metrics = get_list_investigation_metrics(combination_investigation_results)
+        #metrics = get_list_investigation_metrics(combination_investigation_results)
 
         filters={'drop_value':0.2}
         metrics = parse_list_investigation_metrics(combination_investigation_results,**filters)

@@ -65,7 +65,7 @@ class TransferNetForRegression(nn.Module):
     def forward(self, samples):
         (source, source_label) = samples['src']
         (target_cls, target_label_cls) = samples['tcl']
-        if(self.tgt_reg_loss_weight>0.): #using target reg
+        if(self.tgt_reg_loss_weight > 0.): #using target reg
             (target_reg, target_label_reg) = samples['tre']
 
         # base_network

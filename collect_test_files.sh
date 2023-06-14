@@ -22,7 +22,7 @@ list_hyper_files=($(find $testing_folders -name hyperparams.yaml))
 data_file="$testing_folders/testing_result_folders.txt"
 touch ${data_file}
 # columns of the testing_result_folders.txt
-echo "landing_manner\tmodel_name\tfeature_layer_num\tdataset_name\talias_name\tconfig_name\tsubject_num\ttre_trial_num\ttst_trial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subjects\tparent_test_id\tchild_test_id\tresult_folder\ttraining_testing_folders" > $data_file
+echo "landing_manner\tmodel_name\tfeature_layer_num\tdataset_name\talias_name\tconfig_name\tsubject_num\ttre_trial_num\ttst_trial_num\ttrain_sub_num\tfeatures_name\tlabels_name\tr2\trmse\tr_rmse\tmae\ttest_subjects\ttest_trial\tparent_test_id\tchild_test_id\tresult_folder\ttraining_testing_folders" > $data_file
 
 echo "Start to collect test data ...."
 
@@ -78,6 +78,7 @@ for hyper_file in ${list_hyper_files}; do
         tst_trial_num=$(awk -F"[ :-]+" '$1~/^tst_trial_num/{print $2}' $hyper_file)
         tre_trial_num=$(awk -F"[ :-]+" '$1~/^tre_trial_num/{print $2}' $hyper_file)
         train_sub_num=$(awk -F"[ :-]+" '$1~/^train_sub_num/{print $2}' $hyper_file)
+        test_trial=$(awk -F"[ :-]+" '$1~/^trial_idx/{print $2}' $hyper_file)
         echo "sub_num: ${sub_num}, trial_num: ${trial_num}, train_sub_num: ${train_sub_num}"
         
         config_name=$(awk -F"[,:]+" '$1~/config_name/{print $2}' $hyper_file)
@@ -96,7 +97,7 @@ for hyper_file in ${list_hyper_files}; do
         echo "model_name: ${model_name}" 
         echo "r2: ${r2}, rmse: ${rmse}, r_rmse: ${r_rmse}, mae: ${mae}"
 
-        echo "${landing_manner}\t${model_name}\t${feature_layer_num}\t${dataset_name}\t${alias_name}\t${config_name}\t${sub_num}\t${tre_trial_num}\t${tst_trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subjects}\t${parent_test_id}\t${child_test_id}\t${result_folder}\t${folder_path}" >> $data_file
+        echo "${landing_manner}\t${model_name}\t${feature_layer_num}\t${dataset_name}\t${alias_name}\t${config_name}\t${sub_num}\t${tre_trial_num}\t${tst_trial_num}\t${train_sub_num}\t${features_name}\t${labels_name}\t${r2}\t${rmse}\t${r_rmse}\t${mae}\t${test_subjects}\t${test_trial}\t${parent_test_id}\t${child_test_id}\t${result_folder}\t${folder_path}" >> $data_file
     fi
 done
 
