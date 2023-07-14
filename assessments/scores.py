@@ -510,8 +510,9 @@ def survey_investigation_assessment(combination_investigation_results):
 
     #iii) concate to a pandas dataframe
     if(assessment==[]):
-        print('results folders are enough')
+        print('results folders {} are enough'.format(combination_investigation_results))
         exit()
+        pdb.set_trace()
         
     if(isinstance(assessment[0],dict)):
         pd_assessment = pd.DataFrame(assessment)
@@ -952,12 +953,13 @@ def sum_metrics(result_folders):
 if __name__=='__main__':
     if True:
 
-        result_folders = read_result_folder_file("tmp_result_folders.txt")
-        result_folders = ['rdouble_leg_v1_baseline_5_original_5_5_25_R_KNEE_MOMENT_X_ori_v2']
+        result_folders = read_result_folder_file("all_test_cases.txt")
+        #result_folders = ['rdouble_leg_v1_baseline_5_original_5_5_25_R_KNEE_MOMENT_X_ori_v2']
         combination_investigation_results=[os.path.join(RESULTS_PATH, "training_testing", result_folder,"testing_result_folders.txt")
                                                    for result_folder in result_folders]
-        #combination_investigation_results = [os.path.join(os.path.dirname(folder), "metrics.csv") if(os.path.exists(os.path.join(os.path.dirname(folder), "metrics.csv"))) else folder for folder in combination_investigation_results]
-        #metrics = get_list_investigation_metrics(combination_investigation_results)
+        combination_investigation_results = [os.path.join(os.path.dirname(folder), "metrics.csv") if(os.path.exists(os.path.join(os.path.dirname(folder), "metrics.csv"))) else folder for folder in combination_investigation_results]
+        metrics = get_list_investigation_metrics(combination_investigation_results)
+        pdb.set_trace()
 
         filters={'drop_value':0.2}
         metrics = parse_list_investigation_metrics(combination_investigation_results,**filters)

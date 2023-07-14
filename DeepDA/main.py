@@ -472,7 +472,8 @@ def k_fold(args, multiple_domain_datasets):
         model = get_model(args)
 
         # get model time complexity and memory complexisty
-        args.FLOPs, args.Params = np.array(profile(model.base_network, inputs=(torch.randn(1,model.base_network.seq_len,len(args.features_name)).to(args.device),))) + np.array(profile(model.output_layer, inputs=(torch.randn(100,200).to(args.device),)))
+        profile_value = np.array(profile(model.base_network, inputs=(torch.randn(1,model.base_network.seq_len,len(args.features_name)).to(args.device),))) + np.array(profile(model.output_layer, inputs=(torch.randn(100,200).to(args.device),)))
+        args.FLOPs, args.Params = float(profile_value[0]), float(profile_value[1])
 
         #iv) get optimizer
         optimizer = get_optimizer(model, args)
