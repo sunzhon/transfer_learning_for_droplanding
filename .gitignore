@@ -1,8 +1,10 @@
 tag
 __pycache__
 *.csv
+*.svg
 *.log
 *.pyc
 *.txt
 log
+.ipynb_checkpoints
 

@@ -730,7 +730,10 @@ def filter_metrics(metrics, landing_manner='all', estimated_variable='all', syn_
             print('DROP R2 cases below :{}'.format(drop_value))
         elif('r2' in metrics.columns):
             metrics = metrics.drop(metrics[metrics['r2']<drop_value].index)
-            print('DROP R2 cases below :{}'.format(drop_value))
+            print('DROP r2 cases below :{}'.format(drop_value))
+        elif(r'$R^2$' in metrics.columns):
+            metrics = metrics.drop(metrics[metrics[r'$R^2$']<drop_value].index)
+            print(r'$DROP R^2 cases below :{}$'.format(drop_value))
 
     #2) pick necessary metrics
     if 'landing_manners' in metrics.columns: # has this investigation
@@ -823,6 +826,7 @@ def filter_metrics(metrics, landing_manner='all', estimated_variable='all', syn_
                         print('All {} are used'.format(key))
                     else:
                         print('{} is not right, it should be {}'.format(key, set(metrics[key])))
+                        pdb.set_trace()
                         sys.exit()
                 except Exception as e:
                     print(e)
