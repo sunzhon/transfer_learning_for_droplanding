@@ -359,7 +359,7 @@ def get_a_model_test_results(training_testing_folders, selection={'unused':None}
             testing_results['labels'].append(pd_labels)
             testing_results['predictions'].append(pd_predictions)
             testing_results['trial_index'].append(pd.DataFrame(data={"trial_index": [idx]*pd_labels.shape[0]}))
-            testing_results['test_subject'].append(pd.DataFrame(data={"test_subject": [needed_config_training_testing_folders['test_subject'].iloc[idx]]*pd_labels.shape[0]}))
+            testing_results['test_subject'].append(pd.DataFrame(data={"test_subject": [needed_config_training_testing_folders['test_subjects'].iloc[idx]]*pd_labels.shape[0]}))
     else:
         print('training_testing_folders name:{} are wrong, please check that first'.format(training_testing_folders))
         sys.exit()
@@ -397,7 +397,7 @@ Returns:
 
 '''
 
-def get_list_investigation_results(list_training_testing_folders, list_selection_map=None, **kwargs):
+def get_list_investigation_results(list_training_testing_folders, list_selection_map=None, return_type="list",**kwargs):
     list_test_results = []
     if list_selection_map!=None:
         for training_testing_folders, selection in zip(list_training_testing_folders, list_selection_map):
@@ -406,11 +406,16 @@ def get_list_investigation_results(list_training_testing_folders, list_selection
         for training_testing_folders in list_training_testing_folders:
             list_test_results.append(get_a_model_test_results(training_testing_folders, **kwargs))
 
-    # transform to dataframe
+    # add test_folder_index column
     for idx in range(len(list_test_results)):
         list_test_results[idx]['test_folder_index'] = idx
     
-    return pd.concat(list_test_results,axis=0)
+
+    if return_type=='list':
+        return list_test_results
+    else:
+        # transform to dataframe
+        return pd.concat(list_test_results,axis=0)
 
 
 
