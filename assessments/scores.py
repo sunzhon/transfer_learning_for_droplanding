@@ -592,7 +592,8 @@ def read_result_folder_file(result_folder_file_name='original_layer_subject_num.
     result_folder_file= os.path.join(RESULTS_PATH,'training_testing',result_folder_file_name)
     with open(result_folder_file,'r') as fd:
         lines=fd.readlines()
-        new_lines=[line.replace("\n","") for line in lines]
+        new_lines=[line.replace("\n","") for line in lines if line!="\n"]
+
     return new_lines
 
 

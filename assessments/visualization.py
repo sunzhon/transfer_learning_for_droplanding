@@ -1236,33 +1236,6 @@ def p6plot_model_accuracy(combination_investigation_metrics,filters={}, ttest=Fa
 
 
 
-def p6_plot_heatmap(metrics,varx='subject_num',vary='trial_num', value='r2', filters={},rename_dict={},figpath="./"):
-    if(isinstance(metrics,list)): # the input metrics is a folder list of metrics
-        filters={'drop_value':0.0,'sort_variable':'r2'}
-        metrics = parse_list_investigation_metrics(metrics,**filters)
-        
-    # rename column name:
-    if(rename_dict not in [{},None]):
-        metrics = metrics.rename(columns=rename_dict)
-    #metrics['LSTM layer number']= metrics['LSTM layer number'].astype(int)
-    
-    if filters!={}:
-        metrics = filter_metrics(metrics,**filters)
-        
-    #metrics[varx].replace({idx:idx-4 for idx in range(5,len(combination_investigation_results)+1)},inplace=True)
-    data = metrics[[vary,varx,value]].groupby([varx,vary]).median().round(2).reset_index().pivot(varx,vary)[value]
-    g = sns.heatmap(data, vmin=0.5, vmax=0.95,cmap="RdBu_r",center=0.8,annot=True,linewidths=0.3)
-    g.invert_yaxis()
-    #g.set_ylabel(ylabel)
-    #g.set_xlabel(xlabel)
-    save_format='svg'
-    if(isinstance(metrics,list)):
-        save_folder = os.path.dirname(metrics[0])
-    else:# metrics is a data array
-        save_folder = figpath
-    save_figure(save_folder,fig_format=save_format)
-    return g 
-
 
 if __name__ == '__main__':
 
