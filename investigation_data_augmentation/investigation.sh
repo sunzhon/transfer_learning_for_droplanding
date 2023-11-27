@@ -22,7 +22,7 @@ for landing_manner in "rdouble_leg_v1"; do
                                 scale_method="standard"
                                 data_id="aug_v4" # test_sub_num=14, mean r2 =  0.83 (rotation), 0.77 (original)
                                 dataset_folder=`echo ${dataset_name} | sed -e "s/ /_/g"`
-                                config_name="${landing_manner}_${model_name}_${feature_layer_num}_${dataset_folder}_${train_sub_num}_${tre_trial_num}_${tst_trial_num}_${labels_name}_${data_id}"
+              config_name="${landing_manner}_${model_name}_${feature_layer_num}_${dataset_folder}_${train_sub_num}_${tre_trial_num}_${tst_trial_num}_${labels_name}_${data_id}"
                                 echo "Start to train and test a model ......"
                                 echo "dataset_name: ${dataset_name}"
                                 echo "train subject num: ${train_sub_num}"
@@ -36,7 +36,7 @@ for landing_manner in "rdouble_leg_v1"; do
                                 tre_datafile_basename="tre_${data_id}_${landing_manner}_norm_landing_data.hdf5"
                                 tst_datafile_basename="tst_${data_id}_${landing_manner}_norm_landing_data.hdf5"
                                 scaler_filename="${data_id}_${landing_manner}_landing_scaler_file.pkl"
-                                result_folder="${config_name}"
+                                result_folder="test_${config_name}"
 
                                 echo "tre_datafile_basename: ${tre_datafile_basename}"
                                 echo "tst_datafile_basename: ${tst_datafile_basename}"
@@ -57,7 +57,24 @@ for landing_manner in "rdouble_leg_v1"; do
                                 fi
 
                                 # model training and evluation
-                                python main.py --config run.yaml --model_name ${model_name} --dataset_name ${dataset_folder} --feature_layer_num ${feature_layer_num} --cv_num ${cv_num} --tre_domain "${dataset_folder}/${tre_datafile_basename}" --tst_domain "${dataset_folder}/${tst_datafile_basename}"  --scaler_file "${dataset_folder}/${scaler_filename}"  --sub_num ${sub_num} --tst_trial_num ${tst_trial_num} --tre_trial_num ${tre_trial_num} --train_sub_num "${train_sub_num}" --test_sub_num ${test_sub_num} --config_name "${config_name}" --result_folder ${result_folder} --features_name ${features_name} --labels_name ${labels_name} --landing_manner ${landing_manner} | tee "${log_folder}/${config_name}.log"
+                                python main.py --config run.yaml \
+                                    --model_name ${model_name} \
+                                    --dataset_name ${dataset_folder} \
+                                    --feature_layer_num ${feature_layer_num} \
+                                    --cv_num ${cv_num} \
+                                    --tre_domain "${dataset_folder}/${tre_datafile_basename}" \
+                                    --tst_domain "${dataset_folder}/${tst_datafile_basename}"  \
+                                    --scaler_file "${dataset_folder}/${scaler_filename}"  \
+                                    --sub_num ${sub_num} \
+                                    --tst_trial_num ${tst_trial_num} \
+                                    --tre_trial_num ${tre_trial_num} \
+                                    --train_sub_num "${train_sub_num}" \
+                                    --test_sub_num ${test_sub_num} \
+                                    --config_name "${config_name}" \
+                                    --result_folder ${result_folder} \
+                                    --features_name ${features_name} \
+                                    --labels_name ${labels_name} \
+                                    --landing_manner ${landing_manner} | tee "${log_folder}/${config_name}.log"
 
                                 # collect training and test results
                                 result_folder_array+=(${result_folder})

@@ -1074,7 +1074,6 @@ def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, lis
     #1) get testing results: estimation and ground truth
     test_results = get_list_investigation_results(list_training_testing_folders, list_selections)
     
-    pdb.set_trace()
     #2) set figures
     row_num = math.ceil(len(list_training_testing_folders)/col_wrap)
     fig = plt.figure(figsize=figsize,constrained_layout=False)
@@ -1100,6 +1099,7 @@ def p6plot_statistic_actual_estimation_curves(list_training_testing_folders, lis
         titles = kwargs['titles']
 
     for idx, (ylabel, estimation_values) in enumerate(zip(ylabels, test_results)):
+        pdb.set_trace()
         estimation_values.rename(columns={'Actual R_KNEE_MOMENT_X': 'Ground truth', 'Estimated R_KNEE_MOMENT_X': 'Estimation'}, inplace=True)
         x=None; y = None
         hue_plot_params = {
@@ -1450,7 +1450,7 @@ if __name__ == '__main__':
 
 
     # P6 visualization
-    if True:
+    if False:
         combination_investigation_results = [
                 #os.path.join(RESULTS_PATH, "training_testing/baseline_v5/25trials/15sub/testing_result_folders.txt"),
                 #os.path.join(RESULTS_PATH, "training_testing/augmentation_v5/25trials/15sub/testing_result_folders.txt")
@@ -1519,3 +1519,38 @@ if __name__ == '__main__':
         combination_investigation_metrics = [os.path.join(os.path.dirname(folder), "metrics.csv") for folder in combination_investigation_results]
         fig_path, r2 = plot_models_accuracy(combination_investigation_results,plot_params={'x':'config_name','y':'r2','hue':'model_selection'})
 
+
+    if True: # graphic abstract
+        combination_investigation_results = "/media/sun/DATA/Drop_landing_workspace/suntao/Results/Experiment_results/training_testing/1_collected_data/testing_result_folders.txt"
+
+
+        combination_investigation_results = [
+            os.path.join(RESULTS_PATH, "training_testing","investigation_imu_augment_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in [5] for trial_idx in [5]
+        ] +[
+            os.path.join(RESULTS_PATH, "training_testing","investigation_imu_augment_v1",str(trial_idx)+"trials",str(sub_idx)+"sub","testing_result_folders.txt") for sub_idx in [10] for trial_idx in [25]
+        ]
+
+        combination_investigation_results = [
+            "/media/suntao/DATA/drop_landing_workspace/results/training_testing/rdouble_leg_v1_baseline_1_original_3_15_25_R_KNEE_MOMENT_X_ori_v2/testing_result_folders.txt"
+        ]
+
+
+        config = {
+            'xticks':[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+            'yticks':[-1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],
+            'ylim':[-1.0, 3.0],
+            'figsize': (8,3),
+            'ylabels': ['Normalized KEM'],
+            'titles': ['A subject with five trials', 'Six subjects with 25 trials'],
+            'font_scale':1.2, 
+            'save_fig': True,
+            'save_format': '.svg'
+        }
+
+
+        #figpath, multi_model_results = p6plot_statistic_actual_estimation_curves(combination_investigation_results, col_wrap=2, **config)
+
+
+        #1) get testing results: estimation and ground truth
+        test_results = get_list_investigation_results(combination_investigation_results)
+        pdb.set_trace()
