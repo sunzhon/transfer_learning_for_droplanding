@@ -5,6 +5,7 @@ __pycache__
 *.log
 *.pyc
 *.txt
+!requirements.txt
 log
 .ipynb_checkpoints
 
