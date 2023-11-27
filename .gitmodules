@@ -1,3 +1,0 @@
-[submodule "vicon_imu_data_process"]
-	path = vicon_imu_data_process
-	url = git@gitlab.com:sunzhon/vicon_imu_data_process.git
