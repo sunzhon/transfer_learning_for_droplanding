@@ -8,4 +8,5 @@ __pycache__
 !requirements.txt
 log
 .ipynb_checkpoints
+.python-version
 
