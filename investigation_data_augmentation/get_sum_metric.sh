@@ -34,3 +34,4 @@ done
 # cclculate metrics
 #echo "a: ${result_folder_array[1]}"
 python ./../assessments/scores.py  "${result_folder_array[@]}"
+

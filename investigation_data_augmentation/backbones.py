@@ -20,23 +20,40 @@ def get_backbone(name,**kwargs):
         return AlexNetBackbone()
     elif "dann" == name.lower():
         return DaNNBackbone()
-    elif "mlnn" == name.lower(): # modular lstm neural network, defined by suntao
+    elif "fc" == name.lower(): # modular lstm neural network, defined by suntao
         if 'num_layers' in kwargs.keys():
             num_layers = kwargs['num_layers']
-            return MLNNBackbone(num_layers=num_layers,n_input=kwargs['features_num'])
+            return FCBackbone(num_layers=num_layers,n_input=kwargs['features_num'])
         else:
             return MLNNBackbone(n_input=kwargs['features_num'])
     elif "cnn" == name.lower(): # cnn, defined by suntao
+        return CNNBackbone()
+    elif "lstm" == name.lower(): # cnn, defined by suntao
         if 'num_layers' in kwargs.keys():
             num_layers = kwargs['num_layers']
-            return CNNBackbone(num_layers=num_layers)
+            return LSTMBackbone(n_input=kwargs["features_num"],num_layers=num_layers)
         else:
-            return CNNBackbone()
+            return LSTMBackbone(n_input=kwargs['features_num'])
 
 
-class MLNNBackbone(nn.Module):
+class FCBackbone(nn.Module):
     def __init__(self, n_input=48, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
-        super(MLNNBackbone, self).__init__()
+        super(FCBackbone, self).__init__()
+        self._feature_dim = hidden_size
+        self.fc_layer = nn.Linear(in_features=n_input*seq_len, out_features=hidden_size)
+    def forward(self, sequence): # input dim = [batch_size, seq_en, features_len]
+        batch_size = sequence.shape[0]
+        sequence = sequence.reshape(batch_size, -1)
+        out = self.fc_layer(sequence) # lstm_out dim  = [batch_size, seq_len, model_dim]
+        return out
+
+    def output_num(self):
+        return self._feature_dim
+
+
+class LSTMBackbone(nn.Module):
+    def __init__(self, n_input=48, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
+        super(LSTMBackbone, self).__init__()
         if num_layers>1:
             self.lstm_layer = nn.LSTM(input_size=n_input, hidden_size = hidden_size, num_layers=num_layers, dropout=0.2,bidirectional=True, batch_first=True)
         else:
@@ -47,9 +64,9 @@ class MLNNBackbone(nn.Module):
 
     def forward(self, sequence): # input dim = [batch_size, seq_en, features_len]
         batch_size = sequence.shape[0]
-        sequence = pack_padded_sequence(sequence, batch_size*[self.seq_len], batch_first=True, enforce_sorted=False)
-        lstm_out, (hidden, c) = self.lstm_layer(sequence) # lstm_out dim  = [batch_size, seq_len, model_dim]
-        lstm_out,_= pad_packed_sequence(lstm_out, batch_first=True)
+        #sequence = pack_padded_sequence(sequence, batch_size*[self.seq_len], batch_first=True, enforce_sorted=False)
+        lstm_out, (hidden, c) = self.lstm_layer(sequence) # lstm_out dim  = [batch_size, seq_len, model_dim], model_dim = DIrection * H_out, Hout=hidden_size
+        #lstm_out,_= pad_packed_sequence(lstm_out, batch_first=True)
 
         return lstm_out
     #return lstm_out[:,-1, :]
@@ -57,35 +74,37 @@ class MLNNBackbone(nn.Module):
     def output_num(self):
         return self._feature_dim
 
+
 '''
 A backup of MLNN on Feb 10 2023
 
 '''
 class CNNBackbone(nn.Module):
-    def __init__(self,in_channels=1,n_output=1,num_layers=1):
+    def __init__(self,in_channels=1, seq_len=80, features_num=50, num_layers=1):
         super(CNNBackbone, self).__init__()
         self.cnn_layers=Sequential(
                 # Defining a 2D convolution layer
-                Conv2d(in_channels=in_channels,out_channels=8, kernel_size=(4,6), stride=1, padding=0),
+                Conv2d(in_channels=in_channels, out_channels=8, kernel_size=(6,6), stride=1, padding=0),
                 BatchNorm2d(8),
                 ReLU(inplace=True),
-                MaxPool2d(kernel_size=(4,6), stride=1),
+                MaxPool2d(kernel_size=6, stride=1, padding=0),
                 ## Defining another 2D convolution layer
                 nn.Dropout(p=0.3),
-                Conv2d(8, 8, kernel_size=(4,6), stride=1, padding=0),
+                Conv2d(8, 8, kernel_size=6, stride=1, padding=0),
                 BatchNorm2d(8),
                 ReLU(inplace=True),
-                MaxPool2d(kernel_size=(4,6), stride=1),
+                MaxPool2d(kernel_size=6, stride=1),
                 )
         self.in_channels = in_channels
-        self._feature_dim=68
+        self._feature_dim = int(8*(features_num-20)*(seq_len-20)/seq_len)
+        self.seq_len = seq_len
 
         # Defining the forward pass
     def forward(self, x): #input_dim = [batch_size, seq_len (80), feature_num (49)]
         (batch_size, seq_len, feature_num) =x.size()
         x = x.view(batch_size, self.in_channels, seq_len, feature_num)
         x = self.cnn_layers(x)
-        x = x.view(batch_size, seq_len, -1)
+        x = x.view(batch_size, self.seq_len, self._feature_dim)
         return x
 
     def output_num(self):

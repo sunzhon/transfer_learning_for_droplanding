@@ -144,7 +144,7 @@ class BaselineModel(nn.Module):
     def __init__(self, num_label=1, base_net='mlnn', finetuning=False, **kwargs):
         super(BaselineModel, self).__init__()
         self.num_label = num_label
-        self.base_network = backbones.get_backbone(base_net,**kwargs)
+        self.base_network = backbones.get_backbone(base_net, **kwargs)
         feature_dim = self.base_network.output_num()
 
         #self.output_layer = nn.Linear(feature_dim, num_label)
@@ -161,8 +161,7 @@ class BaselineModel(nn.Module):
                 nn.Linear(20, num_label)
             ]
         self.output_layer = nn.Sequential(*output_list)
-
-
+        self.output_layer_input_dim = [feature_dim, 100]
         self.criterion = torch.nn.MSELoss()
         self.finetuning=finetuning
 
@@ -193,6 +192,7 @@ class BaselineModel(nn.Module):
             ]
 
         return params
+
 
 
 class DiscriminatorModel(nn.Module):

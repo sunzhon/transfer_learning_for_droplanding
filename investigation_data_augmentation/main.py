@@ -202,8 +202,8 @@ def get_model(args):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
-    elif(args.model_name=='baseline'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),num_layers=num_layers).to(args.device)
+    elif(args.model_name=='baseline_lstm'):
+        model = models.BaselineModel(num_label=args.n_labels, base_net='lstm', features_num = len(args.features_name),num_layers=num_layers).to(args.device)
 
     elif(args.model_name=='augmentation'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),  num_layers=num_layers).to(args.device)
@@ -223,8 +223,6 @@ def get_model(args):
 
     else:
         exit("MODEL is not exist")
-
-    print('Model selection: {}'.format(args.model_name))
 
     return model
 
@@ -312,7 +310,6 @@ def test(model, test_data_loader, args, **kwargs):
             else:
                 testing_folder = None
 
-            print("test trial:{}".format(trial_idx))
             if('test_times' in kwargs.keys()): # just for checing the acc of train dataset during train progress
                 if(trial_idx > kwargs['test_times']): # just test few times, e.g., 4
                     break
@@ -472,7 +469,7 @@ def k_fold(args, multiple_domain_datasets):
         model = get_model(args)
 
         # get model time complexity and memory complexisty
-        profile_value = np.array(profile(model.base_network, inputs=(torch.randn(1,model.base_network.seq_len,len(args.features_name)).to(args.device),))) + np.array(profile(model.output_layer, inputs=(torch.randn(100,200).to(args.device),)))
+        profile_value = np.array(profile(model.base_network, inputs=(torch.randn(1, model.base_network.seq_len, len(args.features_name)).to(args.device),))) + np.array(profile(model.output_layer, inputs=(torch.randn(model.output_layer_input_dim[1], model.output_layer_input_dim[0]).to(args.device),)))
         args.FLOPs, args.Params = float(profile_value[0]), float(profile_value[1])
 
         #iv) get optimizer

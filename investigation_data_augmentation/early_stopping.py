@@ -1,8 +1,7 @@
+#! /bin/pyenv
 import numpy as np
 import torch
 import os
-
-
 
 class EarlyStopping:
 

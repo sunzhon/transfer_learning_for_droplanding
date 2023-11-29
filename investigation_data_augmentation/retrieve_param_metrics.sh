@@ -1,12 +1,13 @@
 #! /bin/zsh
-
+# Collect parameter setup and some extinct parameter values
+RESULTS_PATH=`python -c 'import main; print(main.const.RESULTS_PATH)'`
 # argument
 if [ $# -gt 0 ]; then
     testing_folders=$1
 else
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_t13"
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/baseline_mlnn_double_leg_R_KNEE_MOMENT_X_6_14_25_t3"
-    testing_folders="${MEDIA_NAME}/drop_landing_workspace/results/training_testing/rdouble_leg_baseline_5_original_14_25_15_R_KNEE_MOMENT_X_t_stand"
+    testing_folders="${RESULTS_PATH}/training_testing/baseline_mlnn_t13"
+    testing_folders="${RESULTS_PATH}/training_testing/baseline_mlnn_double_leg_R_KNEE_MOMENT_X_6_14_25_t3"
+    testing_folders="${RESULTS_PATH}/training_testing/rdouble_leg_baseline_5_original_14_25_15_R_KNEE_MOMENT_X_t_stand"
 fi
 
 if [ $# -gt 1 ]; then
