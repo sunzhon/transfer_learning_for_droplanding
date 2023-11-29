@@ -20,7 +20,7 @@ from statannotations.Annotator import Annotator
 current_dir = os.path.dirname(os.path.abspath(__file__))
 added_path = os.path.join(current_dir,"./../../../")
 sys.path.append(added_path)
-from CRCF.plot_utilities import *
+#from CRCF.plot_utilities import *
 
 #sys.path.append(os.getenv('STPY_WORKSPACE'))
 #if os.getenv("STPY_WORKSPACE")!=None:
@@ -39,6 +39,27 @@ if __name__ == '__main__':
     from scores import *
 else:
     from assessments.scores import *
+
+
+def save_figure(fig_data_folder="./", fig_name='results', fig_path=None, fig_format='.svg'):
+
+    if(fig_path==None):
+        folder_fig = os.path.join(fig_data_folder,'data_visulization', str(localtimepkg.strftime("%Y-%m-%d", localtimepkg.localtime())))
+        if not os.path.exists(folder_fig):
+            os.makedirs(folder_fig)
+        figPath= os.path.join(folder_fig, str(localtimepkg.strftime("%H_%M_%S", localtimepkg.localtime()))+"_"+fig_name +'.' +fig_format)
+    else:
+        if os.path.exists(os.path.dirname(fig_path)):
+            figPath = fig_path
+        else:
+            print('provided fig_path is wrong, please give a complete path')
+    plt.savefig(figPath)
+    plt.show()
+
+    return figPath
+
+
+
 
 '''
 Plot the estimation results
