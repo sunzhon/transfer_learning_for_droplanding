@@ -12,12 +12,12 @@ result_folder_array=()
 result_folder_file="./result_folders.txt"
 tmp_result_folder_file="./tmp_result_folders.txt"
 for landing_manner in "rdouble_leg_v1"; do
-    for model_name in "baseline_lstm" "baseline_cnn"; do # "baseline" "augmentation"; do
+    for model_name in "baseline_transformer"; do # "baseline_cnn"; do # "baseline" "augmentation"; do
         for feature_layer_num in 4; do # keep it to use five for offline mode. it is the best value
-            for dataset_name in "original" "e_rotation e_scale" ; do # "e_scale" "e_rotation e_scale" ;  do # "original" "da_rotation"  "e_rotation"; do #"da_rotation" "e_rotation"; do #"da_rotation" "e_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
-                for train_sub_num in  2 5 10 14; do #1 2 3 4 5 6 7 8 9 10 11 12 13 14; do # 8 9 10 11 12 13 14 15; do
+            for dataset_name in "original"; do #"e_rotation e_scale" ; do # "e_scale" "e_rotation e_scale" ;  do # "original" "da_rotation"  "e_rotation"; do #"da_rotation" "e_rotation"; do #"da_rotation" "e_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
+                for train_sub_num in  14; do #1 2 3 4 5 6 7 8 9 10 11 12 13 14; do # 8 9 10 11 12 13 14 15; do
                     test_sub_num=`expr ${sub_num} - ${train_sub_num}` 
-                    for tre_trial_num in 1 ; do # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
+                    for tre_trial_num in 20 ; do # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
                         for tst_trial_num in 5; do #10 15 20 25; do # NOTE: tst_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
                             for labels_name in "R_GRF_Z"; do # "R_KNEE_ANGLE_X" ; do
                                 features_name=`python -c 'import main; array=["Weight","Height"] + main.const.extract_imu_fields(["R_SHANK", "R_THIGH", "R_FOOT", "WAIST", "CHEST", "L_FOOT", "L_SHANK", "L_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
@@ -58,7 +58,7 @@ for landing_manner in "rdouble_leg_v1"; do
                                     python ./../vicon_imu_data_process/process_landing_data.py ${landing_manner} ${scale_method} ${data_id} ${dataset_name} | tee "${log_folder}/data_generattion_${data_id}.log"
                                 fi
 
-				"""
+				
                                 # model training and evluation
                                 python main.py --config run.yaml \
                                     --model_name ${model_name} \
@@ -78,7 +78,6 @@ for landing_manner in "rdouble_leg_v1"; do
                                     --features_name ${features_name} \
                                     --labels_name ${labels_name} \
                                     --landing_manner ${landing_manner} | tee "${log_folder}/${config_name}.log"
-				"""
                                 # collect training and test results
                                 result_folder_array+=(${result_folder})
                                 echo ${result_folder} >> ${result_folder_file}

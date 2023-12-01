@@ -6,7 +6,6 @@ import pdb
 
 
 
-
 '''
 A transfer network for regression
 
@@ -144,8 +143,11 @@ class BaselineModel(nn.Module):
     def __init__(self, num_label=1, base_net='mlnn', finetuning=False, **kwargs):
         super(BaselineModel, self).__init__()
         self.num_label = num_label
+        self.base_net=base_net
         self.base_network = backbones.get_backbone(base_net, **kwargs)
         feature_dim = self.base_network.output_num()
+        self.kwargs = kwargs
+        
 
         #self.output_layer = nn.Linear(feature_dim, num_label)
         output_list = [
@@ -167,7 +169,10 @@ class BaselineModel(nn.Module):
 
     def forward(self, samples):
         target_reg, target_label_reg = samples['tre']
-        target_reg = self.base_network(target_reg)
+        if(self.base_net=="transformer"):
+            target_reg = self.base_network(target_reg,target_label_reg)
+        else:
+            target_reg = self.base_network(target_reg)
         target_reg = self.output_layer(target_reg)
         reg_loss = self.criterion(target_reg, target_label_reg)
         transfer_loss = 0*reg_loss
@@ -175,7 +180,12 @@ class BaselineModel(nn.Module):
         return reg_loss, transfer_loss # 0 indicates transfer loss
 
     def predict(self, x):
-        features = self.base_network(x)
+        if(self.base_net=="transformer"):
+            y = torch.zeros(x.shape[:-1]).unsqueeze(-1).to(self.kwargs['device'])
+            features = self.base_network(x,y)
+        else:
+            features = self.base_network(x)
+
         reg = self.output_layer(features)
         return reg
 

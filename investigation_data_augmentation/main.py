@@ -205,6 +205,9 @@ def get_model(args):
     elif(args.model_name=='baseline_lstm'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='lstm', features_num = len(args.features_name),num_layers=num_layers).to(args.device)
 
+    elif(args.model_name=='baseline_transformer'):
+        model = models.BaselineModel(num_label=args.n_labels, base_net='transformer', features_num = len(args.features_name), num_layers=num_layers, device=args.device).to(args.device)
+
     elif(args.model_name=='augmentation'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),  num_layers=num_layers).to(args.device)
 
@@ -469,7 +472,10 @@ def k_fold(args, multiple_domain_datasets):
         model = get_model(args)
 
         # get model time complexity and memory complexisty
-        profile_value = np.array(profile(model.base_network, inputs=(torch.randn(1, model.base_network.seq_len, len(args.features_name)).to(args.device),))) + np.array(profile(model.output_layer, inputs=(torch.randn(model.output_layer_input_dim[1], model.output_layer_input_dim[0]).to(args.device),)))
+        if(args.model_name=="baseline_transformer"):
+            profile_value=[0.0,0.0] # unknown the param and flops
+        else:
+            profile_value = np.array(profile(model.base_network, inputs=(torch.randn(1, model.base_network.seq_len, len(args.features_name)).to(args.device),))) + np.array(profile(model.output_layer, inputs=(torch.randn(model.output_layer_input_dim[1], model.output_layer_input_dim[0]).to(args.device),)))
         args.FLOPs, args.Params = float(profile_value[0]), float(profile_value[1])
 
         #iv) get optimizer
