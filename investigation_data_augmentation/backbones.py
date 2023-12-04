@@ -24,7 +24,7 @@ def get_backbone(name,**kwargs):
     elif "fc" == name.lower(): # modular lstm neural network, defined by suntao
         if 'num_layers' in kwargs.keys():
             num_layers = kwargs['num_layers']
-            return FCBackbone(num_layers=num_layers,n_input=kwargs['features_num'])
+            return FCBackbone(num_layers=num_layers, n_input=kwargs['features_num'])
         else:
             return MLNNBackbone(n_input=kwargs['features_num'])
     elif "cnn" == name.lower(): # cnn, defined by suntao
@@ -39,22 +39,23 @@ def get_backbone(name,**kwargs):
             return LSTMBackbone(n_input=kwargs['features_num'])
 
 
-class FCBackbone(nn.Module):
-    def __init__(self, n_input=48, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
-        super(FCBackbone, self).__init__()
-        self._feature_dim = hidden_size
-        self.fc_layer = nn.Linear(in_features=n_input*seq_len, out_features=hidden_size)
+class BaseBackbone(nn.Module):
+    def __init__(self, n_input=48, seq_len=80):
+        super(BaseBackbone, self).__init__()
+        self.seq_len = seq_len
+        self._feature_dim = 0
+
+class FCBackbone(BaseBackbone):
+    def __init__(self, n_input=48, seq_len=80, n_output=1, num_layers=1):
+        super(FCBackbone, self).__init__(n_input, seq_len)
+        self._feature_dim = seq_len
+        self.fc_layer = nn.Linear(in_features=n_input, out_features=seq_len)
     def forward(self, sequence): # input dim = [batch_size, seq_en, features_len]
-        batch_size = sequence.shape[0]
-        sequence = sequence.reshape(batch_size, -1)
         out = self.fc_layer(sequence) # lstm_out dim  = [batch_size, seq_len, model_dim]
         return out
 
     def output_num(self):
         return self._feature_dim
-
-
-
 
 class LSTMBackbone(nn.Module):
     def __init__(self, n_input=48, seq_len=80, n_output=1, hidden_size=100, num_layers=1):

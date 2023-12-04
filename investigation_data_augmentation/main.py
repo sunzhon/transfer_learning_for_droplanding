@@ -202,17 +202,20 @@ def get_model(args):
         model = models.TransferNetForRegression(
                 args.n_labels, transfer_loss=args.transfer_loss, base_net=args.backbone, max_iter=args.max_iter, use_bottleneck=args.use_bottleneck, target_reg_loss_weight=1).to(args.device)
 
+    elif(args.model_name=='baseline_fc'):
+        model = models.BaselineModel(num_label=args.n_labels, base_net='fc', num_layers=num_layers, features_num=len(args.features_name)).to(args.device)
+
     elif(args.model_name=='baseline_lstm'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='lstm', features_num = len(args.features_name),num_layers=num_layers).to(args.device)
+        model = models.BaselineModel(num_label=args.n_labels, base_net='lstm', features_num = len(args.features_name), num_layers=num_layers).to(args.device)
+
+    elif(args.model_name=='baseline_cnn'):
+        model = models.BaselineModel(num_label=args.n_labels, base_net='cnn', num_layers=num_layers).to(args.device)
 
     elif(args.model_name=='baseline_transformer'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='transformer', features_num = len(args.features_name), num_layers=num_layers, device=args.device).to(args.device)
 
     elif(args.model_name=='augmentation'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', features_num = len(args.features_name),  num_layers=num_layers).to(args.device)
-
-    elif(args.model_name=='baseline_cnn'):
-        model = models.BaselineModel(num_label=args.n_labels, base_net='cnn', num_layers=num_layers).to(args.device)
 
     elif(args.model_name=='pretrained'):
         model = models.BaselineModel(num_label=args.n_labels, base_net='mlnn', num_layers=num_layers).to(args.device)
