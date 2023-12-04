@@ -73,13 +73,13 @@ class CNNBackbone(BaseBackbone):
                 MaxPool2d(kernel_size=6, stride=1, padding=0),
                 ## Defining another 2D convolution layer
                 nn.Dropout(p=0.3),
-                Conv2d(8, 8, kernel_size=6, stride=1, padding=0),
-                BatchNorm2d(8),
-                ReLU(inplace=True),
-                MaxPool2d(kernel_size=6, stride=1),
+                #Conv2d(8, 8, kernel_size=6, stride=1, padding=0),
+                #BatchNorm2d(8),
+                #ReLU(inplace=True),
+                #MaxPool2d(kernel_size=6, stride=1),
                 )
         self.in_channels = in_channels
-        self._feature_dim = int(8*(features_num-20)*(seq_len-20)/seq_len)
+        self._feature_dim = int(8*(features_num-10)*(seq_len-10)/seq_len)
 
         # Defining the forward pass
     def forward(self, x): #input_dim = [batch_size, seq_len (80), feature_num (49)]
