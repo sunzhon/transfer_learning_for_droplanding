@@ -67,10 +67,10 @@ class CNNBackbone(BaseBackbone):
         super(CNNBackbone, self).__init__()
         self.cnn_layers=Sequential(
                 # Defining a 2D convolution layer
-                Conv2d(in_channels=in_channels, out_channels=8, kernel_size=(6,6), stride=1, padding=0),
-                BatchNorm2d(8),
+                Conv2d(in_channels=in_channels, out_channels=4, kernel_size=11, stride=1, padding=0),
+                BatchNorm2d(4),
                 ReLU(inplace=True),
-                MaxPool2d(kernel_size=6, stride=1, padding=0),
+                MaxPool2d(kernel_size=11, stride=1, padding=0),
                 ## Defining another 2D convolution layer
                 nn.Dropout(p=0.3),
                 #Conv2d(8, 8, kernel_size=6, stride=1, padding=0),
@@ -79,7 +79,7 @@ class CNNBackbone(BaseBackbone):
                 #MaxPool2d(kernel_size=6, stride=1),
                 )
         self.in_channels = in_channels
-        self._feature_dim = int(8*(features_num-10)*(seq_len-10)/seq_len)
+        self._feature_dim = int(4*(features_num-20)*(seq_len-20)/seq_len)
 
         # Defining the forward pass
     def forward(self, x): #input_dim = [batch_size, seq_len (80), feature_num (49)]

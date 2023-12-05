@@ -241,7 +241,7 @@ def get_optimizer(model, args):
 
 
 def get_scheduler(optimizer, args):
-    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))  # decay of lr
     return scheduler
 
 def test(model, test_data_loader, args, **kwargs):
@@ -325,9 +325,8 @@ def test(model, test_data_loader, args, **kwargs):
 
 def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
 
-    # log information
-    log = []
-
+    # log information for save train and validation loss
+    epochs_loss = []
     # crerate train results folder
     training_folder = pro_rd.create_training_files(hyperparams=vars(args))
     args.save_test = False 
@@ -361,20 +360,17 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
             reg_loss = args.regression_loss_weight*reg_loss 
             transfer_loss = args.transfer_loss_weight * transfer_loss
             
-            loss = reg_loss + transfer_loss 
+            loss = reg_loss + transfer_loss  # calculate loss
             optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            if lr_scheduler:
+            loss.backward()  # calculate grad
+            optimizer.step() # update learning
+            if lr_scheduler: # update learning rate
                 lr_scheduler.step()
 
             train_loss_reg.update(reg_loss.item())
             train_loss_transfer.update(transfer_loss.item())
             train_loss_total.update(loss.item())
             
-        #log.append([train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg])
-        log.append([train_loss_reg.val, train_loss_transfer.val, train_loss_total.val])
-        
         info = 'Epoch: [{:2d}/{}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}\n'.format(
                         epoch, args.n_epoch, train_loss_reg.val, train_loss_transfer.val, train_loss_total.val)
 
@@ -382,11 +378,8 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
         #ii) Test processing Acc,
         test_loss, test_acc, _ = test(model, domain_data_loaders['tst'], args)
         info += 'test_loss {:.4f}, test_acc: {:.4f}\n'.format(test_loss, test_acc)
-
-        #iii) log save
-        np_log = np.array(log, dtype=float)
-        train_log_path = os.path.join(training_folder,'train_log.csv')
-        np.savetxt(train_log_path, np_log, delimiter=',', fmt='%.6f')
+        #iii) store log info: train and validation loss
+        epochs_loss.append([epoch, train_loss_reg.val, train_loss_transfer.val, train_loss_total.val, test_loss])
 
         # early stopping
         early_stop(test_loss, test_acc, model)
@@ -394,6 +387,14 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
             print(info)
             break
         print(info)
+
+    # save log of
+    pd_epochs_loss = pd.DataFrame(data=np.array(epochs_loss, dtype=float), columns=["epoch", "reg_loss","trans_loss", "total_train_loss", "vali_loss"], dtype=float)
+    train_loss_path = os.path.join(training_folder,'train_log.csv')
+    #pd_epochs_loss.to_csv(train_loss_path)
+    pd_epochs_loss.to_csv("./train_vali_loss.csv")
+    #np.savetxt(train_loss_path, pd, delimiter=',', fmt='%.6f')
+    #np.savetxt("./train_log.csv", np_log, delimiter=',', fmt='%.6f')
 
     # load the last checkpoint with the best model for test model 
     model.load_state_dict(torch.load(os.path.join(training_folder,'best_model.pth')))
