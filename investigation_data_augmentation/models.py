@@ -198,8 +198,8 @@ class BaselineModel(nn.Module):
                 ]
         else:
             params = [
-                {'params': self.base_network.parameters(), 'lr': 0.1 * initial_lr},
-                {'params': self.output_layer.parameters(), 'lr': 1.0 * initial_lr},
+                {'params': self.base_network.parameters(), 'lr': initial_lr},
+                {'params': self.output_layer.parameters(), 'lr': initial_lr},
             ]
 
         return params

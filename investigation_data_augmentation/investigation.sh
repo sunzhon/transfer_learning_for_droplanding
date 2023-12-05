@@ -12,7 +12,7 @@ result_folder_array=()
 result_folder_file="./result_folders.txt"
 tmp_result_folder_file="./tmp_result_folders.txt"
 for landing_manner in "rdouble_leg_v1"; do
-    for model_name in "baseline_cnn"; do # "baseline_cnn"; do # "baseline" "augmentation"; do
+    for model_name in "baseline_transformer" "baseline_cnn" "baseline_fc" "baseline_lstm"; do # "baseline" "augmentation"; do
         for feature_layer_num in 4; do # keep it to use five for offline mode. it is the best value
             for dataset_name in "original"; do #"e_rotation e_scale" ; do # "e_scale" "e_rotation e_scale" ;  do # "original" "da_rotation"  "e_rotation"; do #"da_rotation" "e_rotation"; do #"da_rotation" "e_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
                 for train_sub_num in  14; do #1 2 3 4 5 6 7 8 9 10 11 12 13 14; do # 8 9 10 11 12 13 14 15; do
@@ -22,7 +22,7 @@ for landing_manner in "rdouble_leg_v1"; do
                             for labels_name in "R_GRF_Z"; do # "R_KNEE_ANGLE_X" ; do
                                 features_name=`python -c 'import main; array=["Weight","Height"] + main.const.extract_imu_fields(["R_SHANK", "R_THIGH", "R_FOOT", "WAIST", "CHEST", "L_FOOT", "L_SHANK", "L_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
                                 scale_method="standard"
-                                data_id="aug_v5" # test_sub_num=14, mean r2 =  0.83 (rotation), 0.77 (original)
+                                data_id="test_model" # test_sub_num=14, mean r2 =  0.83 (rotation), 0.77 (original)
                                 dataset_folder=`echo ${dataset_name} | sed -e "s/ /_/g"`
               config_name="${landing_manner}_${model_name}_${feature_layer_num}_${dataset_folder}_${train_sub_num}_${tre_trial_num}_${tst_trial_num}_${labels_name}_${data_id}"
                                 echo "Start to train and test a model ......"
@@ -77,9 +77,9 @@ for landing_manner in "rdouble_leg_v1"; do
                                     --result_folder ${result_folder} \
                                     --features_name ${features_name} \
                                     --labels_name ${labels_name} \
-                                    --landing_manner ${landing_manner}
-			        #	| tee "${log_folder}/${config_name}.log"
-				exit
+                                    --landing_manner ${landing_manner} \
+			        	| tee "${log_folder}/${config_name}.log"
+
                                 # collect training and test results
                                 result_folder_array+=(${result_folder})
                                 echo ${result_folder} >> ${result_folder_file}

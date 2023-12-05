@@ -74,12 +74,19 @@ def get_parser():
     parser.add_argument('--landing_manner',type=str, default='double_legs')
     
     # training related
-    parser.add_argument('--batch_size', type=int, default=20)
+    parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--max_iter', type=int, default=1000)
     parser.add_argument('--n_epoch', type=int, default=100)
     parser.add_argument('--early_stop', type=int, default=0, help="Early stopping")
     parser.add_argument('--epoch_based_training', type=str2bool, default=True, help="Epoch-based training / Iteration-based training")
     parser.add_argument("--n_iter_per_epoch", type=int, default=20, help="Used in Iteration-based training")
+
+
+    # cross-validation
+    parser.add_argument('--n_splits',type=int,default=0) # n_splits kfold or leaveone cross validation n_splits=0
+    parser.add_argument('--early_stopping_patience',type=int, default=15) # patience for early stopping
+    parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
+
 
     # optimizer related
     parser.add_argument('--lr', type=float, default=1e-3)
@@ -108,11 +115,6 @@ def get_parser():
     parser.add_argument('--trial_idx',type=int,default=0)
     parser.add_argument('--tst_test_subjects_trials_len',type=dict,default={})
     parser.add_argument('--tre_train_subjects_trials_len',type=dict,default={})
-
-    # cross-validation
-    parser.add_argument('--n_splits',type=int,default=0) # n_splits kfold or leaveone cross validation n_splits=0
-    parser.add_argument('--early_stopping_patience',type=int, default=10) # patience for early stopping
-    parser.add_argument('--use_early_stop',type=str2bool, default=True) # patience for early stopping
 
     # sub_num subjects and tst_trial_num and tre_trial_num trials of the subjects will be used
     parser.add_argument('--sub_num',type=int, default=17) # patience for early stopping
@@ -233,15 +235,15 @@ def get_model(args):
     return model
 
 def get_optimizer(model, args):
-    initial_lr = args.lr if not args.lr_scheduler else 1.0
-    params = model.get_parameters(initial_lr=initial_lr)
-    optimizer = torch.optim.AdamW(params, betas=(0.9, 0.999), eps=1e-08, weight_decay=args.weight_decay)
-    #optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=False)
+    params = model.get_parameters(initial_lr=args.lr)
+    #optimizer = torch.optim.AdamW(params, betas=(0.9, 0.999), eps=1e-08, weight_decay=args.weight_decay)
+    optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=False)
     return optimizer
 
-
 def get_scheduler(optimizer, args):
-    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay))  # decay of lr
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, \
+            [lambda x:  args.lr * (1. + args.lr_gamma * float(x)) ** (-args.lr_decay),\
+            lambda x: args.lr])  # decay of lr
     return scheduler
 
 def test(model, test_data_loader, args, **kwargs):
@@ -323,7 +325,13 @@ def test(model, test_data_loader, args, **kwargs):
     return test_loss.avg, test_acc.avg, testing_folder
 
 
-def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
+def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, loop=0):
+    """
+    Arguments:
+    domain_data_loaders: dataset
+    model: model
+    loop=0, a loop of kfold 
+    """
 
     # log information for save train and validation loss
     epochs_loss = []
@@ -390,11 +398,9 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args):
 
     # save log of
     pd_epochs_loss = pd.DataFrame(data=np.array(epochs_loss, dtype=float), columns=["epoch", "reg_loss","trans_loss", "total_train_loss", "vali_loss"], dtype=float)
-    train_loss_path = os.path.join(training_folder,'train_log.csv')
-    #pd_epochs_loss.to_csv(train_loss_path)
-    pd_epochs_loss.to_csv("./train_vali_loss.csv")
-    #np.savetxt(train_loss_path, pd, delimiter=',', fmt='%.6f')
-    #np.savetxt("./train_log.csv", np_log, delimiter=',', fmt='%.6f')
+    train_loss_path = os.path.join(training_folder, args.model_name+"_kfloop"+str(loop)+'_train_valid_loss.csv')
+    pd_epochs_loss.to_csv(train_loss_path)
+    #pd_epochs_loss.to_csv("./train_valid_loss/"+args.model_name+"_kfloop"+str(loop)+"_train_valid_loss.csv")
 
     # load the last checkpoint with the best model for test model 
     model.load_state_dict(torch.load(os.path.join(training_folder,'best_model.pth')))
@@ -508,7 +514,7 @@ def k_fold(args, multiple_domain_datasets):
             print('Interation based tranining')
 
         #vi) train model
-        training_folder, testing_folder = train(domain_data_loaders, model, optimizer, scheduler, n_batch, args)
+        training_folder, testing_folder = train(domain_data_loaders, model, optimizer, scheduler, n_batch, args, loop)
         
 def model_evaluation(args, multiple_domain_datasets):
 
