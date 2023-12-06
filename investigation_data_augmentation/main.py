@@ -99,8 +99,6 @@ def get_parser():
     parser.add_argument('--lr_scheduler', type=str2bool, default=True)
 
     # transfer related
-    parser.add_argument('--regression_loss_weight', type=float, default=1.0)
-    parser.add_argument('--transfer_loss_weight', type=float, default=1.0)
     parser.add_argument('--transfer_loss', type=str, default='adv')
 
     parser.add_argument('--save_test', type=bool, default=False)
@@ -251,12 +249,12 @@ def test(model, test_data_loader, args, **kwargs):
     # model evaluation
     model.eval() # declare model evaluation, affects batch normalization and drop out layer
     test_loss = utils.AverageMeter()
-    criterion = torch.nn.MSELoss()
-    len_target_dataset = len(test_data_loader.dataset)
     test_acc = utils.AverageMeter()
+    criterion = torch.nn.MSELoss()
     r2score = torchmetrics.R2Score(2).to(args.device)#num_outputs=2,multioutput='raw_values'
+    len_target_dataset = len(test_data_loader.dataset)
     with torch.no_grad(): # no do calcualte grad
-        for trial_idx, (features, labels) in enumerate(test_data_loader):
+        for trial_idx, (features, labels) in enumerate(test_data_loader): # samples: many trials 
 
             # load data to device
             features, labels = features.to(args.device), labels.to(args.device)
@@ -322,7 +320,7 @@ def test(model, test_data_loader, args, **kwargs):
                 if(trial_idx > kwargs['test_times']): # just test few times, e.g., 4
                     break
 
-    return test_loss.avg, test_acc.avg, testing_folder
+    return test_loss.avg, test_acc.avg.to("cpu"), testing_folder
 
 
 def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, loop=0):
@@ -358,16 +356,13 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, l
                 domains_data_iter[name] = iter(a_data_loader)
         
         # conduct all batchs 
-        for _ in range(n_batch): # batch
+        for _ in range(n_batch): # batchs
             domains_samples = {}
             for name in domains_data_iter.keys(): # domains
                 data, label = next(domains_data_iter[name])
                 data, label = data.to(args.device), label.to(args.device)
                 domains_samples[name] = (data,label) # pack batched data and label of each domain
             reg_loss, transfer_loss = model(domains_samples)
-            reg_loss = args.regression_loss_weight*reg_loss 
-            transfer_loss = args.transfer_loss_weight * transfer_loss
-            
             loss = reg_loss + transfer_loss  # calculate loss
             optimizer.zero_grad()
             loss.backward()  # calculate grad
@@ -380,14 +375,14 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, l
             train_loss_total.update(loss.item())
             
         info = 'Epoch: [{:2d}/{}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}\n'.format(
-                        epoch, args.n_epoch, train_loss_reg.val, train_loss_transfer.val, train_loss_total.val)
+                        epoch, args.n_epoch, train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg)
 
         # Train processing Acc
         #ii) Test processing Acc,
         test_loss, test_acc, _ = test(model, domain_data_loaders['tst'], args)
         info += 'test_loss {:.4f}, test_acc: {:.4f}\n'.format(test_loss, test_acc)
         #iii) store log info: train and validation loss
-        epochs_loss.append([epoch, train_loss_reg.val, train_loss_transfer.val, train_loss_total.val, test_loss])
+        epochs_loss.append([epoch, train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg, test_loss, test_acc])
 
         # early stopping
         early_stop(test_loss, test_acc, model)
@@ -397,7 +392,7 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, l
         print(info)
 
     # save log of
-    pd_epochs_loss = pd.DataFrame(data=np.array(epochs_loss, dtype=float), columns=["epoch", "reg_loss","trans_loss", "total_train_loss", "vali_loss"], dtype=float)
+    pd_epochs_loss = pd.DataFrame(data=np.array(epochs_loss, dtype=float), columns=["epoch", "reg_loss","trans_loss", "total_train_loss", "valid_loss", "valid_acc"], dtype=float)
     train_loss_path = os.path.join(training_folder, args.model_name+"_kfloop"+str(loop)+'_train_valid_loss.csv')
     pd_epochs_loss.to_csv(train_loss_path)
     #pd_epochs_loss.to_csv("./train_valid_loss/"+args.model_name+"_kfloop"+str(loop)+"_train_valid_loss.csv")

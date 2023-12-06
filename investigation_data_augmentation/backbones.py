@@ -92,8 +92,6 @@ class CNNBackbone(BaseBackbone):
     def output_num(self):
         return self._feature_dim
 
-
-
 class LSTMBackbone(nn.Module):
     def __init__(self, n_input=48, seq_len=80, n_output=1, hidden_size=100, num_layers=1):
         super(LSTMBackbone, self).__init__()
@@ -125,7 +123,7 @@ class TransformerBackbone(nn.Module):
         super(TransformerBackbone,self).__init__()
         num_layers = kwargs["num_layers"]
         self.positional_encoding = PositionalEncoding(d_model=n_input,dropout=0.0,max_len=seq_len)
-        self.transformer = nn.Transformer(d_model=n_input,nhead=2,
+        self.transformer = nn.Transformer(d_model=n_input, nhead=5,
                 num_encoder_layers=num_layers,
                 num_decoder_layers=num_layers,
                 batch_first=True)
@@ -136,6 +134,7 @@ class TransformerBackbone(nn.Module):
 
         self.seq_len = seq_len
         self._feature_dim = n_input
+
     def forward(self, src, tgt):
         src = self.positional_encoding(src)
         tgt = self.positional_encoding(tgt)
