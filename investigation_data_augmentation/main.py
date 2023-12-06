@@ -234,8 +234,8 @@ def get_model(args):
 
 def get_optimizer(model, args):
     params = model.get_parameters(initial_lr=args.lr)
-    #optimizer = torch.optim.AdamW(params, betas=(0.9, 0.999), eps=1e-08, weight_decay=args.weight_decay)
-    optimizer = torch.optim.SGD(params, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=False)
+    optimizer = torch.optim.AdamW(params, betas=(0.9, 0.999), eps=1e-08, weight_decay=args.weight_decay)
+    #optimizer = torch.optim.SGD(params, lr=args.lr+0.05, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=False) # for CNN, lr+  0.05
     return optimizer
 
 def get_scheduler(optimizer, args):
@@ -374,8 +374,8 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, l
             train_loss_transfer.update(transfer_loss.item())
             train_loss_total.update(loss.item())
             
-        info = 'Epoch: [{:2d}/{}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}\n'.format(
-                        epoch, args.n_epoch, train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg)
+        info = 'Epoch: [{:2d}/{}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}, lr: {:.4f}\n'.format(
+                        epoch, args.n_epoch, train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg, optimizer.param_groups[0]['lr'])
 
         # Train processing Acc
         #ii) Test processing Acc,
