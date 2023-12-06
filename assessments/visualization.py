@@ -15,6 +15,7 @@ import copy
 import re
 from statannotations.Annotator import Annotator
 
+import time as localtimepkg
 
 
 current_dir = os.path.dirname(os.path.abspath(__file__))

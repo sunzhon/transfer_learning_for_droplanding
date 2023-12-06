@@ -826,12 +826,13 @@ def filter_metrics(metrics, landing_manner='all', estimated_variable='all', syn_
                 try:
                     if(not isinstance(value, list)):
                         value=[value]
+                    metrics[key] = metrics[key].astype(type(value[0]))
                     if set(value) <= set(metrics[key]): # a value of the test id
                         metrics = metrics.loc[metrics[key].isin(value)]
                     elif(value=='all'):
                         print('All {} are used'.format(key))
                     else:
-                        print('{} is not right, it should be {}'.format(key, set(metrics[key])))
+                        print('{} is not right, it should be {}, but {} was given'.format(key, set(metrics[key]), set(value)))
                         pdb.set_trace()
                         sys.exit()
                 except Exception as e:
@@ -933,7 +934,7 @@ def parase_training_testing_folders(investigation_config_results, landing_manner
 
 
 
-def sum_metrics(result_folders):
+def sum_metrics(result_folders, metrics_file="./../DeepDA/sum_metrics.csv"):
     # 
     assert(isinstance(result_folders,list))
 
@@ -952,11 +953,10 @@ def sum_metrics(result_folders):
     tmp = tmp.reset_index()
     #tmp['idx']=range(tmp.shape[0])
     # file for saving the sum results 
-    result_file = "./../DeepDA/sum_metrics.csv"
-    if(not os.path.exists(result_file)):
-        tmp.to_csv(result_file)
+    if(not os.path.exists(metrics_file)):
+        tmp.to_csv(metrics_file)
     else:
-        tmp.to_csv(result_file, mode='a', header=None)
+        tmp.to_csv(metrics_file, mode='a', header=None)
 
 
 
