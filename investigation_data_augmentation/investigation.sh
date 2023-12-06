@@ -9,17 +9,22 @@ echo "RESULTS_PATH: ${RESULTS_PATH}"
 sub_num=15
 cv_num=15  # cross validation num
 result_folder_array=()
-result_folder_file="./result_folders.txt"
-single_result_folder_file="./single_result_folders.txt"
+all_result_folder_file="./all_result_folders.txt"
+cur_result_folder_file="./cur_result_folders.txt"
+if [ -e $cur_result_folder_file ]; then
+	echo "rm $cur_result_folder_file"
+	rm -f $cur_result_folder_file
+fi
+
 for landing_manner in "rdouble_leg_v1"; do
     for model_name in "baseline_transformer" "baseline_cnn" "baseline_fc" "baseline_lstm"; do # "baseline" "augmentation"; do
         for feature_layer_num in 4; do # keep it to use five for offline mode. it is the best value
-            for dataset_name in "e_rotation e_scale"; do #"e_rotation e_scale" ; do # "e_scale" "e_rotation e_scale" ;  do # "original" "da_rotation"  "e_rotation"; do #"da_rotation" "e_rotation"; do #"da_rotation" "e_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
-                for train_sub_num in  14; do #1 2 3 4 5 6 7 8 9 10 11 12 13 14; do # 8 9 10 11 12 13 14 15; do
+            for dataset_name in "original"; do #"e_rotation" "e_scale"; do #"e_rotation e_scale" ; do # "e_scale" "e_rotation e_scale" ;  do # "original" "da_rotation"  "e_rotation"; do #"da_rotation" "e_rotation"; do #"da_rotation" "e_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
+                for train_sub_num in  1 2 3 4 5 6 7 8 9 10 11 12 13 14; do #1 2 3 4 5 6 7 8 9 10 11 12 13 14; do # 8 9 10 11 12 13 14 15; do
                     test_sub_num=`expr ${sub_num} - ${train_sub_num}` 
-                    for tre_trial_num in 20 ; do # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
+                    for tre_trial_num in 5 10 15 20 ; do # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
                         for tst_trial_num in 5; do #10 15 20 25; do # NOTE: tst_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
-                            for labels_name in "R_GRF_Z"; do # "R_KNEE_ANGLE_X" ; do
+                            for labels_name in "R_GRF_Z" "R_KNEE_MOMENT_X"; do # "R_KNEE_ANGLE_X"  "R_KNEE_MOMENT_X"; do
                                 features_name=`python -c 'import main; array=["Weight","Height"] + main.const.extract_imu_fields(["R_SHANK", "R_THIGH", "R_FOOT", "WAIST", "CHEST", "L_FOOT", "L_SHANK", "L_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
                                 scale_method="standard"
                                 data_id="test_model" # test_sub_num=14, mean r2 =  0.83 (rotation), 0.77 (original)
@@ -38,7 +43,7 @@ for landing_manner in "rdouble_leg_v1"; do
                                 tre_datafile_basename="tre_${data_id}_${landing_manner}_norm_landing_data.hdf5"
                                 tst_datafile_basename="tst_${data_id}_${landing_manner}_norm_landing_data.hdf5"
                                 scaler_filename="${data_id}_${landing_manner}_landing_scaler_file.pkl"
-                                result_folder="${config_name}"
+                                result_folder="${config_name}_loss"
 
                                 echo "tre_datafile_basename: ${tre_datafile_basename}"
                                 echo "tst_datafile_basename: ${tst_datafile_basename}"
@@ -82,8 +87,8 @@ for landing_manner in "rdouble_leg_v1"; do
 
                                 # collect training and test results
                                 result_folder_array+=(${result_folder})
-                                echo ${result_folder} >> ${result_folder_file}
-                                echo ${result_folder} > ${single_result_folder_file}
+                                echo ${result_folder} >> ${all_result_folder_file}
+                                echo ${result_folder} >> ${cur_result_folder_file}
                                 ./batch_retrieve_param_metrics.sh ${result_folder}
                             done
                         done
@@ -95,11 +100,11 @@ for landing_manner in "rdouble_leg_v1"; do
 done
 
 ### store resulst folder
-cp single_result_folders.txt ${RESULTS_PATH}/training_testing/
-cp result_folders.txt ${RESULTS_PATH}/training_testing/
+cp cur_result_folders.txt ${RESULTS_PATH}/training_testing/
+cp all_result_folders.txt ${RESULTS_PATH}/training_testing/
 echo "This is the result folders: ..."
 #python ./../assessments/scores.py  "${result_folder_array[@]}"
-python calculate_metrics.py  "${result_folder_array[@]}"
+#python calculate_metrics.py  "${result_folder_array[@]}"
 
 
 
