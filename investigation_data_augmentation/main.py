@@ -1,4 +1,4 @@
-#! /bin/pyenv python
+#! /Bin/pyenv python
 #coding: --utf-8
 import configargparse
 import data_loader
@@ -245,7 +245,12 @@ def get_scheduler(optimizer, args):
             lambda x: args.lr])  # decay of lr
     return scheduler
 
-def test(model, test_data_loader, args, **kwargs):
+def valid_test(model, test_data_loader, args, save_examination=False, **kwargs):
+    """
+    Validation and test
+    save_examination=False, means validation, the results was not stored
+
+    """
     
     # model evaluation
     model.eval() # declare model evaluation, affects batch normalization and drop out layer
@@ -253,8 +258,9 @@ def test(model, test_data_loader, args, **kwargs):
     test_acc = utils.AverageMeter()
     criterion = torch.nn.MSELoss()
     r2score = torchmetrics.R2Score(2).to(args.device)#num_outputs=2,multioutput='raw_values'
-    len_target_dataset = len(test_data_loader.dataset)
     with torch.no_grad(): # no do calcualte grad
+        if(save_examination):
+            list_pd_results=[]
         for trial_idx, (features, labels) in enumerate(test_data_loader): # samples: many trials 
 
             # load data to device
@@ -272,7 +278,7 @@ def test(model, test_data_loader, args, **kwargs):
             mean_r2 = r2score(predictions, labels)
             test_acc.update(mean_r2)
 
-            if(args.save_test):
+            if(save_examination):
                 # transfer tensors to numpy array
                 a_label = labels.cpu().numpy()
                 a_prediction = predictions.cpu().numpy()
@@ -300,20 +306,19 @@ def test(model, test_data_loader, args, **kwargs):
                 pd_features = pd.DataFrame(data=unscaled_features, columns=args.features_name)
                 pd_labels = pd.DataFrame(data=unscaled_labels, columns=args.labels_name)
                 pd_predictions = pd.DataFrame(data=unscaled_predictions, columns=args.labels_name)
-
-                # create test results folder
-                testing_folder = pro_rd.create_testing_files(args.training_folder)
-
-                # save test results
-                es_sc.save_test_result(pd_features, pd_labels, pd_predictions, testing_folder)
-                # trial idx
-                args.trial_idx = trial_idx
                 
-                # find the trail from which subject, stop the test early
-                # save hyper parameters
-                hyperparams_file = os.path.join(testing_folder,"hyperparams.yaml")
-                with open(hyperparams_file,'w') as fd:
-                    yaml.dump(vars(args), fd)
+                # calculate metrics:
+                metrics = es_sc.get_evaluation_metrics(pd_labels, pd_predictions)
+                metrics = metrics[["metrics", "scores"]].set_index('metrics').T.reset_index(drop=True)
+                metrics["trial_idx"] = trial_idx
+                pd_metrics = pd.DataFrame(data=np.repeat(metrics.values, pd_labels.shape[0],axis=0), columns=metrics.columns)
+                pd_labels = pd_labels.rename(columns={tmp: "label_"+ tmp for tmp in args.labels_name})
+                pd_predictions = pd_predictions.rename(columns={tmp: "pred_"+ tmp for tmp in args.labels_name})
+                pd_results=pd.concat([pd_features, pd_labels, pd_predictions, pd_metrics],axis=1)
+                list_pd_results.append(pd_results)
+                # save test results
+                #es_sc.save_test_result(pd_features, pd_labels, pd_predictions, testing_folder)
+                
             else:
                 testing_folder = None
 
@@ -321,15 +326,30 @@ def test(model, test_data_loader, args, **kwargs):
                 if(trial_idx > kwargs['test_times']): # just test few times, e.g., 4
                     break
 
+    
+    if(save_examination):
+        # create test results folder
+        testing_folder = pro_rd.create_testing_files(args.training_folder)
+        # save hyper parameters and some simple metric value
+        hyperparams_file = os.path.join(testing_folder,"hyperparams.yaml")
+        with open(hyperparams_file,'w') as fd:
+            yaml.dump(vars(args), fd)
+        # save results
+        seq_len = list_pd_results[0].shape[0]
+        all_pd_test_results=pd.concat(list_pd_results,axis=0).astype(np.float32)
+        saved_test_results_file = os.path.join(testing_folder, "test_results.h5")
+        all_pd_test_results.to_hdf(saved_test_results_file, key="results")
+        all_pd_test_results[["trial_idx", "r2", "r_rmse", "rmse", "mae"]][::seq_len].to_csv(os.path.join(testing_folder,"test_metrics.csv"))
+
     return test_loss.avg, test_acc.avg.to("cpu"), testing_folder
 
 
-def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, loop=0):
+def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, kfloop=0):
     """
     Arguments:
     domain_data_loaders: dataset
     model: model
-    loop=0, a loop of kfold 
+    kfloop=0, a loop of kfold 
     """
 
     # log information for save train and validation loss
@@ -380,7 +400,7 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, l
 
         # Train processing Acc
         #ii) Test processing Acc,
-        test_loss, test_acc, _ = test(model, domain_data_loaders['tst'], args)
+        test_loss, test_acc, _ = valid_test(model, domain_data_loaders['tst'], args, save_examination=False) # validation
         info += 'test_loss {:.4f}, test_acc: {:.4f}\n'.format(test_loss, test_acc)
         #iii) store log info: train and validation loss
         epochs_loss.append([epoch, train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg, test_loss, test_acc])
@@ -394,14 +414,13 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, l
 
     # save log of
     pd_epochs_loss = pd.DataFrame(data=np.array(epochs_loss, dtype=float), columns=["epoch", "reg_loss","trans_loss", "total_train_loss", "valid_loss", "valid_acc"], dtype=float)
-    train_loss_path = os.path.join(training_folder, args.model_name+"_kfloop"+str(loop)+'_train_valid_loss.csv')
+    train_loss_path = os.path.join(training_folder, args.model_name+"_kfloop"+str(kfloop)+'_train_valid_loss.csv')
     pd_epochs_loss.to_csv(train_loss_path)
-    #pd_epochs_loss.to_csv("./train_valid_loss/"+args.model_name+"_kfloop"+str(loop)+"_train_valid_loss.csv")
+    #pd_epochs_loss.to_csv("./train_valid_loss/"+args.model_name+"_kfloop"+str(kfloop)+"_train_valid_loss.csv")
 
     # load the last checkpoint with the best model for test model 
     model.load_state_dict(torch.load(os.path.join(training_folder,'best_model.pth')))
-    args.save_test = True
-    test_loss, test_acc, testing_folder = test(model, domain_data_loaders['tst'], args)
+    test_loss, test_acc, testing_folder = valid_test(model, domain_data_loaders['tst'], args, save_examination=True) # test, save test results
     print('BEST RESULT: r2: {:.4f}, loss: {:.4f}'.format(early_stop.best_acc,early_stop.best_score))
     print('Its training folder: {}\n\n'.format(training_folder))
     # save trainied model

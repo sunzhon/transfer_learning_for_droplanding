@@ -12,6 +12,9 @@ result_folder_array=()
 all_result_folder_file="./all_result_folders.txt"
 cur_result_folder_file="./cur_result_folders.txt"
 
+./batch_retrieve_param_metrics.sh "-l${cur_result_folder_file}"
+exit
+
 if [ -e $cur_result_folder_file ]; then
 	echo "rm $cur_result_folder_file"
 	rm -f $cur_result_folder_file
@@ -26,7 +29,7 @@ for landing_manner in "rdouble_leg_v1"; do
                     test_sub_num=`expr ${sub_num} - ${train_sub_num}` 
                     for tre_trial_num in 20 ; do # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
                         for tst_trial_num in 5; do #10 15 20 25; do # NOTE: tst_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
-                            for labels_name in "R_GRF_Z" "R_KNEE_MOMENT_X"; do # "R_KNEE_ANGLE_X"  "R_KNEE_MOMENT_X"; do
+                            for labels_name in "R_GRF_Z"; do # "R_KNEE_MOMENT_X"; do # "R_KNEE_ANGLE_X"  "R_KNEE_MOMENT_X"; do
                                 {
                                 features_name=`python -c 'import main; array=["Weight","Height"] + main.const.extract_imu_fields(["R_SHANK", "R_THIGH", "R_FOOT", "WAIST", "CHEST", "L_FOOT", "L_SHANK", "L_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
                                 scale_method="standard"
@@ -95,9 +98,8 @@ for landing_manner in "rdouble_leg_v1"; do
                                 result_folder_array+=(${result_folder})
                                 echo ${result_folder} >> ${all_result_folder_file}
                                 echo ${result_folder} >> ${cur_result_folder_file}
-                            
-                                #./batch_retrieve_param_metrics.sh ${result_folder}
-                            }&  #后台执行
+                                ##./batch_retrieve_param_metrics.sh ${result_folder}
+                            }   # 后台执行
                             train_worker_id=$(expr ${train_worker_id} + 1)
                             done
                         done

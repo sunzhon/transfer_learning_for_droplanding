@@ -21,7 +21,7 @@ early_stopping_patience: 20
 
 # Others
 seed: 1
-num_dataloader_workers: 2
+num_dataloader_workers: 5
 
 # bottleneck
 use_bottleneck: False
