@@ -55,7 +55,8 @@ def get_parser():
     # general configuration
     parser.add("--config", is_config_file=True, help="config file path")
     parser.add("--seed", type=int, default=0)
-    parser.add_argument('--num_workers', type=int, default=0)
+    parser.add_argument('--num_dataloader_workers', type=int, default=4)
+    parser.add_argument('--train_worker_id', type=int, default=0)
     
     # network related
     parser.add_argument('--backbone', type=str, default='resnet50')
@@ -181,9 +182,9 @@ def get_dataloader(args, multiple_domain_datasets):
     domain_data_loaders={}
     for domain_name, domain_data in multiple_domain_datasets.items():
         if(domain_name!='tst'):
-            domain_data_loaders[domain_name], n_labels = data_loader.load_motiondata(domain_data, args.batch_size, train=True, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
+            domain_data_loaders[domain_name], n_labels = data_loader.load_motiondata(domain_data, args.batch_size, num_workers=args.num_dataloader_workers, features_name=args.features_name, labels_name = args.labels_name)
         else:
-            domain_data_loaders[domain_name], n_labels = data_loader.load_motiondata(domain_data,1, train=False, num_workers=args.num_workers, features_name=args.features_name, labels_name = args.labels_name)
+            domain_data_loaders[domain_name], n_labels = data_loader.load_motiondata(domain_data,1, num_workers=args.num_dataloader_workers, features_name=args.features_name, labels_name = args.labels_name)
 
     return domain_data_loaders, n_labels
 
@@ -374,8 +375,8 @@ def train(domain_data_loaders,  model, optimizer, lr_scheduler, n_batch, args, l
             train_loss_transfer.update(transfer_loss.item())
             train_loss_total.update(loss.item())
             
-        info = 'Epoch: [{:2d}/{}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}, lr: {:.4f}\n'.format(
-                        epoch, args.n_epoch, train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg, optimizer.param_groups[0]['lr'])
+        info = 'Epoch: [{:2d}/{} - Worker {:}], reg_loss: {:.4f}, transfer_loss: {:.4f}, total_Loss: {:.4f}, lr: {:.4f}\n'.format(
+                        epoch, args.n_epoch, args.train_worker_id, train_loss_reg.avg, train_loss_transfer.avg, train_loss_total.avg, optimizer.param_groups[0]['lr'])
 
         # Train processing Acc
         #ii) Test processing Acc,
@@ -524,7 +525,7 @@ def model_evaluation(args, multiple_domain_datasets):
 
     for subject in tst_subject_ids_names:
         test_subjects_trials_data = {subject: tst_subjects_trials_data[subject]}
-        target_test_loader, _ = data_loader.load_motiondata(test_subjects_trials_data, 1, train=False, num_workers=args.num_workers, features_name=args.features_name,labels_name=args.labels_name)
+        target_test_loader, _ = data_loader.load_motiondata(test_subjects_trials_data, 1, train=False, num_workers=args.num_dataloader_workers, features_name=args.features_name,labels_name=args.labels_name)
 
         # load the last checkpoint with the best model
         args.save_test=True
@@ -539,7 +540,14 @@ def main():
     parser = get_parser()
     parser.set_defaults(backbone='mlnn') # backbone model selection
     args = parser.parse_args()
-    setattr(args, "device", torch.device('cuda:0' if torch.cuda.is_available() else 'cpu'))
+
+    #2) get local machine devices: cuda and gpu
+    if(torch.cuda.is_available()):
+        devices = ["cuda:"+str(idx) for idx in range(torch.cuda.device_count())] + 10*["cpu"]
+    else:
+        devices = 10*["cpu"]
+        
+    setattr(args, "device", devices[args.train_worker_id])
     print("device:", args.device)
 
     #data path
@@ -567,11 +575,35 @@ def main():
     else:
         k_fold(args, multiple_domain_datasets)
 
-    
 
+def worker(parser, worker_idx=0):
+    print(worker_idx)
+    print(parser)
+
+def main_worker():
+    import multiprocessing as mp
+    p_num=2
+    parser="ss"
+    pool = mp.Pool(processes=p_num)
+    for i in range(p_num):
+        pool.apply_async(worker, (parser, i))
+    pool.close()
+    pool.join()
 
 if __name__ == "__main__":
+    #main_worker()
     main()
+    
+    """
+    print("cuda:",torch.cuda.is_available())
+    if(torch.cuda.is_available()):
+        devices = ["cuda:"+str(idx) for idx in range(torch.cuda.device_count())] + 10*["cpu"]
+    else:
+        devices = 10*["cpu"]
+    print(devices)
+
+    """
+
 
 
 '''
