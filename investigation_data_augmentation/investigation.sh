@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 #!/bin/pyenv python
 #coding: --utf-8
+
+if [[ $# < 2 ]]; then 
+    echo "please run main_inve to speciy parameters, trial and subject numbers"
+    exit
+fi
+train_sub_nums=3 #$1
+tre_trial_nums=5 #$2
+
 DATA_PATH=`python -c 'import main; print(main.const.DATA_PATH)'`
 RESULTS_PATH=`python -c 'import main; print(main.const.RESULTS_PATH)'`
 echo "DATA_PATH: ${DATA_PATH}"
@@ -20,11 +28,11 @@ fi
 train_worker_id=0
 for landing_manner in "rdouble_leg_v1"; do
     for model_name in "baseline_lstm"; do #"baseline_fc" "baseline_cnn" "baseline_lstm" "baseline_transformer";do # "baseline_cnn" "baseline_fc" "baseline_lstm"; do # "baseline" "augmentation"; do
-        for feature_layer_num in 4; do # keep it to use five for offline mode. it is the best value
+        for feature_layer_num in 2; do # keep it to use five for offline mode. it is the best value
             for dataset_name in "original"; do # "e_rotation e_scale"; do #"e_rotation" "e_scale"; do #"e_rotation e_scale" ; do # "e_scale" "e_rotation e_scale" ;  do # "original" "da_rotation"  "e_rotation"; do #"da_rotation" "e_rotation"; do #"da_rotation" "e_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
-                for train_sub_num in 1 2 3 4 5 6 7 8; do # 3 #1 2 3 4 5 6 7 8 9 10 11 12 13 14; do # 8 9 10 11 12 13 14 15; do
+                for train_sub_num in ${train_sub_nums}; do # 3 #1 2 3 4 5 6 7 8 9 10 11 12 13 14; do # 8 9 10 11 12 13 14 15; do
                     test_sub_num=`expr ${sub_num} - ${train_sub_num}` 
-                    for tre_trial_num in $1; do # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
+                    for tre_trial_num in ${tre_trial_nums}; do # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
                         for tst_trial_num in 5; do #10 15 20 25; do # NOTE: tst_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
                             for labels_name in "R_GRF_Z"; do #"R_GRF_Z""R_KNEE_ANGLE_X" "R_KNEE_MOMENT_X"; do
                                 {
@@ -32,7 +40,7 @@ for landing_manner in "rdouble_leg_v1"; do
                                 scale_method="standard"
                                 data_id="test_model" # test_sub_num=14, mean r2 =  0.83 (rotation), 0.77 (original)
                                 dataset_folder=`echo ${dataset_name} | sed -e "s/ /_/g"`
-              config_name="${landing_manner}_${model_name}_${feature_layer_num}_${dataset_folder}_${train_sub_num}_${tre_trial_num}_${tst_trial_num}_${labels_name}_${data_id}"
+                                config_name="${landing_manner}_${model_name}_${feature_layer_num}_${dataset_folder}_${train_sub_num}_${tre_trial_num}_${tst_trial_num}_${labels_name}_${data_id}"
                                 echo "Start to train and test a model ......"
                                 echo "dataset_name: ${dataset_name}"
                                 echo "train subject num: ${train_sub_num}"
@@ -95,7 +103,7 @@ for landing_manner in "rdouble_leg_v1"; do
                                 echo ${result_folder} >> ${all_result_folder_file}
                                 echo ${result_folder} >> ${cur_result_folder_file}
                                 ./batch_retrieve_param_metrics.sh "-f${result_folder}"
-                            }&   # 后台执行
+                            } #&   # 后台执行
                             train_worker_id=$(expr ${train_worker_id} + 1)
                             done
                         done

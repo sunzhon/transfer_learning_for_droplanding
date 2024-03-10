@@ -32,7 +32,7 @@ data_dir: "${DATA_PATH}"
 src_domain: "None"
 tcl_domain: "None" 
 tre_domain: "None" 
-tst_domain: "repeated_5trials_5subjects_kam_norm_landing_data.hdf5" 
+tst_domain:  "None" 
 
 config_name: dann
 config_comments: 'complex output layers and using repeated IMU'

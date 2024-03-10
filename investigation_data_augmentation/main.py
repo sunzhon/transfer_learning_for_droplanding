@@ -584,6 +584,7 @@ def main():
     #2) open datafile and load data
     multiple_domain_datasets, dataset_columns = open_datafile(args)
     setattr(args, "dataset_columns", list(dataset_columns))
+    pdb.set_trace()
 
     #3) cross_validation for training and evaluation model
     setattr(args, 'test_subjects', [])
@@ -595,6 +596,10 @@ def main():
         k_fold(args, multiple_domain_datasets)
 
 
+""""
+Multi process demonstration 
+
+"""
 def worker(parser, worker_idx=0):
     print(worker_idx)
     print(parser)
