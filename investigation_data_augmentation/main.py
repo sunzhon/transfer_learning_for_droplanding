@@ -51,6 +51,7 @@ def get_parser():
     parser.add("--config_name", type=str, default="dann_1")
     parser.add("--config_comments", type=str, default="dann")
     parser.add("--result_folder", type=str, default=None)
+    parser.add('--task_type',type=str,default='train model')
 
     # general configuration
     parser.add("--config", is_config_file=True, help="config file path")
@@ -72,7 +73,7 @@ def get_parser():
     parser.add_argument('--scaler_file', type=str, required=True) # patience for early stopping
     parser.add_argument('--labels_name',type=str, nargs='+')
     parser.add_argument('--features_name',type=str, nargs='+')
-    parser.add_argument('--landing_manner',type=str, default='double_legs')
+    parser.add_argument('--collection_manner',type=str, default='double_legs')
     
     # training related
     parser.add_argument('--batch_size', type=int, default=32)
@@ -258,6 +259,8 @@ def valid_test(model, test_data_loader, args, save_examination=False, **kwargs):
     test_acc = utils.AverageMeter()
     criterion = torch.nn.MSELoss()
     r2score = torchmetrics.R2Score(2).to(args.device)#num_outputs=2,multioutput='raw_values'
+    list_predictions=[]
+    list_labels=[]
     with torch.no_grad(): # no do calcualte grad
         if(save_examination):
             list_pd_results=[]
@@ -266,6 +269,8 @@ def valid_test(model, test_data_loader, args, save_examination=False, **kwargs):
             # load data to device
             features, labels = features.to(args.device), labels.to(args.device)
             predictions = model.predict(features)
+            list_labels.append(labels)
+            list_predctions.append(predctions)
 
             # loss
             loss = criterion(predictions, labels)
@@ -533,9 +538,16 @@ def k_fold(args, multiple_domain_datasets):
         
 def model_evaluation(args, multiple_domain_datasets):
 
+
+
+    print("2023年,{}债务率(宽口径,全辖,%): {}, 深度模型预测值:{}".format{})
+
     # load model
-    model = models.BaselineModel(num_label=args.n_labels, base_net=args.backbone).to(args.device)
-    model.load_state_dict(torch.load(os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'trained_model.pth')))
+    #model = models.BaselineModel(num_label=args.n_labels, base_net=args.backbone).to(args.device)
+    model = get_model(args)
+    model_state_dict = os.path.join(const.RESULTS_PATH, args.trained_model_state_path, 'best_model.pth')
+    #model_state_dict = const.RESULTS_PATH + args.trained_model_state_path + 'best_model.pth'
+    model.load_state_dict(torch.load(model_state_dict))
 
     # load data
     tst_subjects_trials_data = multiple_domain_datasets['tst'] # additional domain for only test, it is raw target domain
@@ -584,13 +596,14 @@ def main():
     #2) open datafile and load data
     multiple_domain_datasets, dataset_columns = open_datafile(args)
     setattr(args, "dataset_columns", list(dataset_columns))
-    pdb.set_trace()
 
     #3) cross_validation for training and evaluation model
     setattr(args, 'test_subjects', [])
 
+    args.task_type="test model"
     # test or cross validation training
-    if(args.model_name=='test_model'):
+    if(args.task_type=='test model'):
+        args.trained_model_state_path="training_testing/ecodata_prediction"
         model_evaluation(args, multiple_domain_datasets) # args contains model_param path
     else:
         k_fold(args, multiple_domain_datasets)

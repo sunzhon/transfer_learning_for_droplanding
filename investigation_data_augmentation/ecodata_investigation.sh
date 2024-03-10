@@ -2,19 +2,15 @@
 #!/bin/pyenv python
 #coding: --utf-8
 
-if [[ $# < 2 ]]; then 
-    echo "please run main_inve to speciy parameters, trial and subject numbers"
-    exit
-fi
-train_sub_nums=3 #$1
-tre_trial_nums=5 #$2
+train_sub_nums=25 #$1
+tre_trial_nums=3 #$2
 
 DATA_PATH=`python -c 'import main; print(main.const.DATA_PATH)'`
 RESULTS_PATH=`python -c 'import main; print(main.const.RESULTS_PATH)'`
 echo "DATA_PATH: ${DATA_PATH}"
 echo "RESULTS_PATH: ${RESULTS_PATH}"
 #features_name=`python -c 'import main; array=main.const.SELECTED_FEATURES_NAME; print(" ".join(array))'`
-sub_num=15
+sub_num=31
 cv_num=5  # cross validation num
 result_folder_array=()
 all_result_folder_file="./all_result_folders.txt"
@@ -26,21 +22,25 @@ if [ -e $cur_result_folder_file ]; then
 fi
 
 train_worker_id=0
-for landing_manner in "rdouble_leg_v1"; do
+for collection_manner in "eco"; do
     for model_name in "baseline_lstm"; do #"baseline_fc" "baseline_cnn" "baseline_lstm" "baseline_transformer";do # "baseline_cnn" "baseline_fc" "baseline_lstm"; do # "baseline" "augmentation"; do
-        for feature_layer_num in 4; do # keep it to use five for offline mode. it is the best value
+        for feature_layer_num in 2; do # keep it to use five for offline mode. it is the best value
             for dataset_name in "original"; do # "e_rotation e_scale"; do #"e_rotation" "e_scale"; do #"e_rotation e_scale" ; do # "e_scale" "e_rotation e_scale" ;  do # "original" "da_rotation"  "e_rotation"; do #"da_rotation" "e_rotation"; do #"da_rotation" "e_rotation"; do #"original" "e_scale" "da_scale"; do #"da_scale" "da_rotation" "e_rotation"; do #"timewarp"; do #"original" "rotation"; do #"rotation"; do # "rotation" "time_wrap"; do
                 for train_sub_num in ${train_sub_nums}; do # 3 #1 2 3 4 5 6 7 8 9 10 11 12 13 14; do # 8 9 10 11 12 13 14 15; do
                     test_sub_num=`expr ${sub_num} - ${train_sub_num}` 
                     for tre_trial_num in ${tre_trial_nums}; do # NOTE: tre_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
-                        for tst_trial_num in 5; do #10 15 20 25; do # NOTE: tst_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
-                            for labels_name in "R_GRF_Z"; do #"R_GRF_Z""R_KNEE_ANGLE_X" "R_KNEE_MOMENT_X"; do
+                        for tst_trial_num in 1; do #10 15 20 25; do # NOTE: tst_trial_num is only work for base_trail idx of tst, 01, 02,.., not work on 01_0, 01_1,...
+                            for labels_name in "明年债务率(宽口径,全辖,%)"; do #"R_GRF_Z""R_KNEE_ANGLE_X" "R_KNEE_MOMENT_X"; do
                                 {
-                                features_name=`python -c 'import main; array=["Weight","Height"] + main.const.extract_imu_fields(["R_SHANK", "R_THIGH", "R_FOOT", "WAIST", "CHEST", "L_FOOT", "L_SHANK", "L_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
+                                #features_name=`python -c 'import main; array=["Weight","Height"] + main.const.extract_imu_fields(["R_SHANK", "R_THIGH", "R_FOOT", "WAIST", "CHEST", "L_FOOT", "L_SHANK", "L_THIGH"], main.const.ACC_GYRO_FIELDS); print(" ".join(array))'`
+                                #features_name=`python -c 'import main; array=['城投债余额(亿)', '城投平台数量(家)', '近一月发行量(亿)', '近一月净融资亿)','GDP(亿)','人均GDP(元)', 'GDP增速(%)', '一般公共预算收入(亿)',  '转移性收入(亿)',  '上级补助收入(亿)','转移支付收入(亿)', ' 税收收入(亿)', '政府性基金收入(亿)', '土地出让收入(亿)',  '财政自给率(%)', ' 地方政府债务余额(亿元)', '负债率(%)', '债务率(%)', '债务率(宽口径,本级,%)', '债务率(宽口径,全辖,%)', '城投有息债务合计(亿)', '城投有息债务合计/地区综合财力(%)', '地方综合财力(亿元)']; print(" ".join(array))'`
+                                features_name=`python -c 'import eco_features; array=eco_features.features_name;print(" ".join(array))'`
+
+                                echo ${features_name}
                                 scale_method="standard"
                                 data_id="test_model" # test_sub_num=14, mean r2 =  0.83 (rotation), 0.77 (original)
                                 dataset_folder=`echo ${dataset_name} | sed -e "s/ /_/g"`
-                                config_name="${landing_manner}_${model_name}_${feature_layer_num}_${dataset_folder}_${train_sub_num}_${tre_trial_num}_${tst_trial_num}_${labels_name}_${data_id}"
+                                config_name="${collection_manner}_${model_name}_${feature_layer_num}_${dataset_folder}_${train_sub_num}_${tre_trial_num}_${tst_trial_num}_${labels_name}_${data_id}"
                                 echo "Start to train and test a model ......"
                                 echo "dataset_name: ${dataset_name}"
                                 echo "train subject num: ${train_sub_num}"
@@ -50,9 +50,9 @@ for landing_manner in "rdouble_leg_v1"; do
                                 echo "dataset_folder: ${dataset_folder}"
                                 sleep 3
                                 # determine datasets' name from the generated data, target regression
-                                tre_datafile_basename="tre_${data_id}_${landing_manner}_norm_landing_data.hdf5"
-                                tst_datafile_basename="tst_${data_id}_${landing_manner}_norm_landing_data.hdf5"
-                                scaler_filename="${data_id}_${landing_manner}_landing_scaler_file.pkl"
+                                tre_datafile_basename="tre_${data_id}_${collection_manner}_norm_data.hdf5"
+                                tst_datafile_basename="tst_${data_id}_${collection_manner}_norm_data.hdf5"
+                                scaler_filename="${data_id}_${collection_manner}_scaler_file.pkl"
                                 result_folder="${config_name}_loss"
 
                                 echo "tre_datafile_basename: ${tre_datafile_basename}"
@@ -70,7 +70,7 @@ for landing_manner in "rdouble_leg_v1"; do
                                 echo "tre_data_file: ${tre_data_file}"
                                 if [ ! -f ${tre_data_file} ]; then
                                     echo "${tre_data_file} does not exist, now generate it ...."
-                                    python ./../vicon_imu_data_process/process_landing_data.py ${landing_manner} ${scale_method} ${data_id} ${dataset_name} | tee "${log_folder}/data_generattion_${data_id}.log"
+                                    python ./../vicon_imu_data_process/process_landing_data.py ${collection_manner} ${scale_method} ${data_id} ${dataset_name} "all_ecodata.hdf5" | tee "${log_folder}/data_generattion_${data_id}.log"
                                 fi
                               
                                 
@@ -93,10 +93,11 @@ for landing_manner in "rdouble_leg_v1"; do
                                     --result_folder ${result_folder} \
                                     --features_name ${features_name} \
                                     --labels_name ${labels_name} \
-                                    --landing_manner ${landing_manner} \
+                                    --collection_manner ${collection_manner} \
                                     --train_worker_id ${train_worker_id}
 			        	                   #| tee "${log_folder}/${config_name}.log"
                                   
+                                   exit
                                 echo "a train worker end"
                                 # collect training and test results
                                 result_folder_array+=(${result_folder})
