@@ -4,8 +4,6 @@
  Import necessary packages
 
 '''
-import tensorflow as tf
-print("tensorflow version:",tf.__version__)
 import numpy as np
 import pdb
 import os
@@ -31,10 +29,6 @@ from sklearn.model_selection import KFold
 import time as localtimepkg
 
 
-
-cpus=tf.config.list_logical_devices(device_type='CPU')
-gpus=tf.config.list_logical_devices(device_type='GPU')
-print(cpus,gpus)
 
 '''
 Set hyper parameters
