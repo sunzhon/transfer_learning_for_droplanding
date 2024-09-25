@@ -538,10 +538,6 @@ def k_fold(args, multiple_domain_datasets):
         
 def model_evaluation(args, multiple_domain_datasets):
 
-
-
-    print("2023年,{}债务率(宽口径,全辖,%): {}, 深度模型预测值:{}".format{})
-
     # load model
     #model = models.BaselineModel(num_label=args.n_labels, base_net=args.backbone).to(args.device)
     model = get_model(args)

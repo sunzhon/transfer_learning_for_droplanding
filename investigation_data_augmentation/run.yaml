@@ -34,6 +34,6 @@ tcl_domain: "None"
 tre_domain: "None" 
 tst_domain:  "None" 
 
-config_name: dann
+config_name: "dann"
 config_comments: 'complex output layers and using repeated IMU'
-
+model_name: "mlnn"
